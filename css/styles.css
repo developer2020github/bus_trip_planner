@@ -1,0 +1,17 @@
+ .mapClass {
+     position: absolute;
+     top: 0px;
+     left: 0;
+     bottom: 0px;
+     right: 0;
+     z-index: 99;
+ }
+ 
+ .filtersClass {
+     position: fixed;
+     z-index: 999;
+     left: 10px;
+     top: 0px;
+     background-color:#564F4F;
+     color:#F6EE21;
+ }

@@ -3,9 +3,10 @@
 var sources_list = Array(); 
 var destinations_list = Array();
 var bus_route_list = Array(); 
-
 var current_view_model; 
 
+var map_inital_pos = {lat: 24.4667, lng: 54.3667};
+var map_handler; 
 //==========================
 var UpdateMap = function(){
 	var self = this; 
@@ -15,6 +16,7 @@ var UpdateMap = function(){
 }
 var ViewModel = function(update_map){
 	var self = this;
+
 	self.map_updater = update_map; 
 	self.current_filter_list = ko.observableArray();
 	self.current_step = ko.observable(0); 
@@ -54,8 +56,8 @@ var ViewModel = function(update_map){
 	}
 
 	self.stepTitle = ko.computed(function() {
-	console.log("computed step");
-	console.log(this.current_step);
+	//console.log("computed step");
+	//console.log(this.current_step);
 
     return ("Step" + String(this.current_step()));
   }, this);
@@ -105,6 +107,12 @@ function initialize(){
 */
 }
 
+function initMap(){
+	debug_main();
+	map_handler = new MapHandler(map_inital_pos);
+	map_handler.add_locations(bus_stops);
+
+}
 
 function previous_step(){
 	if (current_view_model.current_step()===2){
@@ -118,6 +126,7 @@ function next_step(){
 	  current_view_model.update_current_filter_list(destinations_list);
 	  current_view_model.set_current_step(2);
     }
+    console.log(local_distance_matrix);
 }
 
 

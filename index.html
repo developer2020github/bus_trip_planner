@@ -18,14 +18,15 @@
     <div id="map" class="mapClass">MY MAP</div>
     <div id="filters" class="filtersClass">
         <div id = "application_title">
-            <span>ABU DHABI BUS TRIP PLANNER </span>
+            <span data-bind="text: cityName"></span>
+            <span>BUS TRIP PLANNER </span>
         </div>
         <div id="steps">
             <span data-bind="text: stepTitle"></span>
         </div>
         <div class="btn-group" role="group">
-        	<button type="button" class="btn btn-default" id="previousStepButton">Previous step</button>
-            <button type="button" class="btn btn-default" id="nextStepButton">Next step</button>
+        	<button type="button" data-bind= "click: previous_step" class="btn btn-default" id="previousStepButton">Previous step</button>
+            <button type="button" data-bind= "click: next_step" class="btn btn-default" id="nextStepButton">Next step</button>
             <button type="button" data-bind="click: apply_filter" class="btn btn-default">
                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
             </button>

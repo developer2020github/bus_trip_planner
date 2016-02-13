@@ -4,14 +4,14 @@ function test_set_interval(){
 }
 function debug_main(){
 
-	test_data_model();
+	//test_data_model();
 	
 
 }
 
 function test_data_model(){
 	var data_model = new DataModel(bus_routes, bus_stops, map_objects, 2000);
-	//return; 
+	return; 
 	var all_map_points = data_model.bus_stops.concat(data_model.map_objects);
     //console.log(all_map_points)
 	var point1 = map_objects[0];

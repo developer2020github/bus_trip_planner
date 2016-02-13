@@ -21,7 +21,7 @@ var CITY_NAME       = "ABU DHABI"
 var sources_list = Array(); 
 var destinations_list = Array();
 var bus_route_list = Array(); 
-var gui_view; 
+
 
 
 var map_handler; 
@@ -32,6 +32,36 @@ var UpdateMap = function(){
 	self.update_map = function(){
 		console.log("map was just updated");
 	}
+}
+
+//============================
+var Controller = function(){
+  var self = this; 
+  this.data_model = new DataModel(bus_routes, bus_stops, map_objects, 2000);
+  var update_map = new UpdateMap();
+  this.gui_view = new GUIViewModel(update_map, self); 
+  this.gui_view.cityName(CITY_NAME);
+  this.gui_view.update_current_filter_list(sources_list);
+  this.gui_view.current_step(1);
+  ko.applyBindings(this.gui_view);
+
+  //document.getElementById("nextStepButton").addEventListener("click", this.next_step);
+  //document.getElementById("previousStepButton").addEventListener("click", this.previous_step);
+}
+
+Controller.prototype.previous_step = function(){
+	if (this.gui_view.current_step()===2){
+	  this.gui_view.update_current_filter_list(sources_list);
+	  this.gui_view.current_step(1);
+    }
+}
+
+Controller.prototype.next_step = function(){
+	if (this.gui_view.current_step()===1){
+	  this.gui_view.update_current_filter_list(destinations_list);
+	  this.gui_view.current_step(2);
+    }
+    //console.log(local_distance_matrix);
 }
 
 //============================
@@ -55,21 +85,16 @@ function initialize(){
   	 	//STOPPED HERE UNTESTED
   	 }
   }
-  var update_map = new UpdateMap();
-  gui_view = new GUIViewModel(update_map); 
-  gui_view.cityName(CITY_NAME);
-  gui_view.update_current_filter_list(sources_list);
-  gui_view.current_step(1);
+
   //console.log(gui_view);
 
   //////////////
   
 
   //////////
-  ko.applyBindings(gui_view);
+ 
 
-  document.getElementById("nextStepButton").addEventListener("click", next_step);
-  document.getElementById("previousStepButton").addEventListener("click", previous_step);
+
   
 
  
@@ -87,25 +112,12 @@ function initMap(){
 
 }
 
-function previous_step(){
-	if (gui_view.current_step()===2){
-	  gui_view.update_current_filter_list(sources_list);
-	  gui_view.current_step(1);
-    }
-}
-
-function next_step(){
-	if (gui_view.current_step()===1){
-	  gui_view.update_current_filter_list(destinations_list);
-	  gui_view.current_step(2);
-    }
-    console.log(local_distance_matrix);
-}
 
 
 
 (function main(){
  //debugOut(); 
   initialize(); 
+  var controller = new Controller();
 })(); 
 

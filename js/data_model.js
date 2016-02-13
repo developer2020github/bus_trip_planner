@@ -19,16 +19,58 @@ var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distanc
 
     this.destinations_by_source = {}
     this.max_walking_distance_meters = max_walking_distance_meters;
-    this.dms = new google.maps.DistanceMatrixService();
     this.matrix_items = Array();
     this.local_distance_matrix = Array();
     this.infinite_walking_distance = 1000 * this.max_walking_distance_meters;
     this.build_local_distance_matrix();
+    this.memorized_filters = Array(); 
+    this.arrays_matching_filters = Array(); 
 
     //console.log(this.matrix_items);
     //console.log(this.map_objects);
 }
+DataModel.prototype.get_filter_index = function(filter){
+    for (var i = 0, len = this.memorized_filters.lenght; i<len; i++){
+        if (JSON.stringify(filter) === JSON.stringify(this.memorized_filters[i])) {
+            return i; 
+        }
+    }
 
+    return -1; 
+
+}
+
+DataModel.prototype.get_map_objects = function(filter) {
+    var idx = this.get_filter_index(filter);
+    if (idx > -1) {
+        return this.arrays_matching_filters[idx]
+    }
+
+    var matching_array = Array();
+
+    function filter_map_objects(objects) {
+
+        for (var i = 0, len = objects.length; i < len; i++) {
+
+            for (var key in filter) {
+                if (filter.hasOwnProperty(key)) {
+                    if (objects[i].hasOwnProperty(key)) {
+                        if (objects[i][key] === filter[key]){
+                            matching_array.push(objects[i])
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    filter_map_objects(this.bus_stops);
+    filter_map_objects(this.map_objects);
+    this.memorized_filters.push(filter);
+    this.arrays_matching_filters.push(matching_array);
+    
+    return (matching_array);
+}
 
 
 DataModel.prototype.decorate_map_objects_array = function(objects) {
@@ -115,7 +157,7 @@ DataModel.prototype.prepare_locations_for_distance_matrix = function() {
     //Thus, to minimize requests to maps API, 
     //  , 
     //the idea is to use locally built matrix for 
-    //estimates and then process the locations that are close
+    //estimated distances and then process the locations that are close
     //(no point to calculate exact walking distance for points that are >2000 m away anayway)
     // 
     //see http://www.movable-type.co.uk/scripts/latlong.html
@@ -176,7 +218,7 @@ DataModel.prototype.populate_local_distance_matrix = function() {
         this.local_distance_matrix.push(a);
     }
 
-    console.log(this.local_distance_matrix);
+    //console.log(this.local_distance_matrix);
 }
 
 DataModel.prototype.get_bus_stop_by_source = function(source) {

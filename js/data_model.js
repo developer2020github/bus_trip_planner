@@ -24,6 +24,7 @@ var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distanc
     this.local_distance_matrix = Array();
     this.infinite_walking_distance = 1000 * this.max_walking_distance_meters;
     this.build_local_distance_matrix();
+
     //console.log(this.matrix_items);
     //console.log(this.map_objects);
 }
@@ -103,7 +104,7 @@ DataModel.prototype.location_is_ok_for_walking = function(o) {
 }
 
 DataModel.prototype.build_local_distance_matrix = function() {
-    console.log("build_local_distance_matrix");
+    //console.log("build_local_distance_matrix");
     this.prepare_locations_for_distance_matrix();
     this.populate_local_distance_matrix();
 }

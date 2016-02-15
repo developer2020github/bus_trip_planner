@@ -19,10 +19,13 @@
     <div id="filters" class="filtersClass">
         <div id = "application_title">
             <span data-bind="text: cityName"></span>
-            <span>BUS TRIP PLANNER </span>
+            <span>BUS TRIP PLANER </span>
         </div>
         <div id="steps">
-            <span data-bind="text: stepTitle"></span>
+            <span data-bind="text: step_and_status"></span>
+        </div>
+        <div id="current_route">
+            <span data-bind="text: selected_source_destination_display"></span>
         </div>
         <div class="btn-group" role="group">
         	<button type="button" data-bind= "click: previous_step" class="btn btn-default" id="previousStepButton">Previous step</button>
@@ -36,7 +39,7 @@
         </div>
         <div>
             <div class="btn-group" role="group">
-                <input type="text" id="location-search" class="form-control" placeholder="type location" data-bind="textInput: selected_location" />
+                <input type="text" id="location-search" class="form-control" placeholder="type location" data-bind="textInput: filtered_location_name">
             </div>
         </div>
         <div>&nbsp&nbsp</div>

@@ -26,27 +26,26 @@
 
  this array can be pre-built and then return ones mathing source is found  
 */
-var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects){
-    this.source = source; 
+var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects) {
+    this.source = source;
     this.array_of_bus_stops = array_of_walkable_bus_stops.slice(); //should be only stops in this route
-    this.via_bus_route = bus_route; 
-    this.source_bus_stop_idx = -1; 
+    this.via_bus_route = bus_route;
     this.reacheable_map_objects = Array()
 
-    for (var i =0, len_i = map_objects.length; i<len_i; i++){
-        var reacheable_map_object = {}; 
-        for (var j = 0, len_j = this.array_of_bus_stops.length; j<len_j; j++){
+    for (var i = 0, len_i = map_objects.length; i < len_i; i++) {
+        var reacheable_map_object = {};
+        for (var j = 0, len_j = this.array_of_bus_stops.length; j < len_j; j++) {
             var dist = estimate_distance_between_two_map_objects(map_objects[i], this.array_of_bus_stops[j]);
-            if (dist<data_model.max_walking_distance_meters){
-                if ($.isEmptyObject(reacheable_map_object)){
+            if (dist < data_model.max_walking_distance_meters) {
+                if ($.isEmptyObject(reacheable_map_object)) {
                     reachable_map_object = $.extend({}, map_objects[i]);
                     reachable_map_object["closest_stop_idx"] = j;
-                    reachable_map_object["distance_to_closest_stop"] = dist; 
+                    reachable_map_object["distance_to_closest_stop"] = dist;
                     reachable_map_object["via_bus_route"] = this.via_bus_route;
-                }else{
-                    if (reachable_map_object["distance_to_closest_stop"]>dist){
-                     reachable_map_object["closest_stop_idx"] = j;
-                     reachable_map_object["distance_to_closest_stop"] = dist; 
+                } else {
+                    if (reachable_map_object["distance_to_closest_stop"] > dist) {
+                        reachable_map_object["closest_stop_idx"] = j;
+                        reachable_map_object["distance_to_closest_stop"] = dist;
                     }
                 }
 
@@ -54,13 +53,20 @@ var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route,
             }
         }
 
-        if (!($.isEmptyObject(reacheable_map_object))){
+        if (!($.isEmptyObject(reacheable_map_object))) {
             this.reacheable_map_objects.push(reacheable_map_object);
         }
-    }
-    //STOPPED HERE  - NEED TO WORK ON  this.source_bus_stop_idx as next step. Perhaps it makes sense to just keep 
-    //the index and provide getter function.  
+    }  
 
+}
+
+ReacheableObjects.prototype.get_closest_bus_stop = function(map_object){
+ for (var i = 0, len = this.reacheable_map_objects.length; i<len; i++){
+    if (this.data_model.map_objects_are_equal(this.reacheable_map_objects[i], map_object)){
+        var idx = this.reacheable_map_objects[i].closest_stop_idx; 
+        return(this.array_of_bus_stops[idx]);
+    }
+ }
 }
 
 /*on next step: 
@@ -94,8 +100,16 @@ var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distanc
 
     this.bus_stops = bus_stops;
     this.map_objects = map_objects;
-    this.decorate_map_objects_array(this.bus_stops);
-    this.decorate_map_objects_array(this.map_objects);
+    
+    //add unique integer ID for easy comparisons
+    var object_idx = 1
+    object_idx = this.decorate_objects(this.bus_stops, object_idx);
+    object_idx = this.decorate_objects(this.map_objects, object_idx);
+    this.decorate_objects(this.bus_stops, object_idx);
+
+    this.decorate_map_objects(this.bus_stops);
+    this.decorate_map_objects(this.map_objects);
+
     this.all_map_objects = this.map_objects.concat(this.bus_stops);
 
     this.destinations_by_source = {}
@@ -105,12 +119,14 @@ var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distanc
     this.infinite_walking_distance = 1000 * this.max_walking_distance_meters;
     this.build_local_distance_matrix();
     this.filtered_map_objects = new FilteredArray(this.all_map_objects, "all_map_objects");
-    this.reacheable_objects_by_source = Array(); 
+    this.reacheable_objects_by_source = Array();
 }
 
+DataModel.prototype.map_objects_are_equal=function(o1, o2){
+    return (o1.object_id===o2.object_id)
+}
 
-
-DataModel.prototype.get_reacheable_objects = function(source){
+DataModel.prototype.get_reacheable_objects = function(source) {
     //var matching_objects = Array(); 
     //for (var i = 0, len = this.reacheable_objects_by_source.length; i<len; i++){
     //    if (this.reacheable_objects_by_source[i].source === source)
@@ -118,16 +134,26 @@ DataModel.prototype.get_reacheable_objects = function(source){
 }
 
 DataModel.prototype.get_map_objects = function(filter) {
-    return  this.filtered_map_objects.get_filtered_objects(filter);
+    return this.filtered_map_objects.get_filtered_objects(filter);
 }
 
 
-DataModel.prototype.decorate_map_objects_array = function(objects) {
+DataModel.prototype.decorate_map_objects = function(objects) {
     //add fields that are calculated by the application 
     for (var i = 0, len = objects.length; i < len; i++) {
         objects[i]["idx_into_distance_matrix"] = -1;
     }
+
 }
+
+DataModel.prototype.decorate_objects = function (objects, object_idx){
+     for (var i = 0, len = objects.length; i < len; i++) {
+        objects[i]["object_id"] = object_idx;
+        object_idx++;
+    }
+    return object_idx; 
+}
+
 
 DataModel.prototype.get_distance_between_two_locations = function(lat1, lon1, lat2, lon2) {
     //ref. http://www.movable-type.co.uk/scripts/latlong.html
@@ -148,11 +174,11 @@ DataModel.prototype.get_distance_between_two_locations = function(lat1, lon1, la
     return d;
 }
 
-DataModel.prototype.objects_within_walking_distance  = function(o1, o2){
-    if (this.estimate_distance_between_two_map_objects(o1, o2)<this.max_walking_distance_meters){
-        return true; 
+DataModel.prototype.objects_within_walking_distance = function(o1, o2) {
+    if (this.estimate_distance_between_two_map_objects(o1, o2) < this.max_walking_distance_meters) {
+        return true;
     }
-    return false; 
+    return false;
 }
 
 DataModel.prototype.estimate_distance_between_two_map_objects = function(o1, o2) {

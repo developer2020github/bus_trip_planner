@@ -16,6 +16,7 @@ var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distanc
     this.map_objects = map_objects;
     this.decorate_map_objects_array(this.bus_stops);
     this.decorate_map_objects_array(this.map_objects);
+    this.all_map_objects = this.map_objects.concat(this.bus_stops);
 
     this.destinations_by_source = {}
     this.max_walking_distance_meters = max_walking_distance_meters;
@@ -23,53 +24,11 @@ var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distanc
     this.local_distance_matrix = Array();
     this.infinite_walking_distance = 1000 * this.max_walking_distance_meters;
     this.build_local_distance_matrix();
-    this.memorized_filters = Array(); 
-    this.arrays_matching_filters = Array(); 
-
-    //console.log(this.matrix_items);
-    //console.log(this.map_objects);
-}
-DataModel.prototype.get_filter_index = function(filter){
-    for (var i = 0, len = this.memorized_filters.lenght; i<len; i++){
-        if (JSON.stringify(filter) === JSON.stringify(this.memorized_filters[i])) {
-            return i; 
-        }
-    }
-
-    return -1; 
-
+    this.filtered_map_objects = new FilteredArray(this.all_map_objects, "all_map_objects");
 }
 
 DataModel.prototype.get_map_objects = function(filter) {
-    var idx = this.get_filter_index(filter);
-    if (idx > -1) {
-        return this.arrays_matching_filters[idx]
-    }
-
-    var matching_array = Array();
-
-    function filter_map_objects(objects) {
-
-        for (var i = 0, len = objects.length; i < len; i++) {
-
-            for (var key in filter) {
-                if (filter.hasOwnProperty(key)) {
-                    if (objects[i].hasOwnProperty(key)) {
-                        if (objects[i][key] === filter[key]){
-                            matching_array.push(objects[i])
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    filter_map_objects(this.bus_stops);
-    filter_map_objects(this.map_objects);
-    this.memorized_filters.push(filter);
-    this.arrays_matching_filters.push(matching_array);
-    
-    return (matching_array);
+    return  this.filtered_map_objects.get_filtered_objects(filter);
 }
 
 
@@ -86,7 +45,7 @@ DataModel.prototype.get_distance_between_two_locations = function(lat1, lon1, la
     //from request to google maps API. 
     //console.log("get_distance_between_two_locations");
 
-    var R = 6371000; // metres
+    var R = 6371000; // meters
     var x1 = lat2 - lat1;
 
     var dLat = toRad(x1);

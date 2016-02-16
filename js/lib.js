@@ -50,3 +50,10 @@ FilteredArray.prototype.get_filtered_objects = function(filter) {
     
     return (matching_array);
 }
+
+//======================================================
+//generic functions 
+//======================================================
+toRad = function(n) {
+    return n * Math.PI / 180;
+}

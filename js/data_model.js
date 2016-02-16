@@ -1,10 +1,90 @@
 //should handle all data - related computations and serve as interface between map and gui 
 //(need a data structure: reachable destinations with list of bus routes they can be reached by by source)
 
-toRad = function(n) {
-    return n * Math.PI / 180;
+/*
+ request: source
+ response: array of objects: 
+
+              source === source 
+              via === bus_route 
+              walking_distance_to_source === distance (must be reacheable)
+              source_idx - index into array of map objects reacheable from source
+              //stop_closest_to_destination = undefined
+              //destination = undefined 
+              array of map objects reacheable by walking from this route
+                  each map object decorated with closest bus stop index from next array
+              array of bus stops these objects can be reached from 
+             this will be a helper class in the data model.  
+             Pretty much everything can be calculated by constuctor. Should only be created if 
+             - route has a stop close enough to source. Thus, 
+              * array of stops will be provided beforehand (all walkable stops on the route)
+              * source is known too 
+              * calculation of index into array is cheap (matrix is pre-calculated), so it's ok to 
+              not bother with supplying anyting 
+
+              See class ReachebleObjects.
+
+ this array can be pre-built and then return ones mathing source is found  
+*/
+var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects){
+    this.source = source; 
+    this.array_of_bus_stops = array_of_walkable_bus_stops.slice(); //should be only stops in this route
+    this.via_bus_route = bus_route; 
+    this.source_bus_stop_idx = -1; 
+    this.reacheable_map_objects = Array()
+
+    for (var i =0, len_i = map_objects.length; i<len_i; i++){
+        var reacheable_map_object = {}; 
+        for (var j = 0, len_j = this.array_of_bus_stops.length; j<len_j; j++){
+            var dist = estimate_distance_between_two_map_objects(map_objects[i], this.array_of_bus_stops[j]);
+            if (dist<data_model.max_walking_distance_meters){
+                if ($.isEmptyObject(reacheable_map_object)){
+                    reachable_map_object = $.extend({}, map_objects[i]);
+                    reachable_map_object["closest_stop_idx"] = j;
+                    reachable_map_object["distance_to_closest_stop"] = dist; 
+                    reachable_map_object["via_bus_route"] = this.via_bus_route;
+                }else{
+                    if (reachable_map_object["distance_to_closest_stop"]>dist){
+                     reachable_map_object["closest_stop_idx"] = j;
+                     reachable_map_object["distance_to_closest_stop"] = dist; 
+                    }
+                }
+
+
+            }
+        }
+
+        if (!($.isEmptyObject(reacheable_map_object))){
+            this.reacheable_map_objects.push(reacheable_map_object);
+        }
+    }
+    //STOPPED HERE  - NEED TO WORK ON  this.source_bus_stop_idx as next step. Perhaps it makes sense to just keep 
+    //the index and provide getter function.  
+
 }
 
+/*on next step: 
+  controller will provide source and destination selected by user. 
+  data model will need to return a list of objects containing 
+   source
+   source bus stop (stop closest to source)
+   bus route number 
+   destination bus stop 
+   destination 
+   why not just default to shortest route: may want to implement route selection by user in the future 
+*/
+
+/* on following step controller will decide which route to use (the one with shortest distance 
+between source and destination for now 
+now) and request map to draw bus route and path from source to source bus stop, 
+and path from destination to destination bus stop*/
+
+
+//============================================================================================
+
+
+
+//============================================================================================
 var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distance_meters) {
 
     //decorate objects accrodingly 
@@ -25,6 +105,16 @@ var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distanc
     this.infinite_walking_distance = 1000 * this.max_walking_distance_meters;
     this.build_local_distance_matrix();
     this.filtered_map_objects = new FilteredArray(this.all_map_objects, "all_map_objects");
+    this.reacheable_objects_by_source = Array(); 
+}
+
+
+
+DataModel.prototype.get_reacheable_objects = function(source){
+    //var matching_objects = Array(); 
+    //for (var i = 0, len = this.reacheable_objects_by_source.length; i<len; i++){
+    //    if (this.reacheable_objects_by_source[i].source === source)
+    //}
 }
 
 DataModel.prototype.get_map_objects = function(filter) {
@@ -58,6 +148,12 @@ DataModel.prototype.get_distance_between_two_locations = function(lat1, lon1, la
     return d;
 }
 
+DataModel.prototype.objects_within_walking_distance  = function(o1, o2){
+    if (this.estimate_distance_between_two_map_objects(o1, o2)<this.max_walking_distance_meters){
+        return true; 
+    }
+    return false; 
+}
 
 DataModel.prototype.estimate_distance_between_two_map_objects = function(o1, o2) {
 

@@ -21,8 +21,16 @@ def save_excel_as_csv(excel_file_name, csv_file_name, remove_empty_rows=False):
             if remove_empty_rows and (str(sh.row_values(rownum)[0])==""):
                 include = False
             if  include: 
-                #print (sh.row_values(rownum))
-                wr.writerow(sh.row_values(rownum))
+                lw = list(); 
+                for item in sh.row_values(rownum):
+                    if isinstance(item, float):
+                        if ((item % 1)==0.0):
+                            item = int(item)
+
+                    lw.append(item)
+
+
+                wr.writerow(lw)
 
         csv_file.close()
 
@@ -41,6 +49,8 @@ def csv_to_json(csvfile_name_and_path, json_file_name_and_path, var_name = ""):
         for key in d:
             if is_number(d[key]):
                 d[key]=float(d[key])
+                if ((d[key] % 1)==0.0):
+                    d[key]=str(int(d[key]))
         filtered_list.append(d)
 
     data = json.dumps(filtered_list, indent=4)

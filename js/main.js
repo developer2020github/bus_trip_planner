@@ -30,7 +30,7 @@ var UpdateMap = function() {
 //============================
 var Controller = function() {
     var self = this;
-    this.data_model = new DataModel(bus_routes, bus_stops, map_objects, 2000);
+    this.data_model = new DataModel(bus_routes_data, bus_stops, map_objects, 2000);
     var update_map = new UpdateMap();
     this.gui_view = new GUIViewModel(update_map, self);
     this.gui_view.cityName(CITY_NAME);

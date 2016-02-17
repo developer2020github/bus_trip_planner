@@ -26,6 +26,10 @@
 
  this array can be pre-built and then return ones mathing source is found  
 */
+//source  - source provided by view 
+//array of walkable_bus_stops - need to build one array per route 
+//route - just route number 
+//map objects - all map objects (not bus stops)
 var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects) {
     this.source = source;
     this.array_of_bus_stops = array_of_walkable_bus_stops.slice(); //should be only stops in this route
@@ -91,11 +95,11 @@ and path from destination to destination bus stop*/
 
 
 //============================================================================================
-var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distance_meters) {
+var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_distance_meters) {
 
     //decorate objects accrodingly 
     //https://www.iconfinder.com/icons/452386/bus_buss_coach_shuttle_icon#size=48
-    this.bus_routes = bus_routes;
+    this.bus_routes_data = bus_routes_data;
     //console.log(this.bus_routes);
 
     this.bus_stops = bus_stops;
@@ -105,7 +109,9 @@ var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distanc
     var object_idx = 1
     object_idx = this.decorate_objects(this.bus_stops, object_idx);
     object_idx = this.decorate_objects(this.map_objects, object_idx);
-    this.decorate_objects(this.bus_stops, object_idx);
+    this.decorate_objects(this.bus_routes_data, object_idx);
+
+    //this.list_of_bus_numbers = this.build_list_of_bus_routes(); 
 
     this.decorate_map_objects(this.bus_stops);
     this.decorate_map_objects(this.map_objects);
@@ -120,6 +126,9 @@ var DataModel = function(bus_routes, bus_stops, map_objects, max_walking_distanc
     this.build_local_distance_matrix();
     this.filtered_map_objects = new FilteredArray(this.all_map_objects, "all_map_objects");
     this.reacheable_objects_by_source = Array();
+
+    this.bus_routes = new BusRoutes(this.bus_routes_data, this.bus_stops, this);
+    console.log(this.bus_routes);
 }
 
 DataModel.prototype.map_objects_are_equal=function(o1, o2){
@@ -215,6 +224,7 @@ DataModel.prototype.location_is_ok_for_walking = function(o) {
     //the idea is to cover locations user actually checked himself and knows they 
     //are "walkable". All map_objects are walkable, and bus stops have a field indicating 
     //they are "walkable".
+    /*console.log(o);*/
     if (o.item_type === "map_object") {
         return true;
     }

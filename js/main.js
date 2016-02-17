@@ -51,6 +51,10 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
         return (this.data_model.get_map_objects({ class: "community" }));
     }
     //for step 2, need to implement list of reacheable stops in data model 
+
+    if (step ===2 ){
+        return (this.data_model.get_reacheable_objects(this.gui_view.selected_source()));
+    }
 }
 Controller.prototype.set_filtered_item = function(item) {
 

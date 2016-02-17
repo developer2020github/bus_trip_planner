@@ -30,17 +30,28 @@
 //array of walkable_bus_stops - need to build one array per route 
 //route - just route number 
 //map objects - all map objects (not bus stops)
-var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects) {
+
+//when get a source at step2: 
+//will need to get : list of bus routes source belongs to.
+//then for each such route - list of reachable objects 
+//return a list of objects of class ReachableObjects 
+//store the list in 
+var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route,  data_model, map_objects) {
+    //class builds a list of map objects reacheable from a source via a particular bus route 
+    //it assumes that source itself is reacheable.
+
     this.source = source;
+    console.log(array_of_walkable_bus_stops);
     this.array_of_bus_stops = array_of_walkable_bus_stops.slice(); //should be only stops in this route
     this.via_bus_route = bus_route;
     this.reacheable_map_objects = Array()
+    this.data_model = data_model;
 
     for (var i = 0, len_i = map_objects.length; i < len_i; i++) {
         var reacheable_map_object = {};
         for (var j = 0, len_j = this.array_of_bus_stops.length; j < len_j; j++) {
-            var dist = estimate_distance_between_two_map_objects(map_objects[i], this.array_of_bus_stops[j]);
-            if (dist < data_model.max_walking_distance_meters) {
+            var dist = this.data_model.estimate_distance_between_two_map_objects(map_objects[i], this.array_of_bus_stops[j]);
+            if (dist < this.data_model.max_walking_distance_meters) {
                 if ($.isEmptyObject(reacheable_map_object)) {
                     reachable_map_object = $.extend({}, map_objects[i]);
                     reachable_map_object["closest_stop_idx"] = j;
@@ -126,9 +137,13 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     this.build_local_distance_matrix();
     this.filtered_map_objects = new FilteredArray(this.all_map_objects, "all_map_objects");
     this.reacheable_objects_by_source = Array();
+    this.sources_for_reacheble_objects_by_source = Array(); 
 
     this.bus_routes = new BusRoutes(this.bus_routes_data, this.bus_stops, this);
-    console.log(this.bus_routes);
+    //console.log(this.bus_routes);
+    var test_obj = this.get_reacheable_objects(this.map_objects[0]);
+    console.log(test_obj);
+
 }
 
 DataModel.prototype.map_objects_are_equal=function(o1, o2){
@@ -136,10 +151,35 @@ DataModel.prototype.map_objects_are_equal=function(o1, o2){
 }
 
 DataModel.prototype.get_reacheable_objects = function(source) {
-    //var matching_objects = Array(); 
-    //for (var i = 0, len = this.reacheable_objects_by_source.length; i<len; i++){
-    //    if (this.reacheable_objects_by_source[i].source === source)
-    //}
+    var reacheable_map_objects = Array(); 
+    for (var i = 0, len = this.reacheable_objects_by_source.length; i<len; i++){
+         if (this.reacheable_objects_by_source[i].source === source){
+            reacheable_map_objects = reacheable_map_objects.concat(this.reacheable_objects_by_source[i].reacheable_map_objects);
+         }
+    }
+
+    if (reacheable_map_objects.length>0){
+        return reacheable_map_objects; 
+    }
+
+
+    var routes_to_check = this.bus_routes.get_list_of_routes_object_can_be_reached_from(source);
+    //var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects) 
+    //routes_to_check
+    console.log(routes_to_check);
+    for (var i =0, len = routes_to_check.length; i<len; i++){
+        var reacheable_objects = new ReacheableObjects(source, 
+            this.bus_routes.by_number[routes_to_check[i]].walkable_stops,
+            routes_to_check[i],
+            this,
+            this.map_objects);
+
+        this.reacheable_objects_by_source.push(reacheable_objects);
+        reacheable_map_objects = reacheable_map_objects.concat(reacheable_objects.reacheable_map_objects);
+    }    
+
+    return reacheable_map_objects; 
+
 }
 
 DataModel.prototype.get_map_objects = function(filter) {

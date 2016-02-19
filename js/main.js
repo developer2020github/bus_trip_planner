@@ -55,6 +55,17 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
     if (step ===2 ){
         return (this.data_model.get_reacheable_objects(this.gui_view.selected_source()));
     }
+ 
+    if (step===3){
+        //for step 3, we just need a lits of bus routes to display
+        var step_3_routes = Array();
+        $.each(this.gui_view.selected_destination().via_bus_routes, function( index, value ) {
+                step_3_routes.push({name: value});
+        });
+
+        return step_3_routes;
+    }
+
 }
 Controller.prototype.set_filtered_item = function(item) {
 

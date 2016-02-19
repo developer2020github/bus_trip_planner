@@ -1,88 +1,7 @@
 //should handle all data - related computations and serve as interface between map and gui 
 //(need a data structure: reachable destinations with list of bus routes they can be reached by by source)
 
-/*
- request: source
- response: array of objects: 
 
-              source === source 
-              via === bus_route 
-              walking_distance_to_source === distance (must be reacheable)
-              source_idx - index into array of map objects reacheable from source
-              //stop_closest_to_destination = undefined
-              //destination = undefined 
-              array of map objects reacheable by walking from this route
-                  each map object decorated with closest bus stop index from next array
-              array of bus stops these objects can be reached from 
-             this will be a helper class in the data model.  
-             Pretty much everything can be calculated by constuctor. Should only be created if 
-             - route has a stop close enough to source. Thus, 
-              * array of stops will be provided beforehand (all walkable stops on the route)
-              * source is known too 
-              * calculation of index into array is cheap (matrix is pre-calculated), so it's ok to 
-              not bother with supplying anyting 
-
-              See class ReachebleObjects.
-
- this array can be pre-built and then return ones mathing source is found  
-*/
-//source  - source provided by view 
-//array of walkable_bus_stops - need to build one array per route 
-//route - just route number 
-//map objects - all map objects (not bus stops)
-
-//when get a source at step2: 
-//will need to get : list of bus routes source belongs to.
-//then for each such route - list of reachable objects 
-//return a list of objects of class ReachableObjects 
-//store the list in 
-var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route,  data_model, map_objects) {
-    //class builds a list of map objects reacheable from a source via a particular bus route 
-    //it assumes that source itself is reacheable.
-
-    this.source = source;
-    console.log(array_of_walkable_bus_stops);
-    this.array_of_bus_stops = array_of_walkable_bus_stops.slice(); //should be only stops in this route
-    this.via_bus_route = bus_route;
-    this.reacheable_map_objects = Array()
-    this.data_model = data_model;
-
-    for (var i = 0, len_i = map_objects.length; i < len_i; i++) {
-        var reacheable_map_object = {};
-        for (var j = 0, len_j = this.array_of_bus_stops.length; j < len_j; j++) {
-            var dist = this.data_model.estimate_distance_between_two_map_objects(map_objects[i], this.array_of_bus_stops[j]);
-            if (dist < this.data_model.max_walking_distance_meters) {
-                if ($.isEmptyObject(reacheable_map_object)) {
-                    reachable_map_object = $.extend({}, map_objects[i]);
-                    reachable_map_object["closest_stop_idx"] = j;
-                    reachable_map_object["distance_to_closest_stop"] = dist;
-                    reachable_map_object["via_bus_route"] = this.via_bus_route;
-                } else {
-                    if (reachable_map_object["distance_to_closest_stop"] > dist) {
-                        reachable_map_object["closest_stop_idx"] = j;
-                        reachable_map_object["distance_to_closest_stop"] = dist;
-                    }
-                }
-
-
-            }
-        }
-
-        if (!($.isEmptyObject(reacheable_map_object))) {
-            this.reacheable_map_objects.push(reacheable_map_object);
-        }
-    }  
-
-}
-
-ReacheableObjects.prototype.get_closest_bus_stop = function(map_object){
- for (var i = 0, len = this.reacheable_map_objects.length; i<len; i++){
-    if (this.data_model.map_objects_are_equal(this.reacheable_map_objects[i], map_object)){
-        var idx = this.reacheable_map_objects[i].closest_stop_idx; 
-        return(this.array_of_bus_stops[idx]);
-    }
- }
-}
 
 /*on next step: 
   controller will provide source and destination selected by user. 
@@ -118,9 +37,9 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     
     //add unique integer ID for easy comparisons
     var object_idx = 1
-    object_idx = this.decorate_objects(this.bus_stops, object_idx);
-    object_idx = this.decorate_objects(this.map_objects, object_idx);
-    this.decorate_objects(this.bus_routes_data, object_idx);
+    object_idx = this.decorate_objects(this.bus_stops, object_idx, "bus_stops");
+    object_idx = this.decorate_objects(this.map_objects, object_idx, "map_objects");
+    this.decorate_objects(this.bus_routes_data, object_idx, "bus_routes_data");
 
     //this.list_of_bus_numbers = this.build_list_of_bus_routes(); 
 
@@ -136,13 +55,25 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     this.infinite_walking_distance = 1000 * this.max_walking_distance_meters;
     this.build_local_distance_matrix();
     this.filtered_map_objects = new FilteredArray(this.all_map_objects, "all_map_objects");
+
+    //they are not arranged by source in any way (i.e. there is no sorted or
+    //any other order) There is one reacheable object for each combination
+    //of source and route. Number of allowed sources is limited, so is number of 
+    //routes, so the idea is to calculate data for each source 
+    //only once  - when user calls it first time. 
     this.reacheable_objects_by_source = Array();
-    this.sources_for_reacheble_objects_by_source = Array(); 
+
+
+
 
     this.bus_routes = new BusRoutes(this.bus_routes_data, this.bus_stops, this);
     //console.log(this.bus_routes);
-    var test_obj = this.get_reacheable_objects(this.map_objects[0]);
-    console.log(test_obj);
+    //var test_obj = this.get_reacheable_objects(this.map_objects[0]);
+    /*
+    console.log("test source");
+    console.log(this.map_objects[0]);
+    console.log("test object");
+    console.log(test_obj);*/
 
 }
 
@@ -154,7 +85,7 @@ DataModel.prototype.get_reacheable_objects = function(source) {
     var reacheable_map_objects = Array(); 
     for (var i = 0, len = this.reacheable_objects_by_source.length; i<len; i++){
          if (this.reacheable_objects_by_source[i].source === source){
-            reacheable_map_objects = reacheable_map_objects.concat(this.reacheable_objects_by_source[i].reacheable_map_objects);
+            reacheable_map_objects = reacheable_map_objects.merge_reacheable_objects(reacheable_map_objects);
          }
     }
 
@@ -166,18 +97,23 @@ DataModel.prototype.get_reacheable_objects = function(source) {
     var routes_to_check = this.bus_routes.get_list_of_routes_object_can_be_reached_from(source);
     //var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects) 
     //routes_to_check
-    console.log(routes_to_check);
+    //console.log(routes_to_check);
+    console.log('before');
+    console.log(this.reacheable_objects_by_source);
     for (var i =0, len = routes_to_check.length; i<len; i++){
+
         var reacheable_objects = new ReacheableObjects(source, 
             this.bus_routes.by_number[routes_to_check[i]].walkable_stops,
             routes_to_check[i],
             this,
             this.map_objects);
-
+        
         this.reacheable_objects_by_source.push(reacheable_objects);
-        reacheable_map_objects = reacheable_map_objects.concat(reacheable_objects.reacheable_map_objects);
+        reacheable_map_objects = reacheable_objects.merge_reacheable_objects(reacheable_map_objects);
     }    
-
+    console.log('after');
+    console.log(this.reacheable_objects_by_source);
+    //STOPPED HERE. Need to think how to apply merge_reacheable_objects properly
     return reacheable_map_objects; 
 
 }
@@ -195,9 +131,15 @@ DataModel.prototype.decorate_map_objects = function(objects) {
 
 }
 
-DataModel.prototype.decorate_objects = function (objects, object_idx){
+DataModel.prototype.get_data_object  = function (data_model_array_name, idx_into_data_model_array){
+    return this[data_model_array_name][idx_into_data_model_array];
+}
+
+DataModel.prototype.decorate_objects = function (objects, object_idx, data_model_array_name){
      for (var i = 0, len = objects.length; i < len; i++) {
         objects[i]["object_id"] = object_idx;
+        objects[i]["data_model_array_name"] = data_model_array_name;
+        objects[i]["idx_into_data_model_array"] =i;
         object_idx++;
     }
     return object_idx; 
@@ -253,12 +195,21 @@ DataModel.prototype.map_object_location_is_in_array = function(o, map_objects) {
     for (var i = 0, len = map_objects.length; i < len; i++) {
         if (this.map_objects_at_same_location(o, map_objects[i])) {
             return true;
-            console.log("non unique location: ");
-            console.log(o);
+            //console.log("non unique location: ");
+            //console.log(o);
         }
     }
 }
 
+DataModel.prototype.get_object_idx = function(o, array_of_objects){
+    for (var i = 0, len  = array_of_objects.length; i<len; i++){
+        if (o.object_id===array_of_objects[i].object_id){
+            return i;
+        }
+    }
+
+    return -1;
+}
 
 DataModel.prototype.location_is_ok_for_walking = function(o) {
     //the idea is to cover locations user actually checked himself and knows they 

@@ -11,7 +11,6 @@
    bus route number 
    destination bus stop 
    destination 
-   why not just default to shortest route: may want to implement route selection by user in the future 
 */
 
 /* on following step controller will decide which route to use (the one with shortest distance 
@@ -98,8 +97,8 @@ DataModel.prototype.get_reacheable_objects = function(source) {
     //var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects) 
     //routes_to_check
     //console.log(routes_to_check);
-    console.log('before');
-    console.log(this.reacheable_objects_by_source);
+    //console.log('before');
+    //console.log(this.reacheable_objects_by_source);
     for (var i =0, len = routes_to_check.length; i<len; i++){
 
         var reacheable_objects = new ReacheableObjects(source, 
@@ -111,9 +110,8 @@ DataModel.prototype.get_reacheable_objects = function(source) {
         this.reacheable_objects_by_source.push(reacheable_objects);
         reacheable_map_objects = reacheable_objects.merge_reacheable_objects(reacheable_map_objects);
     }    
-    console.log('after');
-    console.log(this.reacheable_objects_by_source);
-    //STOPPED HERE. Need to think how to apply merge_reacheable_objects properly
+    //console.log('after');
+    //console.log(this.reacheable_objects_by_source);
     return reacheable_map_objects; 
 
 }
@@ -303,12 +301,4 @@ DataModel.prototype.populate_local_distance_matrix = function() {
     //console.log(this.local_distance_matrix);
 }
 
-DataModel.prototype.get_bus_stop_by_source = function(source) {
 
-}
-
-
-DataModel.prototype.get_reachable_destinations = function(source_name, source_class) {
-    //first, see if we already have it calculated 
-    //if not - loop thought all bus routes that contain this source 
-}

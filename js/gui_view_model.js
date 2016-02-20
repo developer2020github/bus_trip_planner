@@ -16,6 +16,7 @@ var GUIViewModel = function(update_map, controller) {
 
     this.current_filter_list = ko.observableArray();
     this.current_step = ko.observable(1);
+    this.map_loaded = ko.observable(false);
     //
     this.filtered_location_name = ko.observable("");
     this.filtered_location = {};
@@ -51,6 +52,8 @@ var GUIViewModel = function(update_map, controller) {
         return ("Step " + String(this.current_step()) + this.step_msg());
     }, this);
 
+
+
     this.selected_source_destination_display = ko.computed(function() {
 
         if ($.isEmptyObject(this.selected_source())) {
@@ -69,8 +72,27 @@ var GUIViewModel = function(update_map, controller) {
         return ("From : " + this.selected_source().name + " to : " + this.selected_destination().name) + " , route: " + this.selected_bus_route().name;
     }, this);
  
- $('#previousStepButton').prop('disabled', true);
+ //$('#previousStepButton').prop('disabled', true);
+         this.planner_title = ko.computed(function() {
+            return (this.cityName() + " BUS TRIP PLANNER");
+        }, this)
 
+    this.mapLoadedStatus = ko.pureComputed(function() {
+            if (this.map_loaded()) {
+                return ("label label-success map_status_class")
+            }
+            return ("label label-warning map_status_class")
+        }, this);
+
+
+    
+        this.map_status_text = ko.pureComputed(function() {
+            if (this.map_loaded()) {
+                 return ("MAP: OK")
+            }
+            return ("MAP: LOADING")
+        }, this);
+ 
 }
 
 GUIViewModel.prototype.get_displayed_name_for_filter = function(o) {
@@ -118,18 +140,18 @@ GUIViewModel.prototype.transition_to_step_2 = function() {
     this.init_filtered_location_name();
     this.selected_source(this.filtered_location);
     this.step_msg(this.messages.STEP2_AWAITING_INPUT);
-    this.controller.process_step_update();
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()))
     this.filtered_location = {};
+    this.controller.process_step_update();
 }
 
 GUIViewModel.prototype.transition_to_step_3 = function() {
     this.current_step(3);
     this.init_filtered_location_name();
     this.step_msg(this.messages.STEP3_SELECT_BUS_ROUTE_MESSAGE);
-    this.controller.process_step_update();
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()))
     this.filtered_location = {};
+    this.controller.process_step_update();
 }
 
 GUIViewModel.prototype.transition_to_step_4 = function() {
@@ -201,6 +223,8 @@ GUIViewModel.prototype.previous_step = function() {
         this.controller.process_step_update();
         this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
     }
+
+    this.controller.process_step_update();
 
 }
 

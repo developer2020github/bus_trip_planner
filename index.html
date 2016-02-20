@@ -17,9 +17,9 @@
 <body>
     <div id="map" class="mapClass">MY MAP</div>
     <div id="filters" class="filtersClass">
-        <div id = "application_title">
-            <span data-bind="text: cityName"></span>
-            <span>BUS TRIP PLANNER </span>
+        <div class="title">
+            <span id="application_title" data-bind="text: planner_title" class="label label-default"></span>
+            <span id="map_status" data-bind="css: mapLoadedStatus, text: map_status_text">
         </div>
         <div id="steps">
             <span data-bind="text: step_and_status"></span>
@@ -28,8 +28,8 @@
             <span data-bind="text: selected_source_destination_display"></span>
         </div>
         <div class="btn-group group_map_gui" data-bind="visible: current_step()<4" role="group">
-        	<button type="button" data-bind= "click: previous_step, enable: current_step()>1" class="btn btn-default" id="previousStepButton">Previous step</button>
-            <button type="button" data-bind= "click: next_step" class="btn btn-default" id="nextStepButton">Next step</button>
+            <button type="button" data-bind="click: previous_step, enable: current_step()>1" class="btn btn-default" id="previousStepButton">Previous step</button>
+            <button type="button" data-bind="click: next_step" class="btn btn-default" id="nextStepButton">Next step</button>
             <button type="button" data-bind="click: apply_filter" class="btn btn-default">
                 <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
             </button>
@@ -42,7 +42,6 @@
                 <input type="text" id="location-search" class="form-control" placeholder="" data-bind="textInput: filtered_location_name">
             </div>
         </div>
-       
         <div id="filterList" data-bind="visible: current_step()<4">
             <ul class="list-group" data-bind="foreach: current_filter_list">
                 <li>
@@ -50,18 +49,15 @@
                 </li>
             </ul>
         </div>
-         <div>
-        <div class="btn-group group_map_gui" data-bind="visible: current_step()===4"  role="group">
-        <button type="button" data-bind= "click: plan_new_trip" class="btn btn-default group_map_gui" id="planNewTripButton">New Trip</button>
+        <div>
+            <div class="btn-group group_map_gui" data-bind="visible: current_step()===4" role="group">
+                <button type="button" data-bind="click: plan_new_trip" class="btn btn-default group_map_gui" id="planNewTripButton">New Trip</button>
+            </div>
         </div>
-         </div>
     </div>
 </body>
 <!--load main script file -->
 <script type="text/javascript" src="js\transit_location.js"></script>
-
-<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
-
 <script type="text/javascript" src="js\lib.js"></script>
 <script type="text/javascript" src="js\bus_routes.js"></script>
 <script type="text/javascript" src="js\reacheable_objects.js"></script>
@@ -70,5 +66,6 @@
 <script type="text/javascript" src="js\debug.js"></script>
 <script type="text/javascript" src="js\gui_view_model.js"></script>
 <script type="text/javascript" src="js\main.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
 
 </html>

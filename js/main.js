@@ -17,8 +17,9 @@
 //Global variables (plan to  make them configurable too)
 var MAP_INITIAL_POS = { lat: 24.4667, lng: 54.3667 }; // do not like the deaulf, need to customize 
 var CITY_NAME = "ABU DHABI"
+var controller = {}; 
 
-var map_handler;
+
 //==========================
 var UpdateMap = function() {
     var self = this;
@@ -30,17 +31,20 @@ var UpdateMap = function() {
 //============================
 var Controller = function() {
     var self = this;
+    var map_hanler = {}; 
+    this.map_markers = {}; 
     this.data_model = new DataModel(bus_routes_data, bus_stops, map_objects, 2000);
     var update_map = new UpdateMap();
     this.gui_view = new GUIViewModel(update_map, self);
     this.gui_view.cityName(CITY_NAME);
+    
     //this.gui_view.update_current_filter_list(this.data_model.get_map_objects({class: "community"}));
-
     ko.applyBindings(this.gui_view);
 
     //document.getElementById("nextStepButton").addEventListener("click", this.next_step);
     //document.getElementById("previousStepButton").addEventListener("click", this.previous_step);
 }
+
 
 //console.log(local_distance_matrix);
 
@@ -67,22 +71,51 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
     }
 
 }
+Controller.prototype.process_marker_click = function(data_model_array_name, idx_into_data_model_array){
+    console.log("Controller.process_marker_click");
+    console.log(data_model_array_name);
+    console.log(idx_into_data_model_array);
+    var obj = this.data_model.get_data_object(data_model_array_name, idx_into_data_model_array);
+
+    console.log(obj);
+}
 Controller.prototype.set_filtered_item = function(item) {
 
 }
 Controller.prototype.set_filtered_source = function(source) {
 
-}
-
-Controller.prototype.process_step_update = function(source) {
 
 }
+Controller.prototype.hide_markers = function(){
+     $.each(this.markers, function(index, marker) {
+           marker.setVisible(false);
+        });
+}
 
+Controller.prototype.process_step_update = function() {
+
+    if (this.gui_view.current_step() < 3) {
+        this.hide_markers();
+        for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
+            this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
+
+        }
+    }
+}
+
+Controller.prototype.set_map_available = function(){
+   this.gui_view.map_loaded(true);
+   this.markers = this.map_handler.init_locations(this.data_model.map_objects);
+   this.process_step_update(); 
+} 
 
 function initMap() {
-    debug_main();
-    map_handler = new MapHandler(MAP_INITIAL_POS);
-    map_handler.add_locations(bus_stops);
+    
+    var map_handler = new MapHandler(MAP_INITIAL_POS);
+    controller.map_handler = map_handler; 
+    map_handler.controller = controller;
+    controller.set_map_available();
+    //controller.set_map_available();  
 
 }
 
@@ -90,5 +123,5 @@ function initMap() {
 
 
 (function main() {
-    var controller = new Controller();
+    controller = new Controller();
 })();

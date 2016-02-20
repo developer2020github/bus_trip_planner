@@ -19,16 +19,16 @@ var MapHandler = function(initial_pos){
 
  /*
  on load: 
- - call add_locations 
- - call show_lcoations on non-bus stops to show what is reachable
+ - show all locations (except for bus stops) 
  - on step 1: show only communities (call show_location_of_a_class)
  - on step 1 upon selection: bounce selected community
  - on step 2 (transition from step 1): show only selected community. 
    show list of destinations reachnable from this community.
-   
-  - on step 2 upon selection: bounce selected destination 
-  - on step 3 upon transition: show only selected source, selected destionation, bus routes and walking directions 
-  from and to relevant stops  
+  - on step 2 upon selection: bounce selected destination
+  - on step 3 show all bus routes in different colors 
+  - on step 4 upon transition: show only selected source, selected destionation, bus routes and walking directions 
+  from and to relevant stops 
+  display extra information on each step.  
  */
 }
 
@@ -56,12 +56,10 @@ MapHandler.prototype.show_locations=function(list_of_location_names){
   //should show locations on the map with standard icons 
 }
 
-MapHandler.prototype.show_location_of_a_class=function(location_class){
-  //same deal ad show location but will show all locations in a class 
-}
 
 MapHandler.prototype.select_location = function(list_of_location_names){
   //should bounce location icon
 }
+
 
 

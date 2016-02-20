@@ -7,11 +7,15 @@
      z-index: 99;
  }
  
- .filtersClass {
+ .filtersClass{
      position: fixed;
      z-index: 999;
      left: 10px;
      top: 0px;
-     background-color:#564F4F;
-     color:#F6EE21;
+     background-color: #F0EBEB;
  }
+ 
+.group_map_gui {
+    width: 275px;
+}
+

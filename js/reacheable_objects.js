@@ -138,7 +138,7 @@ ReacheableObjects.prototype.merge_reacheable_objects = function (reacheable_map_
             console.log(reacheable_map_objects[i]);
             console.log(cmp);*/
             if(cmp===2){
-                //second route has closer stop. owerwritefirst stop info
+                //second route has closer stop. overwrite first stop info
                 merged[j] = $.extend({}, reacheable_map_objects[i]);
             }
             if (cmp===0){

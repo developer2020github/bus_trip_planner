@@ -56,10 +56,7 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     this.filtered_map_objects = new FilteredArray(this.all_map_objects, "all_map_objects");
 
     //they are not arranged by source in any way (i.e. there is no sorted or
-    //any other order) There is one reacheable object for each combination
-    //of source and route. Number of allowed sources is limited, so is number of 
-    //routes, so the idea is to calculate data for each source 
-    //only once  - when user calls it first time. 
+    //any other order) There is one reacheable object for each  source and route. 
     this.reacheable_objects_by_source = Array();
 
 
@@ -84,7 +81,7 @@ DataModel.prototype.get_reacheable_objects = function(source) {
     var reacheable_map_objects = Array(); 
     for (var i = 0, len = this.reacheable_objects_by_source.length; i<len; i++){
          if (this.reacheable_objects_by_source[i].source === source){
-            reacheable_map_objects = reacheable_map_objects.merge_reacheable_objects(reacheable_map_objects);
+            reacheable_map_objects = this.reacheable_objects_by_source[i].reacheable_map_objects;
          }
     }
 
@@ -107,9 +104,16 @@ DataModel.prototype.get_reacheable_objects = function(source) {
             this,
             this.map_objects);
         
-        this.reacheable_objects_by_source.push(reacheable_objects);
+        
         reacheable_map_objects = reacheable_objects.merge_reacheable_objects(reacheable_map_objects);
     }    
+
+    var stored_object = {
+        reacheable_map_objects: reacheable_map_objects,
+        source: source
+    }
+
+    this.reacheable_objects_by_source.push(stored_object);
     //console.log('after');
     //console.log(this.reacheable_objects_by_source);
     return reacheable_map_objects; 

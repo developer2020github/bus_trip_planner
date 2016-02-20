@@ -72,14 +72,16 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
 
 }
 Controller.prototype.process_marker_click = function(data_model_array_name, idx_into_data_model_array){
-    console.log("Controller.process_marker_click");
-    console.log(data_model_array_name);
-    console.log(idx_into_data_model_array);
-    var obj = this.data_model.get_data_object(data_model_array_name, idx_into_data_model_array);
 
-    console.log(obj);
+    var obj = this.data_model.get_data_object(data_model_array_name, idx_into_data_model_array);
+    var idx  = this.gui_view.get_idx_of_item_by_field_value(this.gui_view.current_filter_list, obj.name, "name");
+    if (idx>-1){
+        this.gui_view.filtered_location_name(obj.name);
+    }
 }
 Controller.prototype.set_filtered_item = function(item) {
+
+    this.map_handler.animate_marker(this.markers[item.idx_into_data_model_array]);
 
 }
 Controller.prototype.set_filtered_source = function(source) {
@@ -93,13 +95,20 @@ Controller.prototype.hide_markers = function(){
 }
 
 Controller.prototype.process_step_update = function() {
-
+    this.hide_markers();
     if (this.gui_view.current_step() < 3) {
-        this.hide_markers();
+       
         for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
             this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
 
         }
+        if  (this.gui_view.current_step()==2){
+            this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
+            
+        }
+    }else if (this.gui_view.current_step()==3){
+       this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
+       this.markers[this.gui_view.selected_destination().idx_into_data_model_array].setVisible(true);
     }
 }
 

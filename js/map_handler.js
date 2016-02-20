@@ -19,7 +19,7 @@ var MapHandler = function(initial_pos) {
 
     /*
     on load: 
-    - show all locations (except for bus stops) 
+    - show all locations (except for bus stops) ->currently automatically transitioning to step 1
     - on step 1: show only communities (call show_location_of_a_class)
     - on step 1 upon selection: bounce selected community
     - on step 2 (transition from step 1): show only selected community. 
@@ -30,6 +30,17 @@ var MapHandler = function(initial_pos) {
      from and to relevant stops 
      display extra information on each step.  
     */
+
+}
+
+MapHandler.prototype.stop_animation = function (marker) {
+    setTimeout(function () {
+        marker.setAnimation(null);
+    }, 3000);
+}
+MapHandler.prototype.animate_marker = function(marker){
+  marker.setAnimation(google.maps.Animation.BOUNCE);
+  this.stop_animation(marker); 
 }
 
 MapHandler.prototype.init_locations = function(locations) {
@@ -49,7 +60,8 @@ MapHandler.prototype.init_locations = function(locations) {
         var marker = new google.maps.Marker({
             position: psn,
             map: this.map,
-            title: locations[i].name
+            title: locations[i].name, 
+            icon: locations[i].map_icon
         })
         marker.addListener('click', marker_click_call_back)
         marker.setVisible(false);

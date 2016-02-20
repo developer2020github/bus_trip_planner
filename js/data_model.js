@@ -129,6 +129,12 @@ DataModel.prototype.decorate_map_objects = function(objects) {
     //add fields that are calculated by the application 
     for (var i = 0, len = objects.length; i < len; i++) {
         objects[i]["idx_into_distance_matrix"] = -1;
+        if (objects[i].class==="community"){
+            objects[i].map_icon = "image/source_marker.png"
+        }
+        else{
+            objects[i].map_icon = "image/destination_marker.png"
+        }
     }
 
 }

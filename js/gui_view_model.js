@@ -235,9 +235,9 @@ GUIViewModel.prototype.init_filtered_location_name = function(){
 GUIViewModel.prototype.get_idx_of_item_by_field_value = function(observable_array, field_value, field) {
    
         for (var i = 0, len = observable_array().length; i < len; i++) {
-            console.log("get_idx_of_item_by_field");
-            console.log(observable_array()[i]);
-            console.log(observable_array()[i][field]);
+            //console.log("get_idx_of_item_by_field");
+            //console.log(observable_array()[i]);
+            //console.log(observable_array()[i][field]);
             //console.log(o[field]);
             if (observable_array()[i].hasOwnProperty(field)) {
                 if (observable_array()[i][field] === field_value) {

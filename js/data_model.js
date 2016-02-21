@@ -72,6 +72,34 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     console.log(test_obj);*/
 
 }
+DataModel.prototype.get_recommended_coordinates=function(){
+    var min_lat = 1000.0;
+    var min_lng = 1000.0;
+    var max_lat = -10.0;
+    var max_lng = -10.0;
+    $.each(this.all_map_objects, function(idx, o){
+        if (o.lat<min_lat){
+            min_lat  = o.lat; 
+        }
+
+        if (o.lng<min_lng){
+            min_lng  = o.lng; 
+        }
+
+        if (o.lat>max_lat){
+            max_lat  = o.lat; 
+        }
+
+         if (o.lng>max_lng){
+            max_lng  = o.lat; 
+        }
+    })
+
+    var r_lat = (max_lat+min_lat)/2.0; 
+    var r_lng = (max_lng+min_lng)/2.0;
+
+    return({lat:r_lat, lng:r_lng });
+}
 
 DataModel.prototype.map_objects_are_equal=function(o1, o2){
     return (o1.object_id===o2.object_id)

@@ -14,8 +14,13 @@ var MapHandler = function(initial_pos) {
         }
     });
 
+    this.map_active_windows_markers = Array(); 
+
     this.list_of_locations = Array();
     this.list_of_bus_routes = Array();
+    this.info_windows_enabled = true; //I feel info windows might be a bit annoying in a bus trip 
+    //planning application, yet have to include them to meet requirements. As an option, 
+    //give control to user. 
 
     /*
     on load: 
@@ -42,6 +47,51 @@ MapHandler.prototype.animate_marker = function(marker){
   marker.setAnimation(google.maps.Animation.BOUNCE);
   this.stop_animation(marker); 
 }
+MapHandler.prototype.display_info_window = function(marker, search_string){
+    if (!this.info_windows_enabled){
+        return; 
+    }
+
+    var contentString = '<div id="content">'+
+                          '<div id="siteNotice">'+
+                          '</div>'+
+                          '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
+                          '<div id="bodyContent">'+
+                          '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
+                          'sandstone rock formation in the southern part of the '+
+                          'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
+                          'south west of the nearest large town, Alice Springs; 450&#160;km '+
+                          '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
+                          'features of the Uluru - Kata Tjuta National Park. Uluru is '+
+                          'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
+                          'Aboriginal people of the area. It has many springs, waterholes, '+
+                          'rock caves and ancient paintings. Uluru is listed as a World '+
+                          'Heritage Site.</p>'+
+                          '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
+                          'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
+                          '(last visited June 22, 2009).</p>'+
+                          '</div>'+
+                          '</div>';
+
+     var infowindow = new google.maps.InfoWindow({
+                        content: contentString
+                      });
+
+     infowindow.open(this.map, marker);
+
+     this.map_active_windows_markers.push(infowindow);
+
+}
+
+MapHandler.prototype.close_all_info_windows = function(){
+    $.each(this.map_active_windows_markers, function(idx, win){
+        win.close();
+    });
+
+    this.map_active_windows_markers=[];
+}
+
+
 
 MapHandler.prototype.init_locations = function(locations) {
     var markers = Array();
@@ -72,16 +122,7 @@ MapHandler.prototype.init_locations = function(locations) {
     return markers;
 }
 
-MapHandler.prototype.add_locations = function(list_of_locations) {
-    //should add all locations map is aware of. 
-    //locations should have class, name, coordinates and icon (source or desitantion)
-    //bus stops must also have an ID and list of locations that are reachable 
-    //by default all locations are hodden 
-    for (var i = 0; i < list_of_locations.length; i++) {
-        var current_location = new TransitLocation(list_of_locations[i]);
-        this.list_of_locations.push(current_location);
-    }
-}
+
 
 MapHandler.prototype.add_bus_route = function(list_of_stops) {
     //each route should be stored as an array of stops from start to end. 

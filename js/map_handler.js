@@ -21,7 +21,6 @@ var MapHandler = function(initial_pos) {
     this.info_windows_enabled = true;
     this.debug_options = {};
     this.debug_options["show_corner_markers"] = false;
-    this.debug_options["test_panoramio_api"] = true;
 
 
 
@@ -61,7 +60,7 @@ MapHandler.prototype.get_panoramio_request_url = function(o) {
         "order=popularity" +
         "&set=public" +
         "&from=0" +
-        "&to=20" +
+        "&to=30" +
         "&minx=" + o.search_window_lower_left_corner.lng.toString() +
         "&miny=" + o.search_window_lower_left_corner.lat.toString() +
         "&maxx=" + o.search_window_upper_right_corner.lng.toString() +
@@ -85,11 +84,11 @@ MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_p
         var dice_coefficient = get_dice_coefficient(o.name, photo.photo_title);
         var square_ratio = get_square_ratio(photo.height, photo.width);
         if ((dice_coefficient > max_dice_coefficient) ||
-            ((values_within_tolerance(max_dice_coefficient, dice_coefficient, 5)) && (square_ratio < min_square_ratio)) ){
-                best_match = photo;
-                max_dice_coefficient = dice_coefficient;
-                min_square_ratio = square_ratio;
-            }
+            ((values_within_tolerance(max_dice_coefficient, dice_coefficient, 5)) && (square_ratio < min_square_ratio))) {
+            best_match = photo;
+            max_dice_coefficient = dice_coefficient;
+            min_square_ratio = square_ratio;
+        }
 
     })
     return best_match;
@@ -103,27 +102,36 @@ MapHandler.prototype.display_info_window = function(marker, o) {
 
     var self = this;
 
+    var open_window = function(self, include_image, image_url) {
+        var content_string = '<div id="content">' +
+            '<div id = "location_name">' +
+            o.name +
+            '</div>';
+        if (include_image) {
+            content_string = content_string +
+                '<div id ="image">' +
+                "<img src=" + "\"" + image_url + "\"" + "alt=\"" + "" + "\"" + ">" +
+                '</div>'
+        }
+
+        content_string = content_string + "</div>";
+        var infowindow = new google.maps.InfoWindow({
+            content: content_string
+        });
+
+        infowindow.open(self.map, marker);
+        self.map_active_windows_markers.push(infowindow);
+    }
+
     $.getJSON(this.get_panoramio_request_url(o))
         .done(function(data) {
             var best_photo = self.get_best_matching_panoramio_photo(o, data.photos);
-            var contents_string = '<div id="content">' +
-                "<iframe " +
-                "src=" + "\"" + best_photo.photo_file_url + "\"" +
-                "frameborder=\"0\"" +
-                "width=\"" + best_photo.width.toString() + "\"" +
-                "height=\"" + best_photo.height.toString() + "\"" +
-                "+scrolling=\"no\" marginwidth=\"0\" marginheight=\"0\">" +
-                "</iframe>" +
-                "</div>"
-            var infowindow = new google.maps.InfoWindow({
-                content: contents_string
-            });
-
-            infowindow.open(self.map, marker);
-
-            self.map_active_windows_markers.push(infowindow);
+            open_window(self, true, best_photo.photo_file_url);
+        })
+        .fail(function() {
+            //if request to panoramio fails - still open window with the place name 
+            open_window(self, false);
         });
-
 }
 
 MapHandler.prototype.close_all_info_windows = function() {
@@ -177,8 +185,6 @@ MapHandler.prototype.init_locations = function(locations) {
 
     return markers;
 }
-
-
 
 MapHandler.prototype.add_bus_route = function(list_of_stops) {
     //each route should be stored as an array of stops from start to end. 

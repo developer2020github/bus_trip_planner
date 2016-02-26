@@ -56,22 +56,12 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     this.filtered_map_objects = new FilteredArray(this.all_map_objects, "all_map_objects");
 
     //they are not arranged by source in any way (i.e. there is no sorted or
-    //any other order) There is one reacheable object for each  source and route. 
+    //any other order) There is one reacheable object for each  source. 
     this.reacheable_objects_by_source = Array();
 
-
-
-
     this.bus_routes = new BusRoutes(this.bus_routes_data, this.bus_stops, this);
-    //console.log(this.bus_routes);
-    //var test_obj = this.get_reacheable_objects(this.map_objects[0]);
-    /*
-    console.log("test source");
-    console.log(this.map_objects[0]);
-    console.log("test object");
-    console.log(test_obj);*/
-
 }
+
 DataModel.prototype.get_map_center_coordinates=function(){
     var min_lat = 1000.0;
     var min_lng = 1000.0;
@@ -117,13 +107,8 @@ DataModel.prototype.get_reacheable_objects = function(source) {
         return reacheable_map_objects; 
     }
 
-
     var routes_to_check = this.bus_routes.get_list_of_routes_object_can_be_reached_from(source);
-    //var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects) 
-    //routes_to_check
-    //console.log(routes_to_check);
-    //console.log('before');
-    //console.log(this.reacheable_objects_by_source);
+
     for (var i =0, len = routes_to_check.length; i<len; i++){
 
         var reacheable_objects = new ReacheableObjects(source, 
@@ -166,11 +151,6 @@ DataModel.prototype.decorate_map_objects = function(objects) {
 
         objects[i]["search_window_upper_right_corner"] = this.destination_point(objects[i].lat, objects[i].lng, 1000,45);
         objects[i]["search_window_lower_left_corner"] = this.destination_point(objects[i].lat, objects[i].lng, 1000,225);
-        /*
-        console.log("distance check:")
-        console.log(this.get_distance_between_two_locations(objects[i].lat, objects[i].lng,
-            objects[i].search_window_upper_right_corner.lat, objects[i].search_window_upper_right_corner.lng));
-            */
     }
 
 }
@@ -270,8 +250,6 @@ DataModel.prototype.map_object_location_is_in_array = function(o, map_objects) {
     for (var i = 0, len = map_objects.length; i < len; i++) {
         if (this.map_objects_at_same_location(o, map_objects[i])) {
             return true;
-            //console.log("non unique location: ");
-            //console.log(o);
         }
     }
 }

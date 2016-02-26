@@ -1,3 +1,42 @@
+//https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient
+var get_dice_coefficient = function (string1, string2) {
+  var intersection = 0;
+  var length1 = string1.length - 1;
+  var length2 = string2.length - 1;
+  if(length1 < 1 || length2 < 1) return 0;
+  var bigrams2 = [];
+  for(var i = 0; i < length2; i++) {
+    bigrams2.push(string2.substr(i,2));
+  }
+  for(var i = 0; i < length1; i++) {
+    var bigram1 = string1.substr(i, 2);
+    for(var j = 0; j < length2; j++) {
+      if(bigram1 == bigrams2[j]) {
+        intersection++;
+        bigrams2[j] = null;
+        break;
+  }}} 
+  return (2.0 * intersection) / (length1 + length2);  
+}
+
+
+var values_within_tolerance = function(v1, v2, tolerance_percent){
+  var absolute_tolerance = Math.max(v1,v2)*tolerance_percent/100.0;
+  if (Math.abs(v1-v2)<absolute_tolerance){
+    return true; 
+  }
+  return false; 
+}
+
+
+var get_square_ratio = function(h,w){
+    //the smaller the result  - the closer image is to square
+    var r = h/w;
+    if (r>1){
+        r = 1/r;
+    }
+    return 1 - r; 
+}
 //generic functions and classes 
 var FilteredArray  = function(unfiltered_data, identifier){
 	//this class will memorize data items by filter on a first call and then return memorized
@@ -56,4 +95,9 @@ FilteredArray.prototype.get_filtered_objects = function(filter) {
 //======================================================
 toRad = function(n) {
     return n * Math.PI / 180;
+}
+
+toDeg = function(n){
+
+    return((180*n)/Math.PI);
 }

@@ -9,10 +9,9 @@
 - gui view at step 1 requests items to display . On this request controller also updates map
 - gui view at step 2 requests items to display and provides finally selcted location (process_step_update)
  On this request controller also updates map*/
-var GUIViewModel = function(update_map, controller) {
+var GUIViewModel = function(controller, city_name) {
     //var self = this;
     this.controller = controller;
-    this.map_updater = update_map;
 
     this.current_filter_list = ko.observableArray();
     this.current_step = ko.observable(1);
@@ -25,7 +24,7 @@ var GUIViewModel = function(update_map, controller) {
     this.selected_bus_route = ko.observable({});
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
 
-    this.cityName = ko.observable("")
+    this.cityName = ko.observable(city_name)
 
     //this.step_list = Array()
     this.messages = {
@@ -286,7 +285,6 @@ GUIViewModel.prototype.reset_filter = function() {
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
     this.filtered_location_name("");
     this.selected_destination({});
-    this.map_updater.update_map();
     if (this.current_step() === 1) {
         this.selected_source({});
         this.step_msg(this.messages.STEP1_AWAITING_INPUT);

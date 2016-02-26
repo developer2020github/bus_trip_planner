@@ -14,11 +14,18 @@ var MapHandler = function(initial_pos) {
         }
     });
 
-    this.map_active_windows_markers = Array(); 
+    this.map_active_windows_markers = Array();
 
     this.list_of_locations = Array();
     this.list_of_bus_routes = Array();
-    this.info_windows_enabled = true; //I feel info windows might be a bit annoying in a bus trip 
+    this.info_windows_enabled = true;
+    this.debug_options = {};
+    this.debug_options["show_corner_markers"] = false;
+    this.debug_options["test_panoramio_api"] = true;
+
+
+
+    //I feel info windows might be a bit annoying in a bus trip 
     //planning application, yet have to include them to meet requirements. As an option, 
     //give control to user. 
 
@@ -38,59 +45,94 @@ var MapHandler = function(initial_pos) {
 
 }
 
-MapHandler.prototype.stop_animation = function (marker) {
-    setTimeout(function () {
+MapHandler.prototype.stop_animation = function(marker) {
+    setTimeout(function() {
         marker.setAnimation(null);
     }, 3000);
 }
-MapHandler.prototype.animate_marker = function(marker){
-  marker.setAnimation(google.maps.Animation.BOUNCE);
-  this.stop_animation(marker); 
+
+MapHandler.prototype.animate_marker = function(marker) {
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    this.stop_animation(marker);
 }
-MapHandler.prototype.display_info_window = function(marker, search_string){
-    if (!this.info_windows_enabled){
-        return; 
+
+MapHandler.prototype.get_panoramio_request_url = function(o) {
+    var panoramio_url = "http://www.panoramio.com/map/get_panoramas.php?" +
+        "order=popularity" +
+        "&set=public" +
+        "&from=0" +
+        "&to=20" +
+        "&minx=" + o.search_window_lower_left_corner.lng.toString() +
+        "&miny=" + o.search_window_lower_left_corner.lat.toString() +
+        "&maxx=" + o.search_window_upper_right_corner.lng.toString() +
+        "&maxy=" + o.search_window_upper_right_corner.lat.toString() +
+        "&size=small" +
+        "&mapfilter=true" +
+        "&callback=?";
+    return panoramio_url;
+}
+
+MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_photos) {
+    //some photos, while are taken on the location, do not really show what we 
+    //want to show (example - a photo of a buiding facing community but not a part of it)
+    //this function will try to get the best match by photo title. 
+    //for otherwise equal photos take more "square" ones
+    var best_match = panoramio_photos[0];
+    var max_dice_coefficient = get_dice_coefficient(o.name, panoramio_photos[0].photo_title);
+    var min_square_ratio = get_square_ratio(panoramio_photos[0].height, panoramio_photos[0].width);
+
+    $.each(panoramio_photos, function(idx, photo) {
+        var dice_coefficient = get_dice_coefficient(o.name, photo.photo_title);
+        var square_ratio = get_square_ratio(photo.height, photo.width);
+        if ((dice_coefficient > max_dice_coefficient) ||
+            ((values_within_tolerance(max_dice_coefficient, dice_coefficient, 5)) && (square_ratio < min_square_ratio)) ){
+                best_match = photo;
+                max_dice_coefficient = dice_coefficient;
+                min_square_ratio = square_ratio;
+            }
+
+    })
+    return best_match;
+}
+
+
+MapHandler.prototype.display_info_window = function(marker, o) {
+    if (!this.info_windows_enabled) {
+        return;
     }
 
-    var contentString = '<div id="content">'+
-                          '<div id="siteNotice">'+
-                          '</div>'+
-                          '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
-                          '<div id="bodyContent">'+
-                          '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
-                          'sandstone rock formation in the southern part of the '+
-                          'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
-                          'south west of the nearest large town, Alice Springs; 450&#160;km '+
-                          '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
-                          'features of the Uluru - Kata Tjuta National Park. Uluru is '+
-                          'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
-                          'Aboriginal people of the area. It has many springs, waterholes, '+
-                          'rock caves and ancient paintings. Uluru is listed as a World '+
-                          'Heritage Site.</p>'+
-                          '<p>Attribution: Uluru, <a href="https://en.wikipedia.org/w/index.php?title=Uluru&oldid=297882194">'+
-                          'https://en.wikipedia.org/w/index.php?title=Uluru</a> '+
-                          '(last visited June 22, 2009).</p>'+
-                          '</div>'+
-                          '</div>';
+    var self = this;
 
-     var infowindow = new google.maps.InfoWindow({
-                        content: contentString
-                      });
+    $.getJSON(this.get_panoramio_request_url(o))
+        .done(function(data) {
+            var best_photo = self.get_best_matching_panoramio_photo(o, data.photos);
+            var contents_string = '<div id="content">' +
+                "<iframe " +
+                "src=" + "\"" + best_photo.photo_file_url + "\"" +
+                "frameborder=\"0\"" +
+                "width=\"" + best_photo.width.toString() + "\"" +
+                "height=\"" + best_photo.height.toString() + "\"" +
+                "+scrolling=\"no\" marginwidth=\"0\" marginheight=\"0\">" +
+                "</iframe>" +
+                "</div>"
+            var infowindow = new google.maps.InfoWindow({
+                content: contents_string
+            });
 
-     infowindow.open(this.map, marker);
+            infowindow.open(self.map, marker);
 
-     this.map_active_windows_markers.push(infowindow);
+            self.map_active_windows_markers.push(infowindow);
+        });
 
 }
 
-MapHandler.prototype.close_all_info_windows = function(){
-    $.each(this.map_active_windows_markers, function(idx, win){
+MapHandler.prototype.close_all_info_windows = function() {
+    $.each(this.map_active_windows_markers, function(idx, win) {
         win.close();
     });
 
-    this.map_active_windows_markers=[];
+    this.map_active_windows_markers = [];
 }
-
 
 
 MapHandler.prototype.init_locations = function(locations) {
@@ -110,14 +152,28 @@ MapHandler.prototype.init_locations = function(locations) {
         var marker = new google.maps.Marker({
             position: psn,
             map: this.map,
-            title: locations[i].name, 
+            title: locations[i].name,
             icon: locations[i].map_icon
         })
         marker.addListener('click', marker_click_call_back)
         marker.setVisible(false);
         markers.push(marker);
-    }
 
+        if (this.debug_options.show_corner_markers) {
+            var right_corner_marker = new google.maps.Marker({
+                position: locations[i].search_window_upper_right_corner,
+                map: this.map,
+                title: locations[i].name + " right corner"
+            })
+            var left_corner_marker = new google.maps.Marker({
+                position: locations[i].search_window_lower_left_corner,
+                map: this.map,
+                title: locations[i].name + " left  corner"
+            })
+        }
+
+
+    }
 
     return markers;
 }

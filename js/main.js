@@ -15,20 +15,10 @@
 //is not supposed to be accessed by any object other than data model.
 //========================================================================================
 //Global variables (plan to  make them configurable too)
-//24.414273, 54.472835
-//var MAP_INITIAL_POS = { lat: 24.4667, lng: 54.3667 }; // do not like the deaulf, need to customize 
-var MAP_INITIAL_POS = { lat: 24.436344, lng: 54.472910};
+
 var CITY_NAME = "ABU DHABI"
 var controller = {}; 
 
-
-//==========================
-var UpdateMap = function() {
-    var self = this;
-    self.update_map = function() {
-        console.log("map was just updated");
-    }
-}
 
 //============================
 var Controller = function() {
@@ -36,10 +26,8 @@ var Controller = function() {
     var map_hanler = {}; 
     this.map_markers = {}; 
     this.data_model = new DataModel(bus_routes_data, bus_stops, map_objects, 2000);
-    console.log(this.data_model.get_recommended_coordinates());//stopped here - needs to be tested and debugged
-    var update_map = new UpdateMap();
-    this.gui_view = new GUIViewModel(update_map, self);
-    this.gui_view.cityName(CITY_NAME);
+    this.gui_view = new GUIViewModel(this, CITY_NAME);
+    
     
     //this.gui_view.update_current_filter_list(this.data_model.get_map_objects({class: "community"}));
     ko.applyBindings(this.gui_view);
@@ -85,7 +73,7 @@ Controller.prototype.process_marker_click = function(data_model_array_name, idx_
 Controller.prototype.set_filtered_item = function(item) {
 
     this.map_handler.animate_marker(this.markers[item.idx_into_data_model_array]);
-    this.map_handler.display_info_window(this.markers[item.idx_into_data_model_array], "search_string_placeholder");
+    this.map_handler.display_info_window(this.markers[item.idx_into_data_model_array], item);
 
 }
 Controller.prototype.set_filtered_source = function(source) {
@@ -125,7 +113,7 @@ Controller.prototype.set_map_available = function(){
 
 function initMap() {
     
-    var map_handler = new MapHandler(MAP_INITIAL_POS);
+    var map_handler = new MapHandler(controller.data_model.get_map_center_coordinates());
     controller.map_handler = map_handler; 
     map_handler.controller = controller;
     controller.set_map_available();

@@ -72,7 +72,7 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     console.log(test_obj);*/
 
 }
-DataModel.prototype.get_recommended_coordinates=function(){
+DataModel.prototype.get_map_center_coordinates=function(){
     var min_lat = 1000.0;
     var min_lng = 1000.0;
     var max_lat = -10.0;
@@ -91,13 +91,13 @@ DataModel.prototype.get_recommended_coordinates=function(){
         }
 
          if (o.lng>max_lng){
-            max_lng  = o.lat; 
+            max_lng  = o.lng; 
         }
     })
 
     var r_lat = (max_lat+min_lat)/2.0; 
     var r_lng = (max_lng+min_lng)/2.0;
-
+    //console.log(max_lat, min_lat, max_lng, min_lng);
     return({lat:r_lat, lng:r_lng });
 }
 
@@ -163,6 +163,14 @@ DataModel.prototype.decorate_map_objects = function(objects) {
         else{
             objects[i].map_icon = "image/destination_marker.png"
         }
+
+        objects[i]["search_window_upper_right_corner"] = this.destination_point(objects[i].lat, objects[i].lng, 1000,45);
+        objects[i]["search_window_lower_left_corner"] = this.destination_point(objects[i].lat, objects[i].lng, 1000,225);
+        /*
+        console.log("distance check:")
+        console.log(this.get_distance_between_two_locations(objects[i].lat, objects[i].lng,
+            objects[i].search_window_upper_right_corner.lat, objects[i].search_window_upper_right_corner.lng));
+            */
     }
 
 }
@@ -181,6 +189,37 @@ DataModel.prototype.decorate_objects = function (objects, object_idx, data_model
     return object_idx; 
 }
 
+
+//ref http://www.movable-type.co.uk/scripts/latlong.html
+// @param   {number} distance - Distance travelled, in same units as earth radius (default: metres).
+ //* @param   {number} bearing - Initial bearing in degrees from north.
+DataModel.prototype.destination_point = function(lat1, lng1, distance, bearing) {
+    //console.log("destination_point");
+    //radius = (radius === undefined) ? 6371e3 : Number(radius);
+     distance = (distance===undefined)? 1500 : Number(distance);
+     bearing = (bearing===undefined)? 45 : Number(bearing);
+    // φ2 = asin( sinφ1⋅cosδ + cosφ1⋅sinδ⋅cosθ )
+    // λ2 = λ1 + atan2( sinθ⋅sinδ⋅cosφ1, cosδ − sinφ1⋅sinφ2 )
+    // see http://williams.best.vwh.net/avform.htm#LL
+    var radius = 6371000; // meters
+    var delta = Number(distance) / radius; // angular distance in radians
+    var theta = toRad(Number(bearing));
+
+    var phi1 = toRad(lat1);
+    var lambda1 = toRad(lng1);
+
+    var phi2 = Math.asin(Math.sin(phi1)*Math.cos(delta) + Math.cos(phi1)*Math.sin(delta)*Math.cos(theta));
+    var x = Math.cos(delta) - Math.sin(phi1) * Math.sin(phi2);
+    var y = Math.sin(theta) * Math.sin(delta) * Math.cos(phi1);
+    var lambda2 = lambda1 + Math.atan2(y, x);
+
+    // normalise to −180..+180°
+    var dest_lat = toDeg(phi2);
+    var dest_lng = (toDeg(lambda2)+540)%360-180;
+
+    //return new LatLon(φ2.toDegrees(), (λ2.toDegrees()+540)%360-180); 
+    return {lat: dest_lat, lng: dest_lng}
+};
 
 DataModel.prototype.get_distance_between_two_locations = function(lat1, lon1, lat2, lon2) {
     //ref. http://www.movable-type.co.uk/scripts/latlong.html
@@ -323,14 +362,6 @@ DataModel.prototype.populate_local_distance_matrix = function() {
         for (var j = i, len = this.matrix_items.length; j < len; j++) {
             var d = this.estimate_distance_between_two_map_objects(this.matrix_items[i], this.matrix_items[j]);
             a[j] = d;
-            /*if ((j===12)&&(i===12))
-            {
-            
-            console.log("-------------------------")
-            console.log("populate_local_distance_matrix estimated distance between: ");
-            console.log(this.matrix_items[i].item_type + " " + this.matrix_items[i].name);
-            console.log(this.matrix_items[j].item_type + " " + this.matrix_items[j].name);
-            console.log(d);}*/
         }
 
         this.local_distance_matrix.push(a);

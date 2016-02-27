@@ -4,6 +4,8 @@
 var MapHandler = function(initial_pos) {
     this.controller = {};
     this.mapDiv = document.getElementById('map');
+ 
+    
 
     this.map = new google.maps.Map(this.mapDiv, {
         center: initial_pos,
@@ -15,9 +17,13 @@ var MapHandler = function(initial_pos) {
     });
 
     this.map_active_windows_markers = Array();
+    this.map_active_lines = Array(); 
 
     this.list_of_locations = Array();
     this.list_of_bus_routes = Array();
+    this.direction_displays = Array();
+   
+
     this.info_windows_enabled = true;
     this.debug_options = {};
     this.debug_options["show_corner_markers"] = false;
@@ -50,9 +56,101 @@ MapHandler.prototype.stop_animation = function(marker) {
     }, 3000);
 }
 
+MapHandler.prototype.draw_walking_path = function(coordinates) {
+
+        var directions_service = new google.maps.DirectionsService();
+
+        var directions_display = new google.maps.DirectionsRenderer({
+            map: this.map,
+            preserveViewport: true,
+            suppressMarkers: true,
+            polylineOptions: { strokeColor: '#5cb85c' }
+        });
+
+
+    var request = {
+        origin: coordinates[0],
+        destination: coordinates[1],
+        travelMode: google.maps.TravelMode.WALKING
+    };
+
+    var self = this;
+
+    directions_service.route(request, function(result, status) {
+        if (status == google.maps.DirectionsStatus.OK) {
+            directions_display.setDirections(result);
+            self.direction_displays.push(directions_display);
+        } else {
+            // if can't get proper directions - still can draw straignt line 
+            self.draw_source_destination_bus_line(coordinates);
+        }
+    });
+
+    
+}
+
+
 MapHandler.prototype.animate_marker = function(marker) {
     marker.setAnimation(google.maps.Animation.BOUNCE);
     this.stop_animation(marker);
+}
+
+MapHandler.prototype.draw_source_destination_bus_line = function (coordinates){
+//this is a ssimplified version - used for first release 
+//(or may keep it if like it - this program is about walking directions, 
+//does not matter much how exactly bus gets from a to b)
+ var line_symbol = {
+    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+  };
+
+  // Create the polyline and add the symbol via the 'icons' property.
+  var line = new google.maps.Polyline({
+    path: coordinates,
+    icons: [{
+      icon: line_symbol,
+      offset: '100%'
+    }],
+
+    strokeColor: "#2525B2",
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  });
+
+  line.setMap(this.map);
+  this.map_active_lines.push(line);
+}
+
+MapHandler.prototype.draw_line = function(coordinates){
+ //this is tested but not used in the first vesrion of the program - 
+ //need to add more points or use google driving directions 
+ //function to display routes properly. 
+  console.log("MapHandler.prototype.draw_line");
+  console.log(coordinates);
+  var line = new google.maps.Polyline({
+    path: coordinates,
+    strokeColor: "#2525B2",
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  });
+
+  line.setMap(this.map);
+  this.map_active_lines.push(line);
+}
+
+MapHandler.prototype.remove_walking_directions = function(){
+    $.each(this.direction_displays, function(idx, d){
+        d.setMap(null);
+    })
+    this.direction_displays = [];
+}
+
+MapHandler.prototype.remove_lines = function(){
+
+    $.each(this.map_active_lines, function(idx, line){
+        line.setMap(null);
+    })
+    this.map_active_lines = [];
+
 }
 
 MapHandler.prototype.get_panoramio_request_url = function(o) {

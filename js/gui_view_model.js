@@ -171,6 +171,9 @@ GUIViewModel.prototype.plan_new_trip = function() {
 }
 
 GUIViewModel.prototype.next_step = function() {
+    console.log("this.filtered_location");
+    console.log(this.filtered_location);
+
     if (this.current_step() === 1) {
         if (!$.isEmptyObject(this.filtered_location)) {
             this.transition_to_step_2();
@@ -182,8 +185,9 @@ GUIViewModel.prototype.next_step = function() {
             this.selected_destination(this.filtered_location);
             if (this.filtered_location.via_bus_routes.length === 1) {
                 //if there is only one bus route - no point to display bus route menu
-                this.transition_to_step_4();
+               
                 this.selected_bus_route({ name: this.filtered_location.via_bus_routes[0] });
+                this.transition_to_step_4();
             } else {
                 this.transition_to_step_3();
             }
@@ -192,9 +196,10 @@ GUIViewModel.prototype.next_step = function() {
         }
     } else if (this.current_step() === 3) {
         if (!$.isEmptyObject(this.filtered_location)) {
-            this.transition_to_step_4();
+            //this.selected_bus_route({ name: this.filtered_location.via_bus_routes[0] });
             this.step_msg(this.messages.STEP3_ROUTE_SELECTED);
             this.selected_bus_route(this.filtered_location);
+            this.transition_to_step_4();
         } else {
             this.step_msg(this.messages.STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE);
         }

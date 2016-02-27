@@ -62,6 +62,16 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     this.bus_routes = new BusRoutes(this.bus_routes_data, this.bus_stops, this);
 }
 
+DataModel.prototype.convert_to_array_of_coordinates = function(map_objects){
+    var coordinates = Array(); 
+
+    $.each(map_objects, function (idx, o){
+        coordinates.push({lat: o.lat, lng: o.lng})
+    })
+
+    return coordinates; 
+}
+
 DataModel.prototype.get_map_center_coordinates=function(){
     var min_lat = 1000.0;
     var min_lng = 1000.0;

@@ -18,6 +18,7 @@ var GUIViewModel = function(controller, city_name) {
     this.map_loaded = ko.observable(false);
     //
     this.filtered_location_name = ko.observable("");
+    this.gui_shown = ko.observable(true);
     this.filtered_location = {};
     this.selected_source = ko.observable({});
     this.selected_destination = ko.observable({});
@@ -39,7 +40,7 @@ var GUIViewModel = function(controller, city_name) {
         STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: " : no bus route selected",
         STEP3_ROUTE_SELECTED: " : please click next step to complete"
     }
-    this.filtered_location_name_defaults = ['source', 'destination' , 'route'];
+    this.filtered_location_name_defaults = ['source', 'destination', 'route'];
 
     this.step_msg = ko.observable(this.messages.STEP1_AWAITING_INPUT);
     this.init_filtered_location_name();
@@ -70,28 +71,28 @@ var GUIViewModel = function(controller, city_name) {
 
         return ("From : " + this.selected_source().name + " to : " + this.selected_destination().name) + " , route: " + this.selected_bus_route().name;
     }, this);
- 
- //$('#previousStepButton').prop('disabled', true);
-         this.planner_title = ko.computed(function() {
-            return (this.cityName() + " BUS TRIP PLANNER");
-        }, this)
+
+    //$('#previousStepButton').prop('disabled', true);
+    this.planner_title = ko.computed(function() {
+        return (this.cityName() + " BUS TRIP PLANNER");
+    }, this)
 
     this.mapLoadedStatus = ko.pureComputed(function() {
-            if (this.map_loaded()) {
-                return ("label label-success map_status_class")
-            }
-            return ("label label-warning map_status_class")
-        }, this);
+        if (this.map_loaded()) {
+            return ("label label-success map_status_class")
+        }
+        return ("label label-warning map_status_class")
+    }, this);
 
 
-    
-        this.map_status_text = ko.pureComputed(function() {
-            if (this.map_loaded()) {
-                 return ("MAP: OK")
-            }
-            return ("MAP: LOADING")
-        }, this);
- 
+
+    this.map_status_text = ko.pureComputed(function() {
+        if (this.map_loaded()) {
+            return ("MAP")
+        }
+        return ("MAP")
+    }, this);
+
 }
 
 GUIViewModel.prototype.get_displayed_name_for_filter = function(o) {
@@ -185,7 +186,7 @@ GUIViewModel.prototype.next_step = function() {
             this.selected_destination(this.filtered_location);
             if (this.filtered_location.via_bus_routes.length === 1) {
                 //if there is only one bus route - no point to display bus route menu
-               
+
                 this.selected_bus_route({ name: this.filtered_location.via_bus_routes[0] });
                 this.transition_to_step_4();
             } else {
@@ -207,7 +208,14 @@ GUIViewModel.prototype.next_step = function() {
 
 
 }
+GUIViewModel.prototype.show_hide = function() {
+    if (this.gui_shown()) {
+        this.gui_shown(false);
+    } else {
+        this.gui_shown(true);
+    }
 
+}
 GUIViewModel.prototype.previous_step = function() {
     if (this.current_step() === 2) {
         this.current_step(1);
@@ -217,8 +225,7 @@ GUIViewModel.prototype.previous_step = function() {
         this.step_msg(this.messages.STEP1_AWAITING_INPUT);
         this.controller.process_step_update();
         this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
-    }
-    else if (this.current_step() === 3){
+    } else if (this.current_step() === 3) {
         this.current_step(2);
         this.init_filtered_location_name();
         this.selected_destination({});
@@ -232,36 +239,36 @@ GUIViewModel.prototype.previous_step = function() {
 
 }
 
-GUIViewModel.prototype.init_filtered_location_name = function(){
- this.filtered_location_name(this.filtered_location_name_defaults[this.current_step()-1]);
+GUIViewModel.prototype.init_filtered_location_name = function() {
+    this.filtered_location_name(this.filtered_location_name_defaults[this.current_step() - 1]);
 }
 
 GUIViewModel.prototype.get_idx_of_item_by_field_value = function(observable_array, field_value, field) {
-   
-        for (var i = 0, len = observable_array().length; i < len; i++) {
-            //console.log("get_idx_of_item_by_field");
-            //console.log(observable_array()[i]);
-            //console.log(observable_array()[i][field]);
-            //console.log(o[field]);
-            if (observable_array()[i].hasOwnProperty(field)) {
-                if (observable_array()[i][field] === field_value) {
-                    return i;
-                }
+
+    for (var i = 0, len = observable_array().length; i < len; i++) {
+        //console.log("get_idx_of_item_by_field");
+        //console.log(observable_array()[i]);
+        //console.log(observable_array()[i][field]);
+        //console.log(o[field]);
+        if (observable_array()[i].hasOwnProperty(field)) {
+            if (observable_array()[i][field] === field_value) {
+                return i;
             }
         }
-    
+    }
 
-    return -1; 
+
+    return -1;
 }
 
 GUIViewModel.prototype.apply_filter = function() {
     console.log(this.filtered_location_name())
-    var idx  = this.get_idx_of_item_by_field_value(this.current_filter_list, this.filtered_location_name(), "name");
+    var idx = this.get_idx_of_item_by_field_value(this.current_filter_list, this.filtered_location_name(), "name");
     console.log(idx);
-        //console.log(this.filtered_location().name)
+    //console.log(this.filtered_location().name)
     if (this.filtered_location_name() === "") {
         this.reset_filter();
-    } else if (idx>-1){
+    } else if (idx > -1) {
 
         var location = this.filtered_location_name();
         filter_out = function(item) {
@@ -286,7 +293,7 @@ GUIViewModel.prototype.set_filtered_location_message = function() {
 }
 
 GUIViewModel.prototype.reset_filter = function() {
-    this.init_filtered_location_name(); 
+    this.init_filtered_location_name();
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
     this.filtered_location_name("");
     this.selected_destination({});

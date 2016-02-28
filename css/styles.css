@@ -7,51 +7,81 @@
      z-index: 99;
  }
  
- .filtersClass{
+ .filtersClass {
      z-index: 999;
      background-color: #473C3C;
-     color: white;
+     color: #CFCFCF;
      padding-bottom: 0px;
      margin-bottom: 0px;
      max-width: 320px;
  }
-
- #application_title{
- 	  display: inline-block;
-  width: 75%;
+ 
+ #application_title {
+     display: inline-block;
+     width: 70%;
+     text-align: center;
  }
-
-#map_status{
-  display: inline-block;
-  width: 23.5%;
-}
-.grid-item{
-	 border: solid;
-	 border-width: 2px;
-	 border-radius: 3px;
-	 border-color:#CBC9C9;
-	 padding: 5px;
-	 margin-top: 6px;
-}
-
-.zero-padding{
-	margin-left: 0px !important;
-	margin-right: 0px !important;
-    padding-left:  0px !important;  
-    padding-right:  0px !important;  
-}
-
-.custom-padding{
-	margin-left: 2px;
-	margin-right: 2px;
-    padding-left:  2px !important;  
-    padding-right:  2px !important;  
-}
-.map-status{
-	background-color: red;
-}
-.group_map_gui {
-    width: 275px;
-}
-
-
+ 
+ .btn-rev {
+     color: white !important;
+     background-color: #A8A6A6 !important;
+     border-width: 2px !important;
+     padding-top: 4px;
+ }
+ 
+ #map_status {
+     display: inline-block;
+     width: 14%;
+     text-align: center;
+ }
+ 
+ .header-item {
+     border: solid;
+     border-width: 2px;
+     border-radius: 3px;
+     border-color: #CBC9C9;
+     padding: 1px;
+     padding-top: 6px;
+     padding-bottom: 9px;
+     margin-top: 7px;
+     margin-bottom: 5px;
+ }
+ 
+ .grid-item {
+     border: solid;
+     border-width: 2px;
+     border-radius: 3px;
+     border-color: #CBC9C9;
+     padding: 1px;
+     margin-top: 3px;
+ }
+ 
+ #previousStepButton {
+     width: 132px !important;
+ }
+ 
+ .zero-padding {
+     margin-left: 0px !important;
+     margin-right: 0px !important;
+     padding-left: 0px !important;
+     padding-right: 0px !important;
+ }
+ 
+ .custom-padding {
+     margin-left: 2px;
+     margin-right: 2px;
+     padding-left: 2px !important;
+     padding-right: 2px !important;
+ }
+ 
+ .map-status {
+     background-color: green;
+ }
+ 
+ .group_map_gui {
+     margin-top: 5px;
+ }
+ 
+ .list-of-items {
+     margin-bottom: 2px !important;
+ }

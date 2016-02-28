@@ -8,13 +8,48 @@
  }
  
  .filtersClass{
-     position: fixed;
      z-index: 999;
-     left: 10px;
-     top: 0px;
-     background-color: #F0EBEB;
+     background-color: #473C3C;
+     color: white;
+     padding-bottom: 0px;
+     margin-bottom: 0px;
+     max-width: 320px;
  }
- 
+
+ #application_title{
+ 	  display: inline-block;
+  width: 75%;
+ }
+
+#map_status{
+  display: inline-block;
+  width: 23.5%;
+}
+.grid-item{
+	 border: solid;
+	 border-width: 2px;
+	 border-radius: 3px;
+	 border-color:#CBC9C9;
+	 padding: 5px;
+	 margin-top: 6px;
+}
+
+.zero-padding{
+	margin-left: 0px !important;
+	margin-right: 0px !important;
+    padding-left:  0px !important;  
+    padding-right:  0px !important;  
+}
+
+.custom-padding{
+	margin-left: 2px;
+	margin-right: 2px;
+    padding-left:  2px !important;  
+    padding-right:  2px !important;  
+}
+.map-status{
+	background-color: red;
+}
 .group_map_gui {
     width: 275px;
 }

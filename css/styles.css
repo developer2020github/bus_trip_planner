@@ -81,7 +81,15 @@
  .group_map_gui {
      margin-top: 5px;
  }
- 
+ .selected_char{
+   font-weight: bold;
+   color: #FEEE81;
+ }
+ .normal_char{
+     font-weight: bold;
+     color: #CFCFCF;
+ }
+
  .list-of-items {
      margin-bottom: 2px !important;
  }

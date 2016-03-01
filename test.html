@@ -1,27 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+<style>
+ .selected_char{
+   font-weight: bold;
+   color: white;
+ }
+ .b1{
+ 	background-color: black;
+ 	color: green;
+ }
+ </style>
 </head>
-<body>
-<iframe
-   src="http://www.panoramio.com/wapi/template/photo.html?user=12345&amp;width=400&amp;height=300"
-   frameborder="0" width="400" height="300" scrolling="no" marginwidth="0" marginheight="0"> </iframe>
+<body class = "b1">
+Hello <b>w</b>o<span class="selected_char">r</span>ld!   
 </body>
-</html>\\
-/*
-    new Request.JSONP({
-    url: 'http://www.panoramio.com/map/get_panoramas.php?order=popularity&set=public&from=0&to=10&minx=-124.29382324218749&miny=36.089060460282006&maxx=-119.8773193359375&maxy=38.724090458956965',
-    data: {},
-    onSuccess: function(response) {
-        show_response(response, $('post'));
-    }
-}).send();
-
-show_response = function(obj, result) {
-    $H(obj).each(function(v, k) {
-        new Element('li', {
-            text: k + ': ' + JSON.stringify(v, null, 4)
-        }).inject(result);
-    });
-    result.highlight();
-};*/
+</html>

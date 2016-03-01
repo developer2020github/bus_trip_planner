@@ -1,209 +1,209 @@
 var bus_stops = [
     {
+        "name": "Abu Dhabi Intl Airport ADAT",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.42871561,
-        "name": "Abu Dhabi Intl Airport ADAT",
-        "lng": 54.63931337,
-        "item_type": "bus_stop",
+        "id": "1",
         "verified_for_walking": "yes",
-        "id": "1"
+        "lng": 54.63931337
     },
     {
+        "name": "Khalifa City St 3 / Etihad Plaza",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.44382879,
-        "name": "Khalifa City St 3 / Etihad Plaza",
-        "lng": 54.60899234,
-        "item_type": "bus_stop",
+        "id": "2",
         "verified_for_walking": "no",
-        "id": "2"
+        "lng": 54.60899234
     },
     {
+        "name": "Al Raha Beach Al Muneera",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.44833627,
-        "name": "Al Raha Beach Al Muneera",
-        "lng": 54.60310355,
-        "item_type": "bus_stop",
+        "id": "3",
         "verified_for_walking": "yes",
-        "id": "3"
+        "lng": 54.60310355
     },
     {
+        "name": "Yas Island Yas Mall",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.49013138,
-        "name": "Yas Island Yas Mall",
-        "lng": 54.60989088,
-        "item_type": "bus_stop",
+        "id": "4",
         "verified_for_walking": "yes",
-        "id": "4"
+        "lng": 54.60989088
     },
     {
+        "name": "Yas Island ADNOC South",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.49855219,
-        "name": "Yas Island ADNOC South",
-        "lng": 54.58580732,
-        "item_type": "bus_stop",
+        "id": "5",
         "verified_for_walking": "no",
-        "id": "5"
+        "lng": 54.58580732
     },
     {
+        "name": "Al Markaziyah West Sultan Bin Zayed1st St / Khalifa St",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.491892,
-        "name": "Al Markaziyah West Sultan Bin Zayed1st St / Khalifa St",
-        "lng": 54.361513,
-        "item_type": "bus_stop",
+        "id": "6",
         "verified_for_walking": "no",
-        "id": "6"
+        "lng": 54.361513
     },
     {
+        "name": "Al Wahda Sultan Bin Zayed1st St / Bus Station",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.470811,
-        "name": "Al Wahda Sultan Bin Zayed1st St / Bus Station",
-        "lng": 54.377155,
-        "item_type": "bus_stop",
+        "id": "7",
         "verified_for_walking": "yes",
-        "id": "7"
+        "lng": 54.377155
     },
     {
+        "name": "Al Mushrif Shk Rashid Bin Saeed St / Immigration Dept",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.451468,
-        "name": "Al Mushrif Shk Rashid Bin Saeed St / Immigration Dept",
-        "lng": 54.396165,
-        "item_type": "bus_stop",
+        "id": "8",
         "verified_for_walking": "no",
-        "id": "8"
+        "lng": 54.396165
     },
     {
+        "name": "Zayed Sport City St 4 / St 17",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.42487,
-        "name": "Zayed Sport City St 4 / St 17",
-        "lng": 54.451685,
-        "item_type": "bus_stop",
+        "id": "9",
         "verified_for_walking": "no",
-        "id": "9"
+        "lng": 54.451685
     },
     {
+        "name": "Al Raha Beach ALDAR HQ",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.441155,
-        "name": "Al Raha Beach ALDAR HQ",
-        "lng": 54.575922,
-        "item_type": "bus_stop",
+        "id": "10",
         "verified_for_walking": "no",
-        "id": "10"
+        "lng": 54.575922
     },
     {
+        "name": "Al Raha Beach Al Zeina",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.45358583,
-        "name": "Al Raha Beach Al Zeina",
-        "lng": 54.61349308,
-        "item_type": "bus_stop",
+        "id": "12",
         "verified_for_walking": "yes",
-        "id": "12"
+        "lng": 54.61349308
     },
     {
+        "name": "Shahama St 10 / Municipality",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.56382,
-        "name": "Shahama St 10 / Municipality",
-        "lng": 54.694551,
-        "item_type": "bus_stop",
+        "id": "14",
         "verified_for_walking": "no",
-        "id": "14"
+        "lng": 54.694551
     },
     {
+        "name": "Al Bahya St 17 / Emirates Park Zoo",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.546448,
-        "name": "Al Bahya St 17 / Emirates Park Zoo",
-        "lng": 54.677119,
-        "item_type": "bus_stop",
+        "id": "15",
         "verified_for_walking": "no",
-        "id": "15"
+        "lng": 54.677119
     },
     {
+        "name": "Al Bahya St 5 / Deerfield Townsquare",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.521652,
-        "name": "Al Bahya St 5 / Deerfield Townsquare",
-        "lng": 54.667821,
-        "item_type": "bus_stop",
+        "id": "16",
         "verified_for_walking": "yes",
-        "id": "16"
+        "lng": 54.667821
     },
     {
+        "name": "Yas Island Yas Mall / Ferrari World",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.486302,
-        "name": "Yas Island Yas Mall / Ferrari World",
-        "lng": 54.611527,
-        "item_type": "bus_stop",
+        "id": "17",
         "verified_for_walking": "yes",
-        "id": "17"
+        "lng": 54.611527
     },
     {
+        "name": "Yas Island Hotel Plaza",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.465694,
-        "name": "Yas Island Hotel Plaza",
-        "lng": 54.598591,
-        "item_type": "bus_stop",
+        "id": "18",
         "verified_for_walking": "no",
-        "id": "18"
+        "lng": 54.598591
     },
     {
+        "name": "Khalifa City St 16 / Souq",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.417355,
-        "name": "Khalifa City St 16 / Souq",
-        "lng": 54.567607,
-        "item_type": "bus_stop",
+        "id": "19",
         "verified_for_walking": "no",
-        "id": "19"
+        "lng": 54.567607
     },
     {
+        "name": "Sas Al Nakhl Petroleum Institute",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.42137,
-        "name": "Sas Al Nakhl Petroleum Institute",
-        "lng": 54.501954,
-        "item_type": "bus_stop",
+        "id": "20",
         "verified_for_walking": "no",
-        "id": "20"
+        "lng": 54.501954
     },
     {
+        "name": "Al Raha Beach Raha Mall",
+        "item_type": "bus_stop",
         "source_type": "route_map",
         "lat": 24.43838591,
-        "name": "Al Raha Beach Raha Mall",
-        "lng": 54.57417056,
-        "item_type": "bus_stop",
+        "id": "21",
         "verified_for_walking": "yes",
-        "id": "21"
+        "lng": 54.57417056
     },
     {
+        "name": "Turn to Burjeel hospital ",
+        "item_type": "bus_stop",
         "source_type": "added",
         "lat": 24.474814,
-        "name": "Turn to Burjeel hospital ",
-        "lng": 54.373994,
-        "item_type": "bus_stop",
+        "id": "22",
         "verified_for_walking": "yes",
-        "id": "22"
+        "lng": 54.373994
     },
     {
-        "source_type": "added",
-        "lat": 24.491892,
         "name": "Al Noor Hospital Khalifa City",
-        "lng": 54.361513,
         "item_type": "bus_stop",
-        "verified_for_walking": "yes",
-        "id": "23"
-    },
-    {
         "source_type": "added",
         "lat": 24.491892,
-        "name": "Madina Zayed Shopping center",
-        "lng": 54.361513,
-        "item_type": "bus_stop",
+        "id": "23",
         "verified_for_walking": "yes",
-        "id": "24"
+        "lng": 54.361513
     },
     {
+        "name": "Madina Zayed Shopping center",
+        "item_type": "bus_stop",
+        "source_type": "added",
+        "lat": 24.491892,
+        "id": "24",
+        "verified_for_walking": "yes",
+        "lng": 54.361513
+    },
+    {
+        "name": "Turn to HCBC",
+        "item_type": "bus_stop",
         "source_type": "added",
         "lat": 24.4879,
-        "name": "Turn to HCBC",
-        "lng": 54.364166,
-        "item_type": "bus_stop",
+        "id": "25",
         "verified_for_walking": "yes",
-        "id": "25"
+        "lng": 54.364166
     }
 ];

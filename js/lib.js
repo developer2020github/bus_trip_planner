@@ -101,3 +101,43 @@ toDeg = function(n){
 
     return((180*n)/Math.PI);
 }
+
+
+substring_after_tag = function(str, tag){
+  var idx = str.indexOf(tag);
+
+  if(idx>-1){
+    return(str.substring(idx + tag.length, str.length));
+  }
+
+  return str; 
+}
+all_str_characters_found_in_tag = function(str, tag){
+
+  for (var i = 0, len = str.length; i<len; i++){
+    if(tag.indexOf(str[i])===-1){
+      return false; 
+    }
+  }
+
+  return true; 
+}
+
+get_number_of_matching_words = function(str, tag){
+ var num_of_matching_words = 0;
+ var l_tag = tag.toLowerCase();
+ l_tag = l_tag.split(' ').join('+');
+ var tokens = str.toLowerCase().split(" "); 
+
+ for (var i = 0, len = tokens.length; i<len; i++){
+  if (all_str_characters_found_in_tag(tokens[i], l_tag)){
+    num_of_matching_words++;
+  }
+ }
+
+ return num_of_matching_words;
+}
+
+apply_class_to_span = function(text, css_class){
+  return ('<span class="' + css_class +'">' + text + '</span>');
+}

@@ -44,6 +44,47 @@ var GUIViewModel = function(controller, city_name) {
 
     this.step_msg = ko.observable(this.messages.STEP1_AWAITING_INPUT);
     this.init_filtered_location_name();
+
+    var self = this;
+
+    this.filtered_location_name.subscribe(function(new_input) {
+        //USE FOR UPDATE OF OBSERVABLE ARRAY TO HIGHLIGHT ITEMS
+        var current_user_input = substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]);
+       // if (current_user_input.trim() === ("")) {
+       //     this.reset_filter();
+       //     return;
+       // }
+        var max_number_of_matched_words = 0;
+        var current_number_of_matched_words = 0;
+        //this.current_filter_list()[0].formatted_displayed_name_for_filter(str + 
+        //    substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]));
+        for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
+            var cur_str = this.current_filter_list()[i].displayed_name_for_filter;
+
+            var formatted_str = this.format_string_by_tag_matches(cur_str, current_user_input);
+            this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
+            current_number_of_matched_words = get_number_of_matching_words(cur_str, current_user_input);
+            if (current_number_of_matched_words > max_number_of_matched_words) {
+                max_number_of_matched_words = current_number_of_matched_words;
+            }
+
+            this.current_filter_list()[i]['number_of_matching_words'] = current_number_of_matched_words;
+        }
+
+
+        //see if there are entire words matched and keep only items with highest number of words matched
+        //i.e., if one word is matched - remove all with no words matched, if two is matched - remove 
+        //ones with one and zero, etc. Numbers of matches is already computed in the loop above
+
+        if (max_number_of_matched_words > 0) {
+            this.current_filter_list.remove(function(item) {
+                return (item.number_of_matching_words < max_number_of_matched_words);
+            })
+        }
+
+    }, this);
+
+
     this.step_and_status = ko.computed(function() {
         var msg = ""
         if (this.current_step() == 4) {
@@ -95,6 +136,55 @@ var GUIViewModel = function(controller, city_name) {
 
 }
 
+GUIViewModel.prototype.format_string_by_tag_matches = function(input_str, input_tag) {
+    //apply highlighted style to matching chnaractes and normal to the rest of them 
+    var str = input_str.toLowerCase();
+    var tag = input_tag.toLowerCase();
+
+    var begin = 1;
+    var selected = 2;
+    var normal = 3
+
+    var state = begin;
+    var buf = "";
+    var result_str = "";
+    var idx = 0;
+    for (var i = 0, len = str.length; i < len; i++) {
+        idx = tag.indexOf(str[i]);
+
+        if (idx === -1) {
+            if (state === begin) {
+                state = normal;
+            } else if (state === selected) {
+                result_str = result_str + apply_class_to_span(buf, "selected_char");
+                buf = ""
+                state = normal;
+            }
+
+            buf = buf + input_str[i];
+        } else {
+            if (state === begin) {
+                state = selected;
+            } else if (state === normal) {
+                result_str = result_str + apply_class_to_span(buf, "normal_char");
+                buf = ""
+                state = selected;
+            }
+            buf = buf + input_str[i];
+        }
+
+
+    }
+
+    if (state === normal) {
+        result_str = result_str + apply_class_to_span(buf, "normal_char");
+    } else if (state === selected) {
+        result_str = result_str + apply_class_to_span(buf, "selected_char");
+    }
+
+    return result_str;
+}
+
 GUIViewModel.prototype.get_displayed_name_for_filter = function(o) {
     var displayed_name_for_filter = o.name;
     /*console.log("get_displayed_name_for_filter");
@@ -129,9 +219,17 @@ GUIViewModel.prototype.update_current_filter_list = function(new_list) {
 
     for (var i = 0; i < new_list.length; i++) {
         new_list[i]["displayed_name_for_filter"] = this.get_displayed_name_for_filter(new_list[i]);
+        new_list[i]["formatted_displayed_name_for_filter"] =
+            ko.observable("<b>" + this.get_displayed_name_for_filter(new_list[i]) + "</b>" + "*");
         this.current_filter_list.push(new_list[i]);
     }
     console.log(new_list);
+}
+
+GUIViewModel.prototype.init_filtered_location_name = function() {
+
+    this.filtered_location_name(this.filtered_location_name_defaults[this.current_step() - 1])
+    console.log(this.filtered_location_name_defaults[this.current_step() - 1])
 }
 
 GUIViewModel.prototype.transition_to_step_2 = function() {

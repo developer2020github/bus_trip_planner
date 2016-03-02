@@ -11,6 +11,7 @@
  On this request controller also updates map*/
 var GUIViewModel = function(controller, city_name) {
     //var self = this;
+
     this.controller = controller;
 
     this.current_filter_list = ko.observableArray();
@@ -40,11 +41,11 @@ var GUIViewModel = function(controller, city_name) {
         STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: " : no bus route selected",
         STEP3_ROUTE_SELECTED: " : please click next step to complete"
     }
-    this.filtered_location_name_defaults = ['source', 'destination', 'route'];
+    this.filtered_location_name_defaults = ['source:', 'destination:', 'route:'];
 
     this.step_msg = ko.observable(this.messages.STEP1_AWAITING_INPUT);
     this.init_filtered_location_name();
-
+    this.length_of_list = 0; 
     var self = this;
 
     this.filtered_location_name.subscribe(function(new_input) {
@@ -61,10 +62,21 @@ var GUIViewModel = function(controller, city_name) {
         //    substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]));
         for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
             var cur_str = this.current_filter_list()[i].displayed_name_for_filter;
+            var searchable_words = this.current_filter_list()[i].meaningful_words;
+            
 
             var formatted_str = this.format_string_by_tag_matches(cur_str, current_user_input);
             this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
-            current_number_of_matched_words = get_number_of_matching_words(cur_str, current_user_input);
+            
+
+            current_number_of_matched_words = get_number_of_matching_words(searchable_words, current_user_input);
+
+            console.log('------------------------')
+            console.log(searchable_words);
+            console.log(current_user_input);
+            console.log(current_number_of_matched_words);
+            console.log('------------------------')
+
             if (current_number_of_matched_words > max_number_of_matched_words) {
                 max_number_of_matched_words = current_number_of_matched_words;
             }
@@ -223,18 +235,34 @@ GUIViewModel.prototype.update_current_filter_list = function(new_list) {
     //this.step_list = new_list;
 
     for (var i = 0; i < new_list.length; i++) {
+        //exclude "al" at the beggining 
+        var str = this.get_displayed_name_for_filter(new_list[i]);
+        var tokens = str.toLowerCase().split(" ");
+        console.log("before:");
+            console.log(str);
+        if (tokens[0]==="al"){
+            
+            str = substring_after_tag(str.toLowerCase(), "al").trim(); 
+          
+        }
+          console.log("after");
+            console.log(str);
+        new_list[i]["meaningful_words"] = str;
         new_list[i]["displayed_name_for_filter"] = this.get_displayed_name_for_filter(new_list[i]);
         new_list[i]["formatted_displayed_name_for_filter"] =
-            ko.observable("<b>" + this.get_displayed_name_for_filter(new_list[i]) + "</b>" + "*");
+            ko.observable("<b>" + this.get_displayed_name_for_filter(new_list[i]) + "</b>");
         this.current_filter_list.push(new_list[i]);
     }
-    console.log(new_list);
+
+    this.length_of_list = this.current_filter_list().length;
+
+    //console.log(new_list);
 }
 
 GUIViewModel.prototype.init_filtered_location_name = function() {
 
     this.filtered_location_name(this.filtered_location_name_defaults[this.current_step() - 1])
-    console.log(this.filtered_location_name_defaults[this.current_step() - 1])
+    //console.log(this.filtered_location_name_defaults[this.current_step() - 1])
 }
 
 GUIViewModel.prototype.transition_to_step_2 = function() {
@@ -275,8 +303,8 @@ GUIViewModel.prototype.plan_new_trip = function() {
 }
 
 GUIViewModel.prototype.next_step = function() {
-    console.log("this.filtered_location");
-    console.log(this.filtered_location);
+    //console.log("this.filtered_location");
+    //console.log(this.filtered_location);
 
     if (this.current_step() === 1) {
         if (!$.isEmptyObject(this.filtered_location)) {
@@ -364,30 +392,32 @@ GUIViewModel.prototype.get_idx_of_item_by_field_value = function(observable_arra
     return -1;
 }
 
+GUIViewModel.prototype.apply_filter = function(){
 
-GUIViewModel.prototype.apply_filter = function() {
-    //to be removed 
-    console.log(this.filtered_location_name())
-    var idx = this.get_idx_of_item_by_field_value(this.current_filter_list, this.filtered_location_name(), "name");
-    console.log(idx);
-    //console.log(this.filtered_location().name)
+    if(this.length_of_list===this.current_filter_list().length){
+        return; 
+    }
+
     if (this.filtered_location_name() === "") {
         this.reset_filter();
-    } else if (idx > -1) {
-
-        var location = this.filtered_location_name();
-        filter_out = function(item) {
-            return item.name != location;
-        }
-        this.current_filter_list.remove(filter_out);
+        return;
     }
-    //console.log(this.current_filter_list().length);
+    //if there is only one item in the list -  
+    //set source/destination  
     if (this.current_filter_list().length === 1) {
         this.filtered_location = this.current_filter_list()[0];
         this.controller.set_filtered_item(this.filtered_location);
         this.set_filtered_location_message();
     }
+     //hide all markers that are not in the filtered list. 
+     //this applies only to steps 1 and 2 
+     if(this.current_step()<3){
+        this.controller.apply_filter_to_markers()
+     }
+
 }
+
+
 
 GUIViewModel.prototype.set_filtered_location_message = function() {
     if (this.current_step() === 1) {
@@ -400,6 +430,7 @@ GUIViewModel.prototype.set_filtered_location_message = function() {
 GUIViewModel.prototype.reset_filter = function() {
     this.init_filtered_location_name();
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
+    this.controller.apply_filter_to_markers();
     //this.filtered_location_name("");
     this.selected_destination({});
     if (this.current_step() === 1) {

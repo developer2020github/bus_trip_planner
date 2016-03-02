@@ -69,6 +69,9 @@ Controller.prototype.process_marker_click = function(data_model_array_name, idx_
     if (idx>-1){
         this.gui_view.filtered_location_name(obj.name);
     }
+
+    this.map_handler.display_info_window(this.markers[idx_into_data_model_array], obj);
+    this.map_handler.animate_marker(this.markers[idx_into_data_model_array]);
 }
 Controller.prototype.set_filtered_item = function(item) {
   if (item.hasOwnProperty('idx_into_data_model_array')){
@@ -85,6 +88,15 @@ Controller.prototype.hide_markers = function(){
      $.each(this.markers, function(index, marker) {
            marker.setVisible(false);
         });
+}
+
+Controller.prototype.apply_filter_to_markers = function(){
+  //ensure only markers that are in list are shown.
+  this.hide_markers();
+  for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
+            this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
+        }
+  
 }
 
 Controller.prototype.process_step_update = function() {

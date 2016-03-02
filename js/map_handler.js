@@ -243,7 +243,7 @@ MapHandler.prototype.close_all_info_windows = function() {
 
 MapHandler.prototype.init_locations = function(locations) {
     var markers = Array();
-    console.log(locations);
+    //console.log(locations);
     for (var i = 0, len = locations.length; i < len; i++) {
         var psn = {};
         psn['lat'] = locations[i].lat;

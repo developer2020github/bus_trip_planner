@@ -93,3 +93,7 @@
  .list-of-items {
      margin-bottom: 2px !important;
  }
+
+.clickable{
+     cursor: pointer;
+}

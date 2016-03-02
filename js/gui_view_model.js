@@ -50,10 +50,11 @@ var GUIViewModel = function(controller, city_name) {
     this.filtered_location_name.subscribe(function(new_input) {
         //USE FOR UPDATE OF OBSERVABLE ARRAY TO HIGHLIGHT ITEMS
         var current_user_input = substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]);
-       // if (current_user_input.trim() === ("")) {
-       //     this.reset_filter();
-       //     return;
-       // }
+        if (current_user_input.trim() === ("")) {
+           this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
+           return;
+        }
+
         var max_number_of_matched_words = 0;
         var current_number_of_matched_words = 0;
         //this.current_filter_list()[0].formatted_displayed_name_for_filter(str + 
@@ -134,7 +135,11 @@ var GUIViewModel = function(controller, city_name) {
         return ("MAP")
     }, this);
 
+     self.list_item_click = function(clicked_item){
+        self.filtered_location_name(clicked_item.name);
+    }
 }
+
 
 GUIViewModel.prototype.format_string_by_tag_matches = function(input_str, input_tag) {
     //apply highlighted style to matching chnaractes and normal to the rest of them 
@@ -359,7 +364,9 @@ GUIViewModel.prototype.get_idx_of_item_by_field_value = function(observable_arra
     return -1;
 }
 
+
 GUIViewModel.prototype.apply_filter = function() {
+    //to be removed 
     console.log(this.filtered_location_name())
     var idx = this.get_idx_of_item_by_field_value(this.current_filter_list, this.filtered_location_name(), "name");
     console.log(idx);
@@ -393,7 +400,7 @@ GUIViewModel.prototype.set_filtered_location_message = function() {
 GUIViewModel.prototype.reset_filter = function() {
     this.init_filtered_location_name();
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
-    this.filtered_location_name("");
+    //this.filtered_location_name("");
     this.selected_destination({});
     if (this.current_step() === 1) {
         this.selected_source({});

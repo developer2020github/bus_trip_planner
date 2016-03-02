@@ -50,8 +50,8 @@
                     </div>
                     <div id="filterList" data-bind="visible: current_step()<4">
                         <ul class="list-group list-of-items" data-bind="foreach: current_filter_list">
-                            <li class="grid-item">
-                                <span data-bind="html: formatted_displayed_name_for_filter"></span>
+                            <li class="grid-item clickable">
+                                <span data-bind="html: formatted_displayed_name_for_filter, click: $parent.list_item_click"></span>
                             </li>
                         </ul>
                     </div>

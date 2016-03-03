@@ -69,7 +69,7 @@ var GUIViewModel = function(controller, city_name) {
             this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
             
 
-            current_number_of_matched_words = get_number_of_matching_words(searchable_words, current_user_input);
+            current_number_of_matched_words = get_number_of_matching_words(current_user_input, searchable_words);
 
             console.log('------------------------')
             console.log(searchable_words);
@@ -238,15 +238,15 @@ GUIViewModel.prototype.update_current_filter_list = function(new_list) {
         //exclude "al" at the beggining 
         var str = this.get_displayed_name_for_filter(new_list[i]);
         var tokens = str.toLowerCase().split(" ");
-        console.log("before:");
-            console.log(str);
+        //console.log("before:");
+         //   console.log(str);
         if (tokens[0]==="al"){
             
             str = substring_after_tag(str.toLowerCase(), "al").trim(); 
           
         }
-          console.log("after");
-            console.log(str);
+        //  console.log("after");
+        //    console.log(str);
         new_list[i]["meaningful_words"] = str;
         new_list[i]["displayed_name_for_filter"] = this.get_displayed_name_for_filter(new_list[i]);
         new_list[i]["formatted_displayed_name_for_filter"] =
@@ -412,7 +412,7 @@ GUIViewModel.prototype.apply_filter = function(){
      //hide all markers that are not in the filtered list. 
      //this applies only to steps 1 and 2 
      if(this.current_step()<3){
-        this.controller.apply_filter_to_markers()
+        this.controller.apply_filter_to_markers();
      }
 
 }

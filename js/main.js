@@ -96,7 +96,10 @@ Controller.prototype.apply_filter_to_markers = function(){
   for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
             this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
         }
-  
+ //always display seleted source in step 2 
+  if (this.gui_view.current_step() ===2) {
+         this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
+  }
 }
 
 Controller.prototype.process_step_update = function() {

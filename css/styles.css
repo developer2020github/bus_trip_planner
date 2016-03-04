@@ -34,6 +34,11 @@
      width: 14%;
      text-align: center;
  }
+ #planNewTripButton{
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
+ }
  
  .header-item {
      border: solid;
@@ -88,6 +93,15 @@
  .normal_char{
      font-weight: bold;
      color: #CFCFCF;
+ }
+ .msg_normal{
+     font-weight: bold;
+     color: #66D07C;
+ }
+
+ .msg_warning{
+      font-weight: bold;
+     color: #FDB812;
  }
 
  .list-of-items {

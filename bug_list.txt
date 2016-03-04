@@ -1,0 +1,3 @@
+1. In step 2 if source marker is clicked, filter list is reset. 
+2. In step 4, , when new trip is selected, map is not reset without refresh.
+3. Map is not centered properly on initial load - should take menu into account. 

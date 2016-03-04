@@ -18,8 +18,6 @@
 
 var CITY_NAME = "ABU DHABI"
 var controller = {}; 
-
-
 //============================
 var Controller = function() {
     var self = this;
@@ -62,19 +60,24 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
     }
 
 }
-Controller.prototype.process_marker_click = function(data_model_array_name, idx_into_data_model_array){
-
+Controller.prototype.process_marker_click = function(data_model_array_name, idx_into_data_model_array) {
     var obj = this.data_model.get_data_object(data_model_array_name, idx_into_data_model_array);
-    var idx  = this.gui_view.get_idx_of_item_by_field_value(this.gui_view.current_filter_list, obj.name, "name");
-    if (idx>-1){
-        this.gui_view.filtered_location_name(obj.name);
-    }
+    if (this.gui_view.current_step() < 3) {
+        this.gui_view.update_current_filter_list(this.get_filtered_list_for_current_step(this.gui_view.current_step()));
+        
+        var idx = this.gui_view.get_idx_of_item_by_field_value(this.gui_view.current_filter_list, obj.name, "name");
+        if (idx > -1) {
+            this.gui_view.set_selected_item(obj);
+        }
+   }
 
     this.map_handler.display_info_window(this.markers[idx_into_data_model_array], obj);
     this.map_handler.animate_marker(this.markers[idx_into_data_model_array]);
 }
+
 Controller.prototype.set_filtered_item = function(item) {
   if (item.hasOwnProperty('idx_into_data_model_array')){
+    this.map_handler.close_all_info_windows(); 
     this.map_handler.animate_marker(this.markers[item.idx_into_data_model_array]);
     this.map_handler.display_info_window(this.markers[item.idx_into_data_model_array], item);
 }
@@ -109,18 +112,16 @@ Controller.prototype.process_step_update = function() {
        
         for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
             this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
-
         }
         if  (this.gui_view.current_step()==2){
             this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
-            
         }
+
     }else if (this.gui_view.current_step()==3){
        this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
        this.markers[this.gui_view.selected_destination().idx_into_data_model_array].setVisible(true);
     }else if (this.gui_view.current_step()==4){
         console.log("this.gui_view.current_step()==4");
-
         var stop1 = this.data_model.bus_routes.get_closest_stop(this.gui_view.selected_bus_route().name, this.gui_view.selected_source());
         var stop2 = this.data_model.bus_routes.get_closest_stop(this.gui_view.selected_bus_route().name, this.gui_view.selected_destination());
         //var route = this.data_model.bus_routes.get_route_between_stops(this.gui_view.selected_bus_route().name, stop1, stop2);
@@ -131,6 +132,8 @@ Controller.prototype.process_step_update = function() {
 
         this.map_handler.draw_walking_path(conv([this.gui_view.selected_source(), stop1]));
         this.map_handler.draw_walking_path(conv([stop2, this.gui_view.selected_destination()]));
+        this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
+        this.markers[this.gui_view.selected_destination().idx_into_data_model_array].setVisible(true);
     }
 }
 
@@ -149,8 +152,6 @@ function initMap() {
     //controller.set_map_available();  
 
 }
-
-
 
 
 (function main() {

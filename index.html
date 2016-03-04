@@ -28,7 +28,7 @@
                 </div>
                 <div id="hideable" data-bind="visible: gui_shown()">
                     <div id="steps" class="grid-item">
-                        <span data-bind="text: step_and_status"></span>
+                        <span data-bind="html: step_and_status"></span>
                     </div>
                     <div id="current_route" class="grid-item">
                         <span data-bind="text: selected_source_destination_display"></span>
@@ -56,8 +56,8 @@
                         </ul>
                     </div>
                     <div>
-                        <div class="btn-group group_map_gui" data-bind="visible: current_step()===4" role="group">
-                            <button type="button" data-bind="click: plan_new_trip" class="btn btn-default group_map_gui" id="planNewTripButton">New Trip</button>
+                        <div data-bind="visible: current_step()===4" role="group">
+                            <button type="button" data-bind="click: plan_new_trip" class="btn btn-default btn-rev" id="planNewTripButton">New Trip</button>
                         </div>
                     </div>
                 </div>

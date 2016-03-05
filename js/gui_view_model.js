@@ -41,7 +41,7 @@ var GUIViewModel = function(controller, city_name) {
         STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: '<span class ="msg_warning">:  no bus route selected</span>',
         STEP3_ROUTE_SELECTED: '<span class ="msg_normal">:please click next step to complete</span>'
     }
-    this.filtered_location_name_defaults = ['source:', 'destination:', 'route:'];
+    this.filtered_location_name_defaults = ['source:', 'destination:', 'route:', 'COMPLETE'];
 
     this.step_msg = ko.observable(this.messages.STEP1_AWAITING_INPUT);
     this.init_filtered_location_name();
@@ -301,15 +301,16 @@ GUIViewModel.prototype.transition_to_step_4 = function() {
 
 
 GUIViewModel.prototype.plan_new_trip = function() {
-    this.init_filtered_location_name();
-    this.current_filter_list.removeAll();
     this.current_step(1);
-    this.filtered_location_name("");
+    this.init_filtered_location_name();
+    this.step_msg(this.messages.STEP1_AWAITING_INPUT);
+    this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
     this.filtered_location = {};
     this.selected_source({});
     this.selected_destination({});
     this.selected_bus_route({});
-    this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
+   
+    this.controller.process_step_update();
 }
 
 

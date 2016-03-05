@@ -118,6 +118,7 @@ Controller.prototype.apply_filter_to_markers = function(){
 Controller.prototype.process_step_update = function() {
     this.hide_markers();
     this.map_handler.close_all_info_windows();
+    this.map_handler.remove_directions_display(); 
     if (this.gui_view.current_step() < 3) {
        
         for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {

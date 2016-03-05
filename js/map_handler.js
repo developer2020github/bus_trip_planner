@@ -55,6 +55,19 @@ MapHandler.prototype.stop_animation = function(marker) {
         marker.setAnimation(null);
     }, 3000);
 }
+MapHandler.prototype.set_map_to_null = function(items){
+     $.each(items, function(idx, i){
+        i.setMap(null);
+    })   
+}
+MapHandler.prototype.remove_directions_display = function(){
+    this.set_map_to_null(this.direction_displays);
+    this.direction_displays =[];
+
+    this.set_map_to_null(this.map_active_lines);
+    this.map_active_lines=[];
+    
+}
 
 MapHandler.prototype.draw_walking_path = function(coordinates) {
 

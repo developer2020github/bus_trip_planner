@@ -62,7 +62,17 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
 }
 Controller.prototype.process_marker_click = function(data_model_array_name, idx_into_data_model_array) {
     var obj = this.data_model.get_data_object(data_model_array_name, idx_into_data_model_array);
-    if (this.gui_view.current_step() < 3) {
+    //in step 2, clicking on alreasy selected source should not reset the list - 
+    //trip source is not selectable from the list and is always displayed on the map.
+
+    var update_current_filter_list = true;
+    if (this.gui_view.current_step() ==2){
+        if (this.data_model.map_objects_are_equal(obj, this.gui_view.selected_source())){
+            update_current_filter_list = false;
+        }
+    }
+
+    if ((this.gui_view.current_step() < 3)&&update_current_filter_list) {
         this.gui_view.update_current_filter_list(this.get_filtered_list_for_current_step(this.gui_view.current_step()));
         
         var idx = this.gui_view.get_idx_of_item_by_field_value(this.gui_view.current_filter_list, obj.name, "name");

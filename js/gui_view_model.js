@@ -309,7 +309,6 @@ GUIViewModel.prototype.plan_new_trip = function() {
     this.selected_source({});
     this.selected_destination({});
     this.selected_bus_route({});
-   
     this.controller.process_step_update();
 }
 
@@ -365,12 +364,14 @@ GUIViewModel.prototype.previous_step = function() {
         this.init_filtered_location_name();
         this.selected_destination({});
         this.selected_source({});
+        this.filtered_location = {};
         this.step_msg(this.messages.STEP1_AWAITING_INPUT);
         this.controller.process_step_update();
         this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
     } else if (this.current_step() === 3) {
         this.current_step(2);
         this.init_filtered_location_name();
+        this.filtered_location = {};
         this.selected_destination({});
         //this.selected_source({});
         this.step_msg(this.messages.STEP2_AWAITING_INPUT);

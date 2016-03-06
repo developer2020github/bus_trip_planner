@@ -1,5 +1,11 @@
 //this module will display objects on the map.
 //computational part of teh job should be done by controller
+var latlngToPoint = function(map, latlng, z){
+    var normalizedPoint = map.getProjection().fromLatLngToPoint(latlng); // returns x,y normalized to 0~255
+    var scale = Math.pow(2, z);
+    var pixelCoordinate = new google.maps.Point(normalizedPoint.x * scale, normalizedPoint.y * scale);
+    return pixelCoordinate; 
+};
 
 var MapHandler = function(initial_pos) {
     this.controller = {};
@@ -15,6 +21,12 @@ var MapHandler = function(initial_pos) {
             position: google.maps.ControlPosition.LEFT_BOTTOM
         }
     });
+    ////http://qfox.nl/notes/116
+   
+//var point = latlngToPoint(this.map, initial_pos, 12);
+//console.log('point');
+//console.log(point);
+///////////////////////////////////////////////////////////
 
     this.map_active_windows_markers = Array();
     this.map_active_lines = Array(); 

@@ -21,7 +21,6 @@
             <div id="filters">
                 <div class="zero-padding">
                     <div id="application_title" data-bind="text: planner_title" class="header-item"></div>
-                    <div id="map_status" data-bind="text: map_status_text" class="map-status header-item"></div>
                     <button type="button" data-bind="click: show_hide" class="btn btn-default btn-rev">
                         <span class="glyphicon glyphicon-menu-hamburger btn-rev" aria-hidden="true"></span>
                     </button>
@@ -31,7 +30,7 @@
                         <span data-bind="html: step_and_status"></span>
                     </div>
                     <div id="current_route" class="grid-item">
-                        <span data-bind="text: selected_source_destination_display"></span>
+                        <span data-bind="html: selected_source_destination_display"></span>
                     </div>
                     <div class="group_map_gui" data-bind="visible: current_step()<4">
                         <button type="button" data-bind="click: previous_step, enable: current_step()>1" class="btn btn-default btn-rev" id="previousStepButton">Previous step</button>

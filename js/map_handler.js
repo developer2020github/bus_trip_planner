@@ -1,17 +1,10 @@
 //this module will display objects on the map.
-//computational part of teh job should be done by controller
-var latlngToPoint = function(map, latlng, z){
-    var normalizedPoint = map.getProjection().fromLatLngToPoint(latlng); // returns x,y normalized to 0~255
-    var scale = Math.pow(2, z);
-    var pixelCoordinate = new google.maps.Point(normalizedPoint.x * scale, normalizedPoint.y * scale);
-    return pixelCoordinate; 
-};
 
-var MapHandler = function(initial_pos) {
+var MapHandler = function(initial_pos, center_shift) {
     this.controller = {};
     this.mapDiv = document.getElementById('map');
- 
-    
+
+    console.log(initial_pos);
 
     this.map = new google.maps.Map(this.mapDiv, {
         center: initial_pos,
@@ -21,20 +14,22 @@ var MapHandler = function(initial_pos) {
             position: google.maps.ControlPosition.LEFT_BOTTOM
         }
     });
-    ////http://qfox.nl/notes/116
-   
-//var point = latlngToPoint(this.map, initial_pos, 12);
-//console.log('point');
-//console.log(point);
-///////////////////////////////////////////////////////////
+    var self = this;
+    google.maps.event.addListenerOnce(this.map, "projection_changed", function() {
+        //re-center map to ensure GUI does not cover markers
+        var p = latLng2Point(self.map.getCenter(), self.map);
+        p.x = p.x - center_shift;
+        var newLatLng = point2LatLng(p, self.map);
+        self.map.setCenter(newLatLng);
+    });
 
     this.map_active_windows_markers = Array();
-    this.map_active_lines = Array(); 
+    this.map_active_lines = Array();
 
     this.list_of_locations = Array();
     this.list_of_bus_routes = Array();
     this.direction_displays = Array();
-   
+
 
     this.info_windows_enabled = true;
     this.debug_options = {};
@@ -67,30 +62,30 @@ MapHandler.prototype.stop_animation = function(marker) {
         marker.setAnimation(null);
     }, 3000);
 }
-MapHandler.prototype.set_map_to_null = function(items){
-     $.each(items, function(idx, i){
+MapHandler.prototype.set_map_to_null = function(items) {
+    $.each(items, function(idx, i) {
         i.setMap(null);
-    })   
+    })
 }
-MapHandler.prototype.remove_directions_display = function(){
+MapHandler.prototype.remove_directions_display = function() {
     this.set_map_to_null(this.direction_displays);
-    this.direction_displays =[];
+    this.direction_displays = [];
 
     this.set_map_to_null(this.map_active_lines);
-    this.map_active_lines=[];
-    
+    this.map_active_lines = [];
+
 }
 
 MapHandler.prototype.draw_walking_path = function(coordinates) {
 
-        var directions_service = new google.maps.DirectionsService();
+    var directions_service = new google.maps.DirectionsService();
 
-        var directions_display = new google.maps.DirectionsRenderer({
-            map: this.map,
-            preserveViewport: true,
-            suppressMarkers: true,
-            polylineOptions: { strokeColor: '#5cb85c' }
-        });
+    var directions_display = new google.maps.DirectionsRenderer({
+        map: this.map,
+        preserveViewport: true,
+        suppressMarkers: true,
+        polylineOptions: { strokeColor: '#5cb85c' }
+    });
 
 
     var request = {
@@ -110,68 +105,65 @@ MapHandler.prototype.draw_walking_path = function(coordinates) {
             self.draw_source_destination_bus_line(coordinates);
         }
     });
-
-    
 }
-
 
 MapHandler.prototype.animate_marker = function(marker) {
     marker.setAnimation(google.maps.Animation.BOUNCE);
     this.stop_animation(marker);
 }
 
-MapHandler.prototype.draw_source_destination_bus_line = function (coordinates){
-//this is a ssimplified version - used for first release 
-//(or may keep it if like it - this program is about walking directions, 
-//does not matter much how exactly bus gets from a to b)
- var line_symbol = {
-    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
-  };
+MapHandler.prototype.draw_source_destination_bus_line = function(coordinates) {
+    //this is a ssimplified version - used for first release 
+    //(or may keep it if like it - this program is about walking directions, 
+    //does not matter much how exactly bus gets from a to b)
+    var line_symbol = {
+        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
+    };
 
-  // Create the polyline and add the symbol via the 'icons' property.
-  var line = new google.maps.Polyline({
-    path: coordinates,
-    icons: [{
-      icon: line_symbol,
-      offset: '100%'
-    }],
+    // Create the polyline and add the symbol via the 'icons' property.
+    var line = new google.maps.Polyline({
+        path: coordinates,
+        icons: [{
+            icon: line_symbol,
+            offset: '100%'
+        }],
 
-    strokeColor: "#2525B2",
-    strokeOpacity: 1.0,
-    strokeWeight: 2
-  });
+        strokeColor: "#2525B2",
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+    });
 
-  line.setMap(this.map);
-  this.map_active_lines.push(line);
+    line.setMap(this.map);
+    this.map_active_lines.push(line);
 }
 
-MapHandler.prototype.draw_line = function(coordinates){
- //this is tested but not used in the first vesrion of the program - 
- //need to add more points or use google driving directions 
- //function to display routes properly. 
-  console.log("MapHandler.prototype.draw_line");
-  console.log(coordinates);
-  var line = new google.maps.Polyline({
-    path: coordinates,
-    strokeColor: "#2525B2",
-    strokeOpacity: 1.0,
-    strokeWeight: 2
-  });
+MapHandler.prototype.draw_line = function(coordinates) {
+    //this is tested but not used in the first vesrion of the program - 
+    //need to add more points or use google driving directions 
+    //function to display routes properly. 
+    console.log("MapHandler.prototype.draw_line");
+    console.log(coordinates);
+    var line = new google.maps.Polyline({
+        path: coordinates,
+        strokeColor: "#2525B2",
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+    });
 
-  line.setMap(this.map);
-  this.map_active_lines.push(line);
+    line.setMap(this.map);
+    this.map_active_lines.push(line);
 }
 
-MapHandler.prototype.remove_walking_directions = function(){
-    $.each(this.direction_displays, function(idx, d){
+MapHandler.prototype.remove_walking_directions = function() {
+    $.each(this.direction_displays, function(idx, d) {
         d.setMap(null);
     })
     this.direction_displays = [];
 }
 
-MapHandler.prototype.remove_lines = function(){
+MapHandler.prototype.remove_lines = function() {
 
-    $.each(this.map_active_lines, function(idx, line){
+    $.each(this.map_active_lines, function(idx, line) {
         line.setMap(null);
     })
     this.map_active_lines = [];
@@ -265,7 +257,6 @@ MapHandler.prototype.close_all_info_windows = function() {
     this.map_active_windows_markers = [];
 }
 
-
 MapHandler.prototype.init_locations = function(locations) {
     var markers = Array();
     //console.log(locations);
@@ -309,20 +300,3 @@ MapHandler.prototype.init_locations = function(locations) {
     return markers;
 }
 
-MapHandler.prototype.add_bus_route = function(list_of_stops) {
-    //each route should be stored as an array of stops from start to end. 
-    //each route should have its color (assigned by map)
-    //each route should have a function to display and hide itself
-    //Route should have two distinct icons for stops: source and destination. 
-    //source: place you can walk to 
-    //destination: place you can walk from 
-}
-
-MapHandler.prototype.show_locations = function(list_of_location_names) {
-    //should show locations on the map with standard icons 
-}
-
-
-MapHandler.prototype.select_location = function(list_of_location_names) {
-    //should bounce location icon
-}

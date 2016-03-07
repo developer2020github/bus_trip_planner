@@ -16,24 +16,30 @@
 //========================================================================================
 //Global variables (plan to  make them configurable too)
 
+
 var CITY_NAME = "ABU DHABI"
-var controller = {}; 
+var MAP_CENTER_SHIFT = 200; //tune map center position so that GUI does not cover markers
+var controller = {};
 //============================
 var Controller = function() {
     var self = this;
-    var map_hanler = {}; 
-    this.map_markers = {}; 
+    var map_hanler = {};
+    this.map_markers = {};
     this.data_model = new DataModel(bus_routes_data, bus_stops, map_objects, 2000);
     this.gui_view = new GUIViewModel(this, CITY_NAME);
-    
-    
+    this.map_loaded = false;
+
     //this.gui_view.update_current_filter_list(this.data_model.get_map_objects({class: "community"}));
     ko.applyBindings(this.gui_view);
+
 
     //document.getElementById("nextStepButton").addEventListener("click", this.next_step);
     //document.getElementById("previousStepButton").addEventListener("click", this.previous_step);
 }
 
+Controller.prototype.map_is_available = function() {
+    return this.map_loaded;
+}
 
 //console.log(local_distance_matrix);
 
@@ -45,15 +51,15 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
     }
     //for step 2, need to implement list of reacheable stops in data model 
 
-    if (step ===2 ){
+    if (step === 2) {
         return (this.data_model.get_reacheable_objects(this.gui_view.selected_source()));
     }
- 
-    if (step===3){
+
+    if (step === 3) {
         //for step 3, we just need a lits of bus routes to display
         var step_3_routes = Array();
-        $.each(this.gui_view.selected_destination().via_bus_routes, function( index, value ) {
-                step_3_routes.push({name: value});
+        $.each(this.gui_view.selected_destination().via_bus_routes, function(index, value) {
+            step_3_routes.push({ name: value });
         });
 
         return step_3_routes;
@@ -66,77 +72,91 @@ Controller.prototype.process_marker_click = function(data_model_array_name, idx_
     //trip source is not selectable from the list and is always displayed on the map.
 
     var update_current_filter_list = true;
-    if (this.gui_view.current_step() ==2){
-        if (this.data_model.map_objects_are_equal(obj, this.gui_view.selected_source())){
+    if (this.gui_view.current_step() == 2) {
+        if (this.data_model.map_objects_are_equal(obj, this.gui_view.selected_source())) {
             update_current_filter_list = false;
         }
     }
 
-    if ((this.gui_view.current_step() < 3)&&update_current_filter_list) {
+    if ((this.gui_view.current_step() < 3) && update_current_filter_list) {
         this.gui_view.update_current_filter_list(this.get_filtered_list_for_current_step(this.gui_view.current_step()));
-        
+
         var idx = this.gui_view.get_idx_of_item_by_field_value(this.gui_view.current_filter_list, obj.name, "name");
         if (idx > -1) {
             this.gui_view.set_selected_item(obj);
         }
-   }
-
-    this.map_handler.display_info_window(this.markers[idx_into_data_model_array], obj);
-    this.map_handler.animate_marker(this.markers[idx_into_data_model_array]);
+    }
+    if (this.map_is_available()) {
+        this.map_handler.display_info_window(this.markers[idx_into_data_model_array], obj);
+        this.map_handler.animate_marker(this.markers[idx_into_data_model_array]);
+    }
 }
 
 Controller.prototype.set_filtered_item = function(item) {
-  if (item.hasOwnProperty('idx_into_data_model_array')){
-    this.map_handler.close_all_info_windows(); 
-    this.map_handler.animate_marker(this.markers[item.idx_into_data_model_array]);
-    this.map_handler.display_info_window(this.markers[item.idx_into_data_model_array], item);
-}
+    if (!this.map_is_available()) {
+        return;
+    }
+    if (item.hasOwnProperty('idx_into_data_model_array')) {
+        this.map_handler.close_all_info_windows();
+        this.map_handler.animate_marker(this.markers[item.idx_into_data_model_array]);
+        this.map_handler.display_info_window(this.markers[item.idx_into_data_model_array], item);
+    }
 
 }
 Controller.prototype.set_filtered_source = function(source) {
 
 
 }
-Controller.prototype.hide_markers = function(){
-     $.each(this.markers, function(index, marker) {
-           marker.setVisible(false);
-        });
+Controller.prototype.hide_markers = function() {
+    if (!this.map_is_available()) {
+        return;
+    }
+    $.each(this.markers, function(index, marker) {
+        marker.setVisible(false);
+    });
 }
 
-Controller.prototype.apply_filter_to_markers = function(){
-  //ensure only markers that are in list are shown.
-  this.hide_markers();
-  for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
-            this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
-        }
- //always display seleted source in step 2 
-  if (this.gui_view.current_step() ===2) {
-         this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
-  }
+Controller.prototype.apply_filter_to_markers = function() {
+    //ensure only markers that are in list are shown.
+    if (!this.map_is_available()) {
+        return;
+    }
+    this.hide_markers();
+    for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
+        this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
+    }
+    //always display seleted source in step 2 
+    if (this.gui_view.current_step() === 2) {
+        this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
+    }
 }
+
 
 Controller.prototype.process_step_update = function() {
+    if (!this.map_is_available()) {
+        return;
+    }
     this.hide_markers();
     this.map_handler.close_all_info_windows();
-    this.map_handler.remove_directions_display(); 
+    this.map_handler.remove_directions_display();
     if (this.gui_view.current_step() < 3) {
-       
+
         for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
             this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
         }
-        if  (this.gui_view.current_step()==2){
+        if (this.gui_view.current_step() == 2) {
             this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
         }
 
-    }else if (this.gui_view.current_step()==3){
-       this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
-       this.markers[this.gui_view.selected_destination().idx_into_data_model_array].setVisible(true);
-    }else if (this.gui_view.current_step()==4){
+    } else if (this.gui_view.current_step() == 3) {
+        this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
+        this.markers[this.gui_view.selected_destination().idx_into_data_model_array].setVisible(true);
+    } else if (this.gui_view.current_step() == 4) {
         console.log("this.gui_view.current_step()==4");
         var stop1 = this.data_model.bus_routes.get_closest_stop(this.gui_view.selected_bus_route().name, this.gui_view.selected_source());
         var stop2 = this.data_model.bus_routes.get_closest_stop(this.gui_view.selected_bus_route().name, this.gui_view.selected_destination());
         //var route = this.data_model.bus_routes.get_route_between_stops(this.gui_view.selected_bus_route().name, stop1, stop2);
-     
+
         var conv = this.data_model.convert_to_array_of_coordinates;
         //this.map_handler.draw_line(route_coordinates);
         this.map_handler.draw_source_destination_bus_line(conv([stop1, stop2]));
@@ -148,19 +168,22 @@ Controller.prototype.process_step_update = function() {
     }
 }
 
-Controller.prototype.set_map_available = function(){
-   this.gui_view.map_loaded(true);
-   this.markers = this.map_handler.init_locations(this.data_model.map_objects);
-   this.process_step_update(); 
-} 
+Controller.prototype.set_map_available = function() {
+    this.gui_view.map_loaded(true);
+    this.markers = this.map_handler.init_locations(this.data_model.map_objects);
+    this.map_loaded = true;
+    this.process_step_update();
+
+}
 
 function initMap() {
-    
-    var map_handler = new MapHandler(controller.data_model.get_map_center_coordinates());
-    controller.map_handler = map_handler; 
+
+    var map_handler = new MapHandler(controller.data_model.get_map_center_coordinates(), MAP_CENTER_SHIFT);
+    controller.map_handler = map_handler;
     map_handler.controller = controller;
     controller.set_map_available();
     //controller.set_map_available();  
+
 
 }
 

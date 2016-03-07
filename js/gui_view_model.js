@@ -108,7 +108,12 @@ var GUIViewModel = function(controller, city_name) {
     this.selected_source_destination_display = ko.computed(function() {
 
         if ($.isEmptyObject(this.selected_source())) {
-            return ("No source selected");
+            var msg = ('<span>No source selected.</span>');
+
+            if (!this.map_loaded()){
+                msg = msg + '<br><span class = "msg_warning">Warning: map is not available. You may proceed with trip planning anyway.</span>';
+            }
+            return (msg);
         }
 
         if ($.isEmptyObject(this.selected_destination())) {

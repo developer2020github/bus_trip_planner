@@ -1,5 +1,5 @@
 1. In step 2 if source marker is clicked, filter list is reset. - fixed
 2. In step 4, , when new trip is selected, map is not reset without refresh. - fixed
-3. Map is not centered properly on initial load - should take menu into account. 
+3. Map is not centered properly on initial load - should take menu into account. - fixed
 4. it is possible to set a destination as a source by playing with previous step button.
  - in second step apply filter then do previous step then next step again - fixed

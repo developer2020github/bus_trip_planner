@@ -1,45 +1,12 @@
-//https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient
-var get_dice_coefficient = function(string1, string2) {
-    var intersection = 0;
-    var length1 = string1.length - 1;
-    var length2 = string2.length - 1;
-    if (length1 < 1 || length2 < 1) return 0;
-    var bigrams2 = [];
-    for (var i = 0; i < length2; i++) {
-        bigrams2.push(string2.substr(i, 2));
-    }
-    for (var i = 0; i < length1; i++) {
-        var bigram1 = string1.substr(i, 2);
-        for (var j = 0; j < length2; j++) {
-            if (bigram1 == bigrams2[j]) {
-                intersection++;
-                bigrams2[j] = null;
-                break;
-            }
-        }
-    }
-    return (2.0 * intersection) / (length1 + length2);
-}
+//========================================================================================
+//Library  - functions and classes that do not belong to any 
+//particular class/object and can be re-used in a generic way.
+//========================================================================================
 
 
-var values_within_tolerance = function(v1, v2, tolerance_percent) {
-    var absolute_tolerance = Math.max(v1, v2) * tolerance_percent / 100.0;
-    if (Math.abs(v1 - v2) < absolute_tolerance) {
-        return true;
-    }
-    return false;
-}
-
-
-var get_square_ratio = function(h, w) {
-        //the smaller the result  - the closer image is to square
-        var r = h / w;
-        if (r > 1) {
-            r = 1 / r;
-        }
-        return 1 - r;
-    }
-    //generic functions and classes 
+//========================================================================================
+//Generic classes
+//========================================================================================
 var FilteredArray = function(unfiltered_data, identifier) {
     //this class will memorize data items by filter on a first call and then return memorized
     //responses. The idea is to capitalize on the fact that once application is launched,. 
@@ -92,19 +59,66 @@ FilteredArray.prototype.get_filtered_objects = function(filter) {
     return (matching_array);
 }
 
-//======================================================
-//generic functions 
-//======================================================
+
+//========================================================================================
+//Generic functions
+//========================================================================================
+
+//https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient
+//dice coefficient shows simularity between two strings
+var get_dice_coefficient = function(string1, string2) {
+    var intersection = 0;
+    var length1 = string1.length - 1;
+    var length2 = string2.length - 1;
+    if (length1 < 1 || length2 < 1) return 0;
+    var bigrams2 = [];
+    for (var i = 0; i < length2; i++) {
+        bigrams2.push(string2.substr(i, 2));
+    }
+    for (var i = 0; i < length1; i++) {
+        var bigram1 = string1.substr(i, 2);
+        for (var j = 0; j < length2; j++) {
+            if (bigram1 == bigrams2[j]) {
+                intersection++;
+                bigrams2[j] = null;
+                break;
+            }
+        }
+    }
+    return (2.0 * intersection) / (length1 + length2);
+}
+
+//returns true if values are within % tolerance of each other, 
+//and false otherwise. % is taken of the higher value
+var values_within_tolerance = function(v1, v2, tolerance_percent) {
+    var absolute_tolerance = Math.max(v1, v2) * tolerance_percent / 100.0;
+    if (Math.abs(v1 - v2) < absolute_tolerance) {
+        return true;
+    }
+    return false;
+}
+
+//the smaller the result  - the closer image is to square
+var get_square_ratio = function(h, w) {
+      
+        var r = h / w;
+        if (r > 1) {
+            r = 1 / r;
+        }
+        return 1 - r;
+    }
+
+
 toRad = function(n) {
     return n * Math.PI / 180;
 }
 
 toDeg = function(n) {
-
     return ((180 * n) / Math.PI);
 }
 
-
+//does not include tag itself. Searches for the first 
+//instance of tag
 substring_after_tag = function(str, tag) {
     var idx = str.indexOf(tag);
 
@@ -115,6 +129,7 @@ substring_after_tag = function(str, tag) {
     return str;
 }
 
+//returns true if all characters of str are found in tag
 all_str_characters_found_in_tag = function(str, tag) {
 
     for (var i = 0, len = str.length; i < len; i++) {
@@ -126,9 +141,11 @@ all_str_characters_found_in_tag = function(str, tag) {
     return true;
 }
 
+//returns number of matching words between user input and tags_string.
+//user input does not need to be splittable, tags string should 
+//consist of space - separated tags.
+//(i.e., user input is searched for words from tags_string)
 get_number_of_matching_words = function(user_input, tags_string) {
-  //user input does not need to be splittable, tags string should 
-  //consist of space - separated tags
     var tokens_to_exclude = [',', ':'];
     var num_of_matching_words = 0;
     var tokens = tags_string.toLowerCase().split(' ');
@@ -144,6 +161,10 @@ get_number_of_matching_words = function(user_input, tags_string) {
     }
     return num_of_matching_words;
 }
+
+//this will count number of words in tag that
+//contain all characters of str.
+//tag has to be splittable on " "
 get_number_of_found_words = function(str, tag) {
     var num_of_matching_words = 0;
     var l_tag = tag.toLowerCase();
@@ -159,16 +180,17 @@ get_number_of_found_words = function(str, tag) {
     return num_of_matching_words;
 }
 
+//small helper function to wrap a string 
+//into span with css class
 apply_class_to_span = function(text, css_class) {
     return ('<span class="' + css_class + '">' + text + '</span>');
 }
 
 
-//-----------------------------------------
-//MAPs and coordinates 
-//-----------------------------------------
+//========================================================================================
+//map and coordinates-related functions 
+//========================================================================================
 function point2LatLng(point, map) {
-
     //http://stackoverflow.com/questions/25219346/how-to-convert-from-x-y-screen-coordinates-to-latlng-google-maps
   var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
   var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
@@ -176,6 +198,7 @@ function point2LatLng(point, map) {
   var worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
   return map.getProjection().fromPointToLatLng(worldPoint);
 }
+
 function latLng2Point(latLng, map) {
     //http://stackoverflow.com/questions/25219346/how-to-convert-from-x-y-screen-coordinates-to-latlng-google-maps
   var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
@@ -183,4 +206,54 @@ function latLng2Point(latLng, map) {
   var scale = Math.pow(2, map.getZoom());
   var worldPoint = map.getProjection().fromLatLngToPoint(latLng);
   return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
+}
+
+//get coordinates of a point located at a certain 
+//distance and bearing from lat1 lng1
+//ref http://www.movable-type.co.uk/scripts/latlong.html
+// @param   {number} distance - Distance travelled, in same units as earth radius (default: metres).
+ //* @param   {number} bearing - Initial bearing in degrees from north.
+get_destination_point = function(lat1, lng1, distance, bearing) {
+    //console.log("destination_point");
+    //radius = (radius === undefined) ? 6371e3 : Number(radius);
+     distance = (distance===undefined)? 1500 : Number(distance);
+     bearing = (bearing===undefined)? 45 : Number(bearing);
+    // φ2 = asin( sinφ1⋅cosδ + cosφ1⋅sinδ⋅cosθ )
+    // λ2 = λ1 + atan2( sinθ⋅sinδ⋅cosφ1, cosδ − sinφ1⋅sinφ2 )
+    // see http://williams.best.vwh.net/avform.htm#LL
+    var radius = 6371000; // meters
+    var delta = Number(distance) / radius; // angular distance in radians
+    var theta = toRad(Number(bearing));
+
+    var phi1 = toRad(lat1);
+    var lambda1 = toRad(lng1);
+
+    var phi2 = Math.asin(Math.sin(phi1)*Math.cos(delta) + Math.cos(phi1)*Math.sin(delta)*Math.cos(theta));
+    var x = Math.cos(delta) - Math.sin(phi1) * Math.sin(phi2);
+    var y = Math.sin(theta) * Math.sin(delta) * Math.cos(phi1);
+    var lambda2 = lambda1 + Math.atan2(y, x);
+
+    // normalise to −180..+180°
+    var dest_lat = toDeg(phi2);
+    var dest_lng = (toDeg(lambda2)+540)%360-180;
+
+    //return new LatLon(φ2.toDegrees(), (λ2.toDegrees()+540)%360-180); 
+    return {lat: dest_lat, lng: dest_lng}
+};
+
+//ref. http://www.movable-type.co.uk/scripts/latlong.html
+//this function is to estimate distances. Result is in meters.
+get_distance_between_two_locations = function(lat1, lon1, lat2, lon2) {
+
+    var R = 6371000; // meters
+    var x1 = lat2 - lat1;
+
+    var dLat = toRad(x1);
+    var x2 = lon2 - lon1;
+    var dLon = toRad(x2);
+
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c;
+    return d;
 }

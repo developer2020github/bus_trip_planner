@@ -1,7 +1,6 @@
+//============================================================================================
 //should handle all data - related computations and serve as interface between map and gui 
 //(need a data structure: reachable destinations with list of bus routes they can be reached by by source)
-
-
 
 /*on next step: 
   controller will provide source and destination selected by user. 
@@ -17,11 +16,6 @@
 between source and destination for now 
 now) and request map to draw bus route and path from source to source bus stop, 
 and path from destination to destination bus stop*/
-
-
-//============================================================================================
-
-
 
 //============================================================================================
 var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_distance_meters) {
@@ -40,8 +34,6 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     object_idx = this.decorate_objects(this.map_objects, object_idx, "map_objects");
     this.decorate_objects(this.bus_routes_data, object_idx, "bus_routes_data");
 
-    //this.list_of_bus_numbers = this.build_list_of_bus_routes(); 
-
     this.decorate_map_objects(this.bus_stops);
     this.decorate_map_objects(this.map_objects);
 
@@ -55,8 +47,12 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     this.build_local_distance_matrix();
     this.filtered_map_objects = new FilteredArray(this.all_map_objects, "all_map_objects");
 
-    //they are not arranged by source in any way (i.e. there is no sorted or
-    //any other order) There is one reacheable object for each  source. 
+    //There is one reacheable object for each  source. 
+    //it contains a list of objects that can be reached 
+    //by taking a bus and walking.
+    //i.e., destination object is reacheable form source 
+    //if there is a bus stop close enough to source, then 
+    //there is bus stop on the same route close enough to destination.
     this.reacheable_objects_by_source = Array();
 
     this.bus_routes = new BusRoutes(this.bus_routes_data, this.bus_stops, this);
@@ -72,7 +68,7 @@ DataModel.prototype.convert_to_array_of_coordinates = function(map_objects){
     return coordinates; 
 }
 
-DataModel.prototype.get_map_center_coordinates=function(){
+DataModel.prototype.get_map_center_coordinates = function(){
     var min_lat = 1000.0;
     var min_lng = 1000.0;
     var max_lat = -10.0;
@@ -106,6 +102,8 @@ DataModel.prototype.map_objects_are_equal=function(o1, o2){
 }
 
 DataModel.prototype.get_reacheable_objects = function(source) {
+    //see if list was already built for this source. If 
+    //yes - retunr it, if not - build it and memorize for future use. 
     var reacheable_map_objects = Array(); 
     for (var i = 0, len = this.reacheable_objects_by_source.length; i<len; i++){
          if (this.reacheable_objects_by_source[i].source === source){
@@ -149,18 +147,32 @@ DataModel.prototype.get_map_objects = function(filter) {
 
 
 DataModel.prototype.decorate_map_objects = function(objects) {
-    //add fields that are calculated by the application 
     for (var i = 0, len = objects.length; i < len; i++) {
         objects[i]["idx_into_distance_matrix"] = -1;
+
+        //in this verion only communities can be sources 
         if (objects[i].class==="community"){
             objects[i].map_icon = "image/source_marker.png"
         }
         else{
             objects[i].map_icon = "image/destination_marker.png"
         }
+        //need these for Panoramio API to search for photos in
+        //a box around the location point
+        objects[i]["search_window_upper_right_corner"] = get_destination_point(objects[i].lat, objects[i].lng, 1000,45);
+        objects[i]["search_window_lower_left_corner"] = get_destination_point(objects[i].lat, objects[i].lng, 1000,225);
 
-        objects[i]["search_window_upper_right_corner"] = this.destination_point(objects[i].lat, objects[i].lng, 1000,45);
-        objects[i]["search_window_lower_left_corner"] = this.destination_point(objects[i].lat, objects[i].lng, 1000,225);
+        //create names for GUI
+        //exclude "al" at the beggining 
+        var str = objects[i].name;
+        var tokens = str.toLowerCase().split(" ");
+        if (tokens[0] === "al") {
+
+            str = substring_after_tag(str.toLowerCase(), "al").trim();
+        }
+        objects[i]["searcheable_words"] = str;
+        objects[i]["formatted_displayed_name_for_filter"] =
+            ko.observable("<b>" + objects[i].name + "</b>");
     }
 
 }
@@ -180,56 +192,6 @@ DataModel.prototype.decorate_objects = function (objects, object_idx, data_model
 }
 
 
-//ref http://www.movable-type.co.uk/scripts/latlong.html
-// @param   {number} distance - Distance travelled, in same units as earth radius (default: metres).
- //* @param   {number} bearing - Initial bearing in degrees from north.
-DataModel.prototype.destination_point = function(lat1, lng1, distance, bearing) {
-    //console.log("destination_point");
-    //radius = (radius === undefined) ? 6371e3 : Number(radius);
-     distance = (distance===undefined)? 1500 : Number(distance);
-     bearing = (bearing===undefined)? 45 : Number(bearing);
-    // φ2 = asin( sinφ1⋅cosδ + cosφ1⋅sinδ⋅cosθ )
-    // λ2 = λ1 + atan2( sinθ⋅sinδ⋅cosφ1, cosδ − sinφ1⋅sinφ2 )
-    // see http://williams.best.vwh.net/avform.htm#LL
-    var radius = 6371000; // meters
-    var delta = Number(distance) / radius; // angular distance in radians
-    var theta = toRad(Number(bearing));
-
-    var phi1 = toRad(lat1);
-    var lambda1 = toRad(lng1);
-
-    var phi2 = Math.asin(Math.sin(phi1)*Math.cos(delta) + Math.cos(phi1)*Math.sin(delta)*Math.cos(theta));
-    var x = Math.cos(delta) - Math.sin(phi1) * Math.sin(phi2);
-    var y = Math.sin(theta) * Math.sin(delta) * Math.cos(phi1);
-    var lambda2 = lambda1 + Math.atan2(y, x);
-
-    // normalise to −180..+180°
-    var dest_lat = toDeg(phi2);
-    var dest_lng = (toDeg(lambda2)+540)%360-180;
-
-    //return new LatLon(φ2.toDegrees(), (λ2.toDegrees()+540)%360-180); 
-    return {lat: dest_lat, lng: dest_lng}
-};
-
-DataModel.prototype.get_distance_between_two_locations = function(lat1, lon1, lat2, lon2) {
-    //ref. http://www.movable-type.co.uk/scripts/latlong.html
-    //this function is to estimate distances and exclude too long ones 
-    //from request to google maps API. 
-    //console.log("get_distance_between_two_locations");
-
-    var R = 6371000; // meters
-    var x1 = lat2 - lat1;
-
-    var dLat = toRad(x1);
-    var x2 = lon2 - lon1;
-    var dLon = toRad(x2);
-
-    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c;
-    return d;
-}
-
 DataModel.prototype.objects_within_walking_distance = function(o1, o2) {
     if (this.estimate_distance_between_two_map_objects(o1, o2) < this.max_walking_distance_meters) {
         return true;
@@ -243,7 +205,7 @@ DataModel.prototype.estimate_distance_between_two_map_objects = function(o1, o2)
         return 0;
     }
 
-    var d = this.get_distance_between_two_locations(o1.lat, o1.lng, o2.lat, o2.lng);
+    var d = get_distance_between_two_locations(o1.lat, o1.lng, o2.lat, o2.lng);
     return d;
 }
 
@@ -253,7 +215,6 @@ DataModel.prototype.map_objects_at_same_location = function(o1, o2) {
         return true;
     }
     return false;
-
 }
 
 DataModel.prototype.map_object_location_is_in_array = function(o, map_objects) {
@@ -323,7 +284,6 @@ DataModel.prototype.prepare_locations_for_distance_matrix = function() {
     add_map_objects(map_objects, this);
 
     this.matrix_items = locations;
-    //this.populate_local_distance_matrix(); 
 }
 
 DataModel.prototype.get_estimated_distance_in_meters_between_two_objects = function(o1, o2) {
@@ -339,11 +299,9 @@ DataModel.prototype.get_estimated_distance_in_meters_between_two_objects = funct
     }
 
     return (this.local_distance_matrix[row_idx][col_idx]);
-
 }
 
 DataModel.prototype.populate_local_distance_matrix = function() {
-    //console.log("populate_local_distance_matrix");
     for (var i = 0, len = this.matrix_items.length; i < len; i++) {
         this.matrix_items[i].idx_into_distance_matrix = i;
         var a = Array(len);
@@ -354,8 +312,6 @@ DataModel.prototype.populate_local_distance_matrix = function() {
 
         this.local_distance_matrix.push(a);
     }
-
-    //console.log(this.local_distance_matrix);
 }
 
 

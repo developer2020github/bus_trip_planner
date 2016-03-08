@@ -1,3 +1,4 @@
+//part of data model
 //class to present bus routes data in a way reauired by other portions of the application 
 var BusRoutes = function(bus_routes_data, bus_stops, data_model) {
     //interface 

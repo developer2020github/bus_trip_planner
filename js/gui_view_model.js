@@ -63,12 +63,11 @@ var GUIViewModel = function(controller, city_name) {
 
         var max_number_of_matched_words = 0;
         var current_number_of_matched_words = 0;
-        //this.current_filter_list()[0].formatted_displayed_name_for_filter(str + 
-        //    substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]));
-        for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
-            var cur_str = this.current_filter_list()[i].displayed_name_for_filter;
-            var searchable_words = this.current_filter_list()[i].meaningful_words;
+        
 
+        for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
+            var cur_str = this.current_filter_list()[i].name;
+            var searchable_words = this.current_filter_list()[i].searcheable_words;
 
             var formatted_str = this.format_string_by_tag_matches(cur_str, current_user_input);
             this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
@@ -168,7 +167,7 @@ this.current_filter_list.remove(function(item) {
 }
 
 GUIViewModel.prototype.format_string_by_tag_matches = function(input_str, input_tag) {
-    //apply highlighted style to matching chnaractes and normal to the rest of them 
+    //apply highlighted style to matching charactes and normal to the rest of them 
     var str = input_str.toLowerCase();
     var tag = input_tag.toLowerCase();
 
@@ -214,55 +213,10 @@ GUIViewModel.prototype.format_string_by_tag_matches = function(input_str, input_
     return result_str;
 }
 
-GUIViewModel.prototype.get_displayed_name_for_filter = function(o) {
-    var displayed_name_for_filter = o.name;
-    /*console.log("get_displayed_name_for_filter");
-    console.log(this.current_step());
-    console.log(o);*/
-
-    if (this.current_step() == 1) {
-        displayed_name_for_filter = displayed_name_for_filter + " (" + o.class + ")";
-    }
-
-    if (this.current_step() == 2) {
-        var via = "";
-        /*console.log("o.via_bus_routes:");
-        console.log(o.via_bus_routes);*/
-        for (var i = 0, len = o.via_bus_routes.length; i < len; i++) {
-            via = via + o.via_bus_routes[i];
-            if (i < (len - 1)) {
-                via = via + ","
-            }
-        }
-
-        displayed_name_for_filter = displayed_name_for_filter + " ,bus : " + via;
-    }
-    /*console.log(displayed_name_for_filter);
-    console.log("=================================");*/
-    return displayed_name_for_filter;
-}
 
 GUIViewModel.prototype.update_current_filter_list = function(new_list) {
     this.current_filter_list.removeAll();
-    //this.step_list = new_list;
-
     for (var i = 0; i < new_list.length; i++) {
-        //exclude "al" at the beggining 
-        var str = this.get_displayed_name_for_filter(new_list[i]);
-        var tokens = str.toLowerCase().split(" ");
-        //console.log("before:");
-        //   console.log(str);
-        if (tokens[0] === "al") {
-
-            str = substring_after_tag(str.toLowerCase(), "al").trim();
-
-        }
-        //  console.log("after");
-        //    console.log(str);
-        new_list[i]["meaningful_words"] = str;
-        new_list[i]["displayed_name_for_filter"] = this.get_displayed_name_for_filter(new_list[i]);
-        new_list[i]["formatted_displayed_name_for_filter"] =
-            ko.observable("<b>" + this.get_displayed_name_for_filter(new_list[i]) + "</b>");
         this.current_filter_list.push(new_list[i]);
     }
 
@@ -273,7 +227,6 @@ GUIViewModel.prototype.update_current_filter_list = function(new_list) {
 GUIViewModel.prototype.init_filtered_location_name = function() {
 
     this.filtered_location_name(this.filtered_location_name_defaults[this.current_step() - 1])
-        //console.log(this.filtered_location_name_defaults[this.current_step() - 1])
 }
 
 
@@ -343,7 +296,6 @@ GUIViewModel.prototype.next_step = function() {
         }
     } else if (this.current_step() === 3) {
         if (!$.isEmptyObject(this.filtered_location)) {
-            //this.selected_bus_route({ name: this.filtered_location.via_bus_routes[0] });
             this.step_msg(this.messages.STEP3_ROUTE_SELECTED);
             this.selected_bus_route(this.filtered_location);
             this.transition_to_step_4();
@@ -371,7 +323,7 @@ GUIViewModel.prototype.previous_step = function() {
         this.selected_source({});
         this.filtered_location = {};
         this.step_msg(this.messages.STEP1_AWAITING_INPUT);
-        this.controller.process_step_update();
+        //this.controller.process_step_update();
         this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
     } else if (this.current_step() === 3) {
         this.current_step(2);
@@ -395,10 +347,6 @@ GUIViewModel.prototype.init_filtered_location_name = function() {
 GUIViewModel.prototype.get_idx_of_item_by_field_value = function(observable_array, field_value, field) {
 
     for (var i = 0, len = observable_array().length; i < len; i++) {
-        //console.log("get_idx_of_item_by_field");
-        //console.log(observable_array()[i]);
-        //console.log(observable_array()[i][field]);
-        //console.log(o[field]);
         if (observable_array()[i].hasOwnProperty(field)) {
             if (observable_array()[i][field] === field_value) {
                 return i;

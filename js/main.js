@@ -5,6 +5,8 @@
 //2. data_model - loads all the data on iniailization, 
 //calculates extra data (distrance matrix) and provides data-related services to other 
 //portions of the application. 
+//Data model has more than one module. 
+
 //3. map_handler - provides map-related services (show routes and points, etc.)
 //4. main - controller that connects everything together. 
 // Data model is accessable only by contoller. Data model has no access to contoller. 
@@ -19,8 +21,8 @@
 
 var CITY_NAME = "ABU DHABI"
 var MAP_CENTER_SHIFT = 200; //tune map center position so that GUI does not cover markers
+//======================================================================================
 var controller = {};
-//============================
 var Controller = function() {
     var self = this;
     var map_hanler = {};
@@ -31,35 +33,33 @@ var Controller = function() {
 
     //this.gui_view.update_current_filter_list(this.data_model.get_map_objects({class: "community"}));
     ko.applyBindings(this.gui_view);
-
-
-    //document.getElementById("nextStepButton").addEventListener("click", this.next_step);
-    //document.getElementById("previousStepButton").addEventListener("click", this.previous_step);
 }
 
 Controller.prototype.map_is_available = function() {
     return this.map_loaded;
 }
 
-//console.log(local_distance_matrix);
 
-//=============================
-//interface with gui view 
 Controller.prototype.get_filtered_list_for_current_step = function(step) {
     if (step === 1) {
         return (this.data_model.get_map_objects({ class: "community" }));
     }
-    //for step 2, need to implement list of reacheable stops in data model 
 
+    //for step 2, return list of reacheable stops 
     if (step === 2) {
         return (this.data_model.get_reacheable_objects(this.gui_view.selected_source()));
     }
 
     if (step === 3) {
-        //for step 3, we just need a lits of bus routes to display
+        //for step 3, we just need a list f bus routes to display
+
         var step_3_routes = Array();
         $.each(this.gui_view.selected_destination().via_bus_routes, function(index, value) {
-            step_3_routes.push({ name: value });
+            var route_to_display = {};
+            route_to_display["name"]=value;
+            route_to_display["searcheable_words"]=value;
+            route_to_display["formatted_displayed_name_for_filter"]=ko.observable("<b>" + value + "</b>");
+            step_3_routes.push(route_to_display);
         });
 
         return step_3_routes;
@@ -103,10 +103,7 @@ Controller.prototype.set_filtered_item = function(item) {
     }
 
 }
-Controller.prototype.set_filtered_source = function(source) {
 
-
-}
 Controller.prototype.hide_markers = function() {
     if (!this.map_is_available()) {
         return;
@@ -183,8 +180,6 @@ function initMap() {
     map_handler.controller = controller;
     controller.set_map_available();
     //controller.set_map_available();  
-
-
 }
 
 

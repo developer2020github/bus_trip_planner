@@ -29,7 +29,7 @@ var MapHandler = function(initial_pos, center_shift) {
     this.list_of_locations = Array();
     this.list_of_bus_routes = Array();
     this.direction_displays = Array();
-
+    this.markers = Array();
 
     this.info_windows_enabled = true;
     this.debug_options = {};
@@ -107,9 +107,23 @@ MapHandler.prototype.draw_walking_path = function(coordinates) {
     });
 }
 
-MapHandler.prototype.animate_marker = function(marker) {
-    marker.setAnimation(google.maps.Animation.BOUNCE);
-    this.stop_animation(marker);
+MapHandler.prototype.show_marker  = function(marker_idx){
+    this.markers[marker_idx].setVisible(true);
+}
+
+MapHandler.prototype.hide_all_markers = function(){
+ $.each(this.markers, function(idx, m){
+    m.setVisible(false); 
+ })
+}
+
+MapHandler.prototype.hide_marker  = function(marker_idx){
+    this.markers[marker_idx].setVisible(false);
+}
+
+MapHandler.prototype.animate_marker = function(marker_idx) {
+    this.markers[marker_idx].setAnimation(google.maps.Animation.BOUNCE);
+    this.stop_animation(this.markers[marker_idx]);
 }
 
 MapHandler.prototype.draw_source_destination_bus_line = function(coordinates) {
@@ -210,12 +224,13 @@ MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_p
 }
 
 
-MapHandler.prototype.display_info_window = function(marker, o) {
+MapHandler.prototype.display_info_window = function(o) {
     if (!this.info_windows_enabled) {
         return;
     }
 
     var self = this;
+    var marker = this.markers[o.marker_idx];
 
     var open_window = function(self, include_image, image_url) {
         var content_string = '<div id="content">' +
@@ -258,8 +273,8 @@ MapHandler.prototype.close_all_info_windows = function() {
 }
 
 MapHandler.prototype.init_locations = function(locations) {
-    var markers = Array();
-    //console.log(locations);
+    
+    var markers_idxs = Array(); 
     for (var i = 0, len = locations.length; i < len; i++) {
         var psn = {};
         psn['lat'] = locations[i].lat;
@@ -279,8 +294,8 @@ MapHandler.prototype.init_locations = function(locations) {
         })
         marker.addListener('click', marker_click_call_back)
         marker.setVisible(false);
-        markers.push(marker);
-
+        this.markers.push(marker);
+        markers_idxs.push(i);
         if (this.debug_options.show_corner_markers) {
             var right_corner_marker = new google.maps.Marker({
                 position: locations[i].search_window_upper_right_corner,
@@ -297,6 +312,6 @@ MapHandler.prototype.init_locations = function(locations) {
 
     }
 
-    return markers;
+    return markers_idxs;
 }
 

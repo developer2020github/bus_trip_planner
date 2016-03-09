@@ -142,6 +142,13 @@ DataModel.prototype.get_map_objects = function(filter) {
     return this.filtered_map_objects.get_filtered_objects(filter);
 }
 
+DataModel.prototype.assign_marker_idxs = function (objects, idxs){
+    //indexes into markers array 
+    for (var i = 0, len = objects.length; i<len; i++){
+        objects[i]['marker_idx'] = idxs[i];
+    }
+}
+
 
 DataModel.prototype.decorate_map_objects = function(objects) {
     for (var i = 0, len = objects.length; i < len; i++) {

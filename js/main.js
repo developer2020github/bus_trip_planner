@@ -26,7 +26,6 @@ var controller = {};
 var Controller = function() {
     var self = this;
     var map_hanler = {};
-    this.map_markers = {};
     this.data_model = new DataModel(bus_routes_data, bus_stops, map_objects, 2000);
     this.gui_view = new GUIViewModel(this, CITY_NAME);
     this.map_loaded = false;
@@ -87,8 +86,8 @@ Controller.prototype.process_marker_click = function(data_model_array_name, idx_
         }
     }
     if (this.map_is_available()) {
-        this.map_handler.display_info_window(this.markers[idx_into_data_model_array], obj);
-        this.map_handler.animate_marker(this.markers[idx_into_data_model_array]);
+        this.map_handler.display_info_window(obj);
+        this.map_handler.animate_marker(obj.marker_idx);
     }
 }
 
@@ -96,21 +95,13 @@ Controller.prototype.set_filtered_item = function(item) {
     if (!this.map_is_available()) {
         return;
     }
-    if (item.hasOwnProperty('idx_into_data_model_array')) {
+
+    if (item.hasOwnProperty('marker_idx')) {
         this.map_handler.close_all_info_windows();
-        this.map_handler.animate_marker(this.markers[item.idx_into_data_model_array]);
-        this.map_handler.display_info_window(this.markers[item.idx_into_data_model_array], item);
+        this.map_handler.animate_marker(item.marker_idx);
+        this.map_handler.display_info_window(item);
     }
 
-}
-
-Controller.prototype.hide_markers = function() {
-    if (!this.map_is_available()) {
-        return;
-    }
-    $.each(this.markers, function(index, marker) {
-        marker.setVisible(false);
-    });
 }
 
 Controller.prototype.apply_filter_to_markers = function() {
@@ -118,13 +109,14 @@ Controller.prototype.apply_filter_to_markers = function() {
     if (!this.map_is_available()) {
         return;
     }
-    this.hide_markers();
+    this.map_handler.hide_all_markers();
+
     for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
-        this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
+        this.map_handler.show_marker(this.gui_view.current_filter_list()[i].marker_idx);
     }
     //always display seleted source in step 2 
     if (this.gui_view.current_step() === 2) {
-        this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
+        this.map_handler.show_marker(this.gui_view.selected_source().marker_idx);
     }
 }
 
@@ -133,26 +125,25 @@ Controller.prototype.process_step_update = function() {
     if (!this.map_is_available()) {
         return;
     }
-    this.hide_markers();
+    this.map_handler.hide_all_markers();
     this.map_handler.close_all_info_windows();
     this.map_handler.remove_directions_display();
     if (this.gui_view.current_step() < 3) {
 
         for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
-            this.markers[this.gui_view.current_filter_list()[i].idx_into_data_model_array].setVisible(true);
+            this.map_handler.show_marker(this.gui_view.current_filter_list()[i].marker_idx);
         }
         if (this.gui_view.current_step() == 2) {
-            this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
+            this.map_handler.show_marker(this.gui_view.selected_source().marker_idx)
         }
 
     } else if (this.gui_view.current_step() == 3) {
-        this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
-        this.markers[this.gui_view.selected_destination().idx_into_data_model_array].setVisible(true);
+        this.map_handler.show_marker(this.gui_view.selected_source().marker_idx);
+        this.map_handler.show_marker(this.gui_view.selected_destination().marker_idx);
+
     } else if (this.gui_view.current_step() == 4) {
-        console.log("this.gui_view.current_step()==4");
         var stop1 = this.data_model.bus_routes.get_closest_stop(this.gui_view.selected_bus_route().name, this.gui_view.selected_source());
         var stop2 = this.data_model.bus_routes.get_closest_stop(this.gui_view.selected_bus_route().name, this.gui_view.selected_destination());
-        //var route = this.data_model.bus_routes.get_route_between_stops(this.gui_view.selected_bus_route().name, stop1, stop2);
 
         var conv = this.data_model.convert_to_array_of_coordinates;
         //this.map_handler.draw_line(route_coordinates);
@@ -160,14 +151,16 @@ Controller.prototype.process_step_update = function() {
 
         this.map_handler.draw_walking_path(conv([this.gui_view.selected_source(), stop1]));
         this.map_handler.draw_walking_path(conv([stop2, this.gui_view.selected_destination()]));
-        this.markers[this.gui_view.selected_source().idx_into_data_model_array].setVisible(true);
-        this.markers[this.gui_view.selected_destination().idx_into_data_model_array].setVisible(true);
+        this.map_handler.show_marker(this.gui_view.selected_source().marker_idx);
+        this.map_handler.show_marker(this.gui_view.selected_destination().marker_idx);
     }
 }
 
 Controller.prototype.set_map_available = function() {
     this.gui_view.map_loaded(true);
-    this.markers = this.map_handler.init_locations(this.data_model.map_objects);
+
+    var marker_idxs = this.map_handler.init_locations(this.data_model.map_objects);
+    this.data_model.assign_marker_idxs(this.data_model.map_objects, marker_idxs);
     this.map_loaded = true;
     this.process_step_update();
 

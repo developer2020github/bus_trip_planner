@@ -10,25 +10,20 @@
 - gui view at step 2 requests items to display and provides finally selcted location (process_step_update)
  On this request controller also updates map*/
 var GUIViewModel = function(controller, city_name) {
-    //var self = this;
 
     this.controller = controller;
-
     this.current_filter_list = ko.observableArray();
     this.current_step = ko.observable(1);
     this.map_loaded = ko.observable(false);
-    //
     this.filtered_location_name = ko.observable("");
     this.gui_shown = ko.observable(true);
     this.filtered_location = {};
     this.selected_source = ko.observable({});
     this.selected_destination = ko.observable({});
     this.selected_bus_route = ko.observable({});
-    this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
-
+    this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()))
     this.cityName = ko.observable(city_name)
 
-    //this.step_list = Array()
     this.messages = {
         STEP1_AWAITING_INPUT: '<span class ="msg_normal">: Please select starting point and apply filter to confirm. You can use filter to narrow the list</span>',
         STEP1_NO_SOURCE_SELECTED: '<span class ="msg_warning">: no starting point selected</span>',
@@ -46,10 +41,12 @@ var GUIViewModel = function(controller, city_name) {
     this.step_msg = ko.observable(this.messages.STEP1_AWAITING_INPUT);
     this.init_filtered_location_name();
     this.length_of_list = 0;
+
     var self = this;
 
     this.filtered_location_name.subscribe(function(new_input) {
-        //USE FOR UPDATE OF OBSERVABLE ARRAY TO HIGHLIGHT ITEMS
+    //this function  highlights matching characters in list view as user types
+    //and filters in the ones with max number of matching words in real time
         if (this.disable_auto_filter === true){
             this.disable_auto_filter = false; 
             return;
@@ -72,9 +69,7 @@ var GUIViewModel = function(controller, city_name) {
             var formatted_str = this.format_string_by_tag_matches(cur_str, current_user_input);
             this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
 
-
             current_number_of_matched_words = get_number_of_matching_words(current_user_input, searchable_words);
-
 
             if (current_number_of_matched_words > max_number_of_matched_words) {
                 max_number_of_matched_words = current_number_of_matched_words;
@@ -83,11 +78,9 @@ var GUIViewModel = function(controller, city_name) {
             this.current_filter_list()[i]['number_of_matching_words'] = current_number_of_matched_words;
         }
 
-
         //see if there are entire words matched and keep only items with highest number of words matched
         //i.e., if one word is matched - remove all with no words matched, if two is matched - remove 
         //ones with one and zero, etc. Numbers of matches is already computed in the loop above
-
         if (max_number_of_matched_words > 0) {
             this.current_filter_list.remove(function(item) {
                 return (item.number_of_matching_words < max_number_of_matched_words);
@@ -158,6 +151,7 @@ var GUIViewModel = function(controller, city_name) {
     }
 }
 
+
 GUIViewModel.prototype.set_selected_item = function(obj){
 this.disable_auto_filter = true; 
 this.filtered_location_name(obj.name);
@@ -219,7 +213,6 @@ GUIViewModel.prototype.update_current_filter_list = function(new_list) {
     for (var i = 0; i < new_list.length; i++) {
         this.current_filter_list.push(new_list[i]);
     }
-
     this.length_of_list = this.current_filter_list().length;
 }
 
@@ -230,29 +223,19 @@ GUIViewModel.prototype.init_filtered_location_name = function() {
 }
 
 
-GUIViewModel.prototype.transition_to_step_2 = function() {
-    this.current_step(2);
-
+GUIViewModel.prototype.transition_to_step = function(step, message){
+//a common transition function for standard transitions - i.e. 
+//steps that are not final (in our case works for steps 2 and 3)
+    this.current_step(step);
     this.init_filtered_location_name();
-    this.selected_source(this.filtered_location);
-    this.step_msg(this.messages.STEP2_AWAITING_INPUT);
+    this.step_msg(message);
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()))
     this.filtered_location = {};
     this.controller.process_step_update();
 }
-
-
-GUIViewModel.prototype.transition_to_step_3 = function() {
-    this.current_step(3);
-    this.init_filtered_location_name();
-    this.step_msg(this.messages.STEP3_SELECT_BUS_ROUTE_MESSAGE);
-    this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()))
-    this.filtered_location = {};
-    this.controller.process_step_update();
-}
-
 
 GUIViewModel.prototype.transition_to_step_4 = function() {
+    //make it a function in case more functionality will need to be added
     this.current_step(4);
     this.controller.process_step_update();
 }
@@ -272,11 +255,12 @@ GUIViewModel.prototype.plan_new_trip = function() {
 
 
 GUIViewModel.prototype.next_step = function() {
-    //console.log("this.filtered_location");
-    //console.log(this.filtered_location);
+  
     if (this.current_step() === 1) {
         if (!$.isEmptyObject(this.filtered_location)) {
-            this.transition_to_step_2();
+            this.selected_source(this.filtered_location);
+            this.transition_to_step(2, this.messages.STEP2_AWAITING_INPUT);
+
         } else {
             this.step_msg(this.messages.STEP1_NO_SOURCE_SELECTED);
         }
@@ -284,12 +268,11 @@ GUIViewModel.prototype.next_step = function() {
         if (!$.isEmptyObject(this.filtered_location)) {
             this.selected_destination(this.filtered_location);
             if (this.filtered_location.via_bus_routes.length === 1) {
-                //if there is only one bus route - no point to display bus route menu
-
+                //if there is only one bus route - no point to display bus route selection list
                 this.selected_bus_route({ name: this.filtered_location.via_bus_routes[0] });
                 this.transition_to_step_4();
             } else {
-                this.transition_to_step_3();
+                this.transition_to_step(3, this.messages.STEP3_SELECT_BUS_ROUTE_MESSAGE);
             }
         } else {
             this.step_msg(this.messages.STEP2_NO_DESTINATION_SELECTED);
@@ -315,27 +298,25 @@ GUIViewModel.prototype.show_hide = function() {
 }
 
 
+GUIViewModel.prototype.transition_to_previous_step = function(step, message) {
+    this.current_step(step);
+    this.init_filtered_location_name();
+    this.selected_destination({});
+
+    this.filtered_location = {};
+    this.step_msg(message);
+    this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
+    this.controller.process_step_update();
+}
+
+
 GUIViewModel.prototype.previous_step = function() {
     if (this.current_step() === 2) {
-        this.current_step(1);
-        this.init_filtered_location_name();
-        this.selected_destination({});
         this.selected_source({});
-        this.filtered_location = {};
-        this.step_msg(this.messages.STEP1_AWAITING_INPUT);
-        //this.controller.process_step_update();
-        this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
+        this.transition_to_previous_step(1, this.messages.STEP1_AWAITING_INPUT);
     } else if (this.current_step() === 3) {
-        this.current_step(2);
-        this.init_filtered_location_name();
-        this.filtered_location = {};
-        this.selected_destination({});
-        //this.selected_source({});
-        this.step_msg(this.messages.STEP2_AWAITING_INPUT);
-        this.controller.process_step_update();
-        this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
-    }
-    this.controller.process_step_update();
+        this.transition_to_previous_step(2, this.messages.STEP2_AWAITING_INPUT);
+    }  
 }
 
 

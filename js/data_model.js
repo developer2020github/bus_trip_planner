@@ -135,10 +135,7 @@ DataModel.prototype.get_reacheable_objects = function(source) {
     }
 
     this.reacheable_objects_by_source.push(stored_object);
-    //console.log('after');
-    //console.log(this.reacheable_objects_by_source);
     return reacheable_map_objects; 
-
 }
 
 DataModel.prototype.get_map_objects = function(filter) {
@@ -309,7 +306,6 @@ DataModel.prototype.populate_local_distance_matrix = function() {
             var d = this.estimate_distance_between_two_map_objects(this.matrix_items[i], this.matrix_items[j]);
             a[j] = d;
         }
-
         this.local_distance_matrix.push(a);
     }
 }

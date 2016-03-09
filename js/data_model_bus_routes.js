@@ -17,13 +17,9 @@ var BusRoutes = function(bus_routes_data, bus_stops, data_model) {
         var stops = Array();
         var walkable_stops = Array();
 
-
-
         //loop through routes data. If route === list item, get stop id and find it in list of stops 
         //
         for (var k = 0; k < len; k++) {
-            //console.log(this.list[i]);
-            //console.log(bus_routes_data[k].route);
             if (this.list[i] === bus_routes_data[k].route) {
               
                 for (var j = 0, len2 = bus_stops.length; j < len2; j++) {
@@ -42,7 +38,6 @@ var BusRoutes = function(bus_routes_data, bus_stops, data_model) {
         this.by_number[this.list[i]] = {};
         this.by_number[this.list[i]]['stops'] = stops;
         this.by_number[this.list[i]]['walkable_stops'] = walkable_stops;
-        //console.log(this.by_number[this.list[i]])
     }
 
 }
@@ -59,11 +54,6 @@ BusRoutes.prototype.get_closest_stop = function(route, map_object){
             shortest_distance = distance; 
         }
     }); 
-
-    console.log('BusRoutes.prototype.get_closest_stop'); 
-    console.log(map_object);
-    console.log(route);
-    console.log(closest_stop);
 
     return closest_stop; 
 }

@@ -1,6 +1,7 @@
 //========================================================================================
 //Abu Dhabi bus trip planner
 //2016
+//Main module (controller)
 //========================================================================================
 //This is the main module of bus trip planner. 
 //
@@ -37,23 +38,20 @@
 //========================================================================================
 
 
-
-//Global variables (plan to  make them configurable too)
-
-
+//========================================================================================
+//Constanst (can be made configurable too)
 var CITY_NAME = "ABU DHABI"
 var MAP_CENTER_SHIFT = 200; //tune map center position so that GUI does not cover markers
-var MAX_WALKING_DISATNCE_METERS = 2000;
+var MAX_WALKING_DISTANCE_METERS = 2000;
+
 //======================================================================================
 var controller = {};
 var Controller = function() {
     var self = this;
     var map_hanler = {};
-    this.data_model = new DataModel(bus_routes_data, bus_stops, map_objects, MAX_WALKING_DISATNCE_METERS);
+    this.data_model = new DataModel(bus_routes_data, bus_stops, map_objects, MAX_WALKING_DISTANCE_METERS);
     this.gui_view = new GUIViewModel(this, CITY_NAME);
     this.map_loaded = false;
-
-    //this.gui_view.update_current_filter_list(this.data_model.get_map_objects({class: "community"}));
     ko.applyBindings(this.gui_view);
 }
 
@@ -62,35 +60,44 @@ Controller.prototype.map_is_available = function() {
 }
 
 Controller.prototype.reset_formatted_displayed_names = function(objects) {
+    //used on re-initialization of the list to remove highlights 
     $.each(objects, function(idx, o) {
         o.formatted_displayed_name_for_filter(o.default_formatted_displayed_name_for_filter);
     });
     return objects;
 }
-Controller.prototype.get_filtered_list_for_current_step = function(step) {
 
+Controller.prototype.get_filtered_list_for_current_step = function(step) {
+    //returns list of items that should be displayed in current step
     var filtered_list = {};
 
+    //step  1 in this version of the program handles only communities
     if (step === 1) {
-
         filtered_list = this.data_model.get_map_objects({ class: "community" });
     }
 
     //for step 2, return list of reacheable stops 
+    //desitnation object is considered to be reachebale from a source 
+    //if
+    //1. there is a walkable bus stop closer to the source than max walking distance
+    //2. there is a bus route that leads to a stop that is located closer to destination
+    //than max walking distance 
     if (step === 2) {
         filtered_list = this.data_model.get_reacheable_objects(this.gui_view.selected_source());
     }
 
     if (step === 3) {
-        //for step 3, we just need a list f bus routes to display
-
+        //for step 3, we  need a list of bus routes to display
+        //need to build bus route objects with the same 
+        //interface as map objects so that GUI view could use 
+        //same code to display them
         var step_3_routes = Array();
         $.each(this.gui_view.selected_destination().via_bus_routes, function(index, value) {
             var route_to_display = {};
             route_to_display["name"] = value;
             route_to_display["searcheable_words"] = value;
             route_to_display["formatted_displayed_name_for_filter"] = ko.observable("<b>" + value + "</b>");
-            route_to_display["default_formatted_displayed_name_for_filter"] = ko.observable("<b>" + value + "</b>");
+            route_to_display["default_formatted_displayed_name_for_filter"] = "<b>" + value + "</b>";
             step_3_routes.push(route_to_display);
         });
 
@@ -100,10 +107,13 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
 
 }
 Controller.prototype.process_marker_click = function(data_model_array_name, idx_into_data_model_array) {
+    //is called by map handler when marker is clicked.
+    //map hanlder also passed data model array name and idx into it
+
     var obj = this.data_model.get_data_object(data_model_array_name, idx_into_data_model_array);
+
     //in step 2, clicking on alreasy selected source should not reset the list - 
     //trip source is not selectable from the list and is always displayed on the map.
-
     var update_current_filter_list = true;
     if (this.gui_view.current_step() == 2) {
         if (this.data_model.map_objects_are_equal(obj, this.gui_view.selected_source())) {
@@ -126,6 +136,7 @@ Controller.prototype.process_marker_click = function(data_model_array_name, idx_
 }
 
 Controller.prototype.set_filtered_item = function(item) {
+    //handles map effects of item selection from a gui view
     if (!this.map_is_available()) {
         return;
     }
@@ -139,7 +150,7 @@ Controller.prototype.set_filtered_item = function(item) {
 }
 
 Controller.prototype.apply_filter_to_markers = function() {
-    //ensure only markers that are in list are shown.
+    //ensure only markers that are in current list are shown.
     if (!this.map_is_available()) {
         return;
     }
@@ -156,6 +167,8 @@ Controller.prototype.apply_filter_to_markers = function() {
 
 
 Controller.prototype.process_step_update = function() {
+    //called by GUI view on step transitions and 
+    //handles map effects 
     if (!this.map_is_available()) {
         return;
     }
@@ -191,6 +204,8 @@ Controller.prototype.process_step_update = function() {
 }
 
 Controller.prototype.set_map_available = function() {
+    //called by map loading callback 
+    //and peforms relevant initializations
     this.gui_view.map_loaded(true);
 
     var marker_idxs = this.map_handler.init_locations(this.data_model.map_objects);
@@ -201,15 +216,15 @@ Controller.prototype.set_map_available = function() {
 }
 
 function initMap() {
-
+    //map load call back 
     var map_handler = new MapHandler(controller.data_model.get_map_center_coordinates(), MAP_CENTER_SHIFT);
     controller.map_handler = map_handler;
     map_handler.controller = controller;
     controller.set_map_available();
-    //controller.set_map_available();  
 }
 
 
 (function main() {
+    //main - gets executed first
     controller = new Controller();
 })();

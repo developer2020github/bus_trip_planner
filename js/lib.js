@@ -98,6 +98,56 @@ var values_within_tolerance = function(v1, v2, tolerance_percent) {
     return false;
 }
 
+//applies selected_char style to matching charactes and normal_char to the rest of them 
+//mmatches are determined as follows: if a character of input string is found  in input tag
+//- there is a match, and no match otherwise.
+format_string_by_tag_matches = function(input_str, input_tag, selected_char, normal_char) {
+    
+    var str = input_str.toLowerCase();
+    var tag = input_tag.toLowerCase();
+
+    var begin = 1;
+    var selected = 2;
+    var normal = 3
+
+    var state = begin;
+    var buf = "";
+    var result_str = "";
+    var idx = 0;
+    for (var i = 0, len = str.length; i < len; i++) {
+        idx = tag.indexOf(str[i]);
+
+        if (idx === -1) {
+            if (state === begin) {
+                state = normal;
+            } else if (state === selected) {
+                result_str = result_str + apply_class_to_span(buf, selected_char);
+                buf = ""
+                state = normal;
+            }
+
+            buf = buf + input_str[i];
+        } else {
+            if (state === begin) {
+                state = selected;
+            } else if (state === normal) {
+                result_str = result_str + apply_class_to_span(buf, normal_char);
+                buf = ""
+                state = selected;
+            }
+            buf = buf + input_str[i];
+        }
+    }
+
+    if (state === normal) {
+        result_str = result_str + apply_class_to_span(buf, normal_char);
+    } else if (state === selected) {
+        result_str = result_str + apply_class_to_span(buf, selected_char);
+    }
+
+    return result_str;
+}
+
 //the smaller the result  - the closer image is to square
 var get_square_ratio = function(h, w) {
       
@@ -244,7 +294,6 @@ get_destination_point = function(lat1, lng1, distance, bearing) {
 //ref. http://www.movable-type.co.uk/scripts/latlong.html
 //this function is to estimate distances. Result is in meters.
 get_distance_between_two_locations = function(lat1, lon1, lat2, lon2) {
-
     var R = 6371000; // meters
     var x1 = lat2 - lat1;
 

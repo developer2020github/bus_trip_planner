@@ -39,7 +39,7 @@ var MapHandler = function(initial_pos, center_shift) {
 
     //I feel info windows might be a bit annoying in a bus trip 
     //planning application, yet have to include them to meet requirements. As an option, 
-    //give control to user. 
+    //will give control to user in the subsequent versions of the program. 
 
     /*
     on load: 

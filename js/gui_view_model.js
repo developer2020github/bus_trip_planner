@@ -1,23 +1,30 @@
-/*gui view interface with controller: 
-- gui view provides currentl syelected item to controller to bounce it on the map 
-(contoller method set_filtered_item)
-- done for step 1, call to set_filtered_item
+//========================================================================================
+//Abu Dhabi bus trip planner
+//2016
+//gui view  - handles gui menu.
+//========================================================================================
+//Built on knockout framework. 
+//Any action related to map is passed to controller
+//========================================================================================
 
-- gui view provides final selection at beginning of each step
-(contrioller should update 
-
-- gui view at step 1 requests items to display . On this request controller also updates map
-- gui view at step 2 requests items to display and provides finally selcted location (process_step_update)
- On this request controller also updates map*/
 var GUIViewModel = function(controller, city_name) {
 
     this.controller = controller;
     this.current_filter_list = ko.observableArray();
     this.current_step = ko.observable(1);
-    this.map_loaded = ko.observable(false);
-    this.filtered_location_name = ko.observable("");
+    this.map_loaded = ko.observable(false); //this does not have to be observable in current version of 
+    //the program, but keep it like this - may decide to 
+    //add some kind of map status indication
+
     this.gui_shown = ko.observable(true);
+    //filtered location name is whatever is in the input text area (an observable)
+    //filtered location is an object selected on application 
+    //of the filter (since this is a trip planning 
+    //application, we can pick only one object as source, only one as desitnation 
+    //and only one bus route)
+    this.filtered_location_name = ko.observable("");
     this.filtered_location = {};
+
     this.selected_source = ko.observable({});
     this.selected_destination = ko.observable({});
     this.selected_bus_route = ko.observable({});
@@ -41,174 +48,117 @@ var GUIViewModel = function(controller, city_name) {
     this.step_msg = ko.observable(this.messages.STEP1_AWAITING_INPUT);
     this.init_filtered_location_name();
     this.length_of_list = 0;
+    this.disable_auto_filter = false;
 
-    var self = this;
+    this.filtered_location_name.subscribe(this.highlight_chars_and_filter_by_closest_match, this);
+    this.step_and_status = ko.computed(this.get_step_and_status_msg, this);
+    this.selected_source_destination_display = ko.computed(this.get_selected_source_destination_display, this);
 
-    this.filtered_location_name.subscribe(function(new_input) {
-    //this function  highlights matching characters in list view as user types
-    //and filters in the ones with max number of matching words in real time
-        if (this.disable_auto_filter === true){
-            this.disable_auto_filter = false; 
-            return;
-        }
-
-        var current_user_input = substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]);
-        if (current_user_input.trim() === ("")) {
-            this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
-            return;
-        }
-
-        var max_number_of_matched_words = 0;
-        var current_number_of_matched_words = 0;
-        
-
-        for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
-            var cur_str = this.current_filter_list()[i].name;
-            var searchable_words = this.current_filter_list()[i].searcheable_words;
-
-            var formatted_str = this.format_string_by_tag_matches(cur_str, current_user_input);
-            this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
-
-            current_number_of_matched_words = get_number_of_matching_words(current_user_input, searchable_words);
-
-            if (current_number_of_matched_words > max_number_of_matched_words) {
-                max_number_of_matched_words = current_number_of_matched_words;
-            }
-
-            this.current_filter_list()[i]['number_of_matching_words'] = current_number_of_matched_words;
-        }
-
-        //see if there are entire words matched and keep only items with highest number of words matched
-        //i.e., if one word is matched - remove all with no words matched, if two is matched - remove 
-        //ones with one and zero, etc. Numbers of matches is already computed in the loop above
-        if (max_number_of_matched_words > 0) {
-            this.current_filter_list.remove(function(item) {
-                return (item.number_of_matching_words < max_number_of_matched_words);
-            })
-        }
-
-    }, this);
-
-    this.step_and_status = ko.computed(function() {
-        var msg = ""
-        if (this.current_step() == 4) {
-            return ("Trip planning complete");
-        }
-        return ("Step " + String(this.current_step()) + this.step_msg());
-    }, this);
-
-    this.selected_source_destination_display = ko.computed(function() {
-
-        if ($.isEmptyObject(this.selected_source())) {
-            var msg = ('<span>No source selected.</span>');
-
-            if (!this.map_loaded()){
-                msg = msg + '<br><span class = "msg_warning">Warning: map is not available. You may proceed with trip planning anyway.</span>';
-            }
-            return (msg);
-        }
-
-        if ($.isEmptyObject(this.selected_destination())) {
-            return ("From : " + this.selected_source().name);
-        }
-
-
-        if ($.isEmptyObject(this.selected_bus_route())) {
-            return ("From : " + this.selected_source().name + " to : " + this.selected_destination().name);
-        }
-
-        return ("From : " + this.selected_source().name + " to : " + this.selected_destination().name) + " , route: " + this.selected_bus_route().name;
-    }, this);
-
-    //$('#previousStepButton').prop('disabled', true);
     this.planner_title = ko.computed(function() {
         return (this.cityName() + " BUS TRIP PLANNER");
     }, this)
 
-    this.mapLoadedStatus = ko.pureComputed(function() {
-        if (this.map_loaded()) {
-            return ("label label-success map_status_class")
-        }
-        return ("label label-warning map_status_class")
-    }, this);
-
-    this.map_status_text = ko.pureComputed(function() {
-        if (this.map_loaded()) {
-            return ("MAP")
-        }
-        return ("MAP")
-    }, this);
-    
-    this.disable_auto_filter = false; 
+    var self = this;
     self.list_item_click = function(clicked_item) {
-        //disable auto filter to avoid more then one item being 
-        //displayed. 
-        self.disable_auto_filter = true; 
+        //process a click on a filtered list item 
+
+        //disable auto filter (one implemented in highlight_chars_and_filter_by_closest_match 
+        //to avoid more then one item being 
+        //displayed. (say,lic user clicks on Yas Mall. But 
+        //Yas Mall cinema will also have two matching words and will 
+        //be picked by auto-filter)
+        self.disable_auto_filter = true;
         self.filtered_location_name(clicked_item.name);
         self.current_filter_list.remove(function(item) {
-                return (item.name!= clicked_item.name);
-            })
+            return (item.name != clicked_item.name);
+        })
     }
 }
 
+GUIViewModel.prototype.get_selected_source_destination_display = function() {
+    if ($.isEmptyObject(this.selected_source())) {
+        var msg = ('<span>No source selected.</span>');
 
-GUIViewModel.prototype.set_selected_item = function(obj){
-this.disable_auto_filter = true; 
-this.filtered_location_name(obj.name);
-this.current_filter_list.remove(function(item) {
-                return (obj.name!= item.name);
-            })
-}
-
-GUIViewModel.prototype.format_string_by_tag_matches = function(input_str, input_tag) {
-    //apply highlighted style to matching charactes and normal to the rest of them 
-    var str = input_str.toLowerCase();
-    var tag = input_tag.toLowerCase();
-
-    var begin = 1;
-    var selected = 2;
-    var normal = 3
-
-    var state = begin;
-    var buf = "";
-    var result_str = "";
-    var idx = 0;
-    for (var i = 0, len = str.length; i < len; i++) {
-        idx = tag.indexOf(str[i]);
-
-        if (idx === -1) {
-            if (state === begin) {
-                state = normal;
-            } else if (state === selected) {
-                result_str = result_str + apply_class_to_span(buf, "selected_char");
-                buf = ""
-                state = normal;
-            }
-
-            buf = buf + input_str[i];
-        } else {
-            if (state === begin) {
-                state = selected;
-            } else if (state === normal) {
-                result_str = result_str + apply_class_to_span(buf, "normal_char");
-                buf = ""
-                state = selected;
-            }
-            buf = buf + input_str[i];
+        if (!this.map_loaded()) {
+            msg = msg + '<br><span class = "msg_warning">Warning: map is not available. You may proceed with trip planning anyway.</span>';
         }
+        return (msg);
     }
 
-    if (state === normal) {
-        result_str = result_str + apply_class_to_span(buf, "normal_char");
-    } else if (state === selected) {
-        result_str = result_str + apply_class_to_span(buf, "selected_char");
+    if ($.isEmptyObject(this.selected_destination())) {
+        return ("From : " + this.selected_source().name);
     }
 
-    return result_str;
+    if ($.isEmptyObject(this.selected_bus_route())) {
+        return ("From : " + this.selected_source().name + " to : " + this.selected_destination().name);
+    }
+
+    return ("From : " + this.selected_source().name + " to : " + this.selected_destination().name) + " , route: " + this.selected_bus_route().name;
 }
 
+GUIViewModel.prototype.get_step_and_status_msg = function() {
+    var msg = ""
+    if (this.current_step() == 4) {
+        return ("Trip planning complete");
+    }
+    return ("Step " + String(this.current_step()) + this.step_msg());
+}
+
+GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(new_input) {
+    //this function  highlights matching characters in list view as user types
+    //and filters in the items with max number of words matching user input in real time
+    if (this.disable_auto_filter === true) {
+        this.disable_auto_filter = false;
+        return;
+    }
+
+    var current_user_input = substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]);
+    if (current_user_input.trim() === ("")) {
+        this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
+        return;
+    }
+
+    var max_number_of_matched_words = 0;
+    var current_number_of_matched_words = 0;
+
+
+    for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
+        var cur_str = this.current_filter_list()[i].name;
+        var searchable_words = this.current_filter_list()[i].searcheable_words;
+
+        var formatted_str = format_string_by_tag_matches(cur_str, current_user_input, "selected_char", "normal_char");
+        this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
+
+        current_number_of_matched_words = get_number_of_matching_words(current_user_input, searchable_words);
+
+        if (current_number_of_matched_words > max_number_of_matched_words) {
+            max_number_of_matched_words = current_number_of_matched_words;
+        }
+
+        this.current_filter_list()[i]['number_of_matching_words'] = current_number_of_matched_words;
+    }
+
+    //see if there are entire words matched and keep only items with highest number of words matched
+    //i.e., if one word is matched - remove all with no words matched, if two is matched - remove 
+    //ones with one and zero, etc. Numbers of matches is already computed in the loop above
+    if (max_number_of_matched_words > 0) {
+        this.current_filter_list.remove(function(item) {
+            return (item.number_of_matching_words < max_number_of_matched_words);
+        })
+    }
+}
+
+GUIViewModel.prototype.set_selected_item = function(obj) {
+    //used by contoller to process marker clicks 
+    this.disable_auto_filter = true;
+    this.filtered_location_name(obj.name);
+    this.current_filter_list.remove(function(item) {
+        return (obj.name != item.name);
+    })
+}
 
 GUIViewModel.prototype.update_current_filter_list = function(new_list) {
+    //re-populates list on initializations, resets and step transitions
     this.current_filter_list.removeAll();
     for (var i = 0; i < new_list.length; i++) {
         this.current_filter_list.push(new_list[i]);
@@ -218,14 +168,13 @@ GUIViewModel.prototype.update_current_filter_list = function(new_list) {
 
 
 GUIViewModel.prototype.init_filtered_location_name = function() {
-
     this.filtered_location_name(this.filtered_location_name_defaults[this.current_step() - 1])
 }
 
 
-GUIViewModel.prototype.transition_to_step = function(step, message){
-//a common transition function for standard transitions - i.e. 
-//steps that are not final (in our case works for steps 2 and 3)
+GUIViewModel.prototype.transition_to_step = function(step, message) {
+    //a common transition function for standard transitions - i.e. 
+    //steps that are not final (in our case works for steps 2 and 3)
     this.current_step(step);
     this.init_filtered_location_name();
     this.step_msg(message);
@@ -240,8 +189,8 @@ GUIViewModel.prototype.transition_to_step_4 = function() {
     this.controller.process_step_update();
 }
 
-
 GUIViewModel.prototype.plan_new_trip = function() {
+    //callback for new trip button that shows at the end of final step
     this.current_step(1);
     this.init_filtered_location_name();
     this.step_msg(this.messages.STEP1_AWAITING_INPUT);
@@ -253,9 +202,8 @@ GUIViewModel.prototype.plan_new_trip = function() {
     this.controller.process_step_update();
 }
 
-
 GUIViewModel.prototype.next_step = function() {
-  
+    //call back for next step button 
     if (this.current_step() === 1) {
         if (!$.isEmptyObject(this.filtered_location)) {
             this.selected_source(this.filtered_location);
@@ -288,15 +236,14 @@ GUIViewModel.prototype.next_step = function() {
     }
 }
 
-
 GUIViewModel.prototype.show_hide = function() {
+    //click call back for GUI show-hide button (hamb menu)
     if (this.gui_shown()) {
         this.gui_shown(false);
     } else {
         this.gui_shown(true);
     }
 }
-
 
 GUIViewModel.prototype.transition_to_previous_step = function(step, message) {
     this.current_step(step);
@@ -316,7 +263,7 @@ GUIViewModel.prototype.previous_step = function() {
         this.transition_to_previous_step(1, this.messages.STEP1_AWAITING_INPUT);
     } else if (this.current_step() === 3) {
         this.transition_to_previous_step(2, this.messages.STEP2_AWAITING_INPUT);
-    }  
+    }
 }
 
 
@@ -340,7 +287,7 @@ GUIViewModel.prototype.get_idx_of_item_by_field_value = function(observable_arra
 GUIViewModel.prototype.apply_filter = function() {
 
     if (this.length_of_list === this.current_filter_list().length) {
-        return;//nothing to filter on 
+        return; //nothing to filter on 
     }
 
     if (this.filtered_location_name() === "") {
@@ -353,10 +300,9 @@ GUIViewModel.prototype.apply_filter = function() {
         this.filtered_location = this.current_filter_list()[0];
         this.controller.set_filtered_item(this.filtered_location);
         this.set_filtered_location_message();
-        if (this.current_step()===1){
+        if (this.current_step() === 1) {
             this.selected_source(this.filtered_location);
-        }
-        else if (this.current_step()===2){
+        } else if (this.current_step() === 2) {
             this.selected_destination(this.filtered_location);
         }
 
@@ -374,23 +320,23 @@ GUIViewModel.prototype.set_filtered_location_message = function() {
         this.step_msg(this.messages.STEP1_SOURCE_SELECTED);
     } else if (this.current_step() === 2) {
         this.step_msg(this.messages.STEP2_DESTINATION_SELECTED);
-    }else if (this.current_step()==3){
-          this.step_msg(this.messages.STEP3_ROUTE_SELECTED);
+    } else if (this.current_step() == 3) {
+        this.step_msg(this.messages.STEP3_ROUTE_SELECTED);
     }
 }
 
 GUIViewModel.prototype.reset_filter = function() {
+    //filter reset button
     this.init_filtered_location_name();
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
     this.controller.apply_filter_to_markers();
-    //this.filtered_location_name("");
     this.selected_destination({});
     if (this.current_step() === 1) {
         this.selected_source({});
         this.step_msg(this.messages.STEP1_AWAITING_INPUT);
-    }else if (this.current_step()===2){
+    } else if (this.current_step() === 2) {
 
-        this.selected_destination({}); 
+        this.selected_destination({});
         this.step_msg(this.messages.STEP2_AWAITING_INPUT);
     }
 }

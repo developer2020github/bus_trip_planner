@@ -3,3 +3,5 @@
 3. Map is not centered properly on initial load - should take menu into account. - fixed
 4. it is possible to set a destination as a source by playing with previous step button.
  - in second step apply filter then do previous step then next step again - fixed
+ 5. IN STEP 1 IF AL MUNEER IS TYPED, MUNEERA IS HIGHLIGHTED BUT NOT FILTERED TILL ONE MORE A IS TYPED
+ 6. iffilter reset is applied in step 3  - markers disappear

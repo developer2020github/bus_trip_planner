@@ -1,8 +1,0 @@
-http://jsfiddle.net/wardbell/SQqr5/
-http://knockoutjs.com/documentation/binding-syntax.html
-
-simpler: 
-http://jsfiddle.net/7bRVH/214/ - will try this 
-
-
-http://www.w3schools.com/jquerymobile/jquerymobile_list_views.asp

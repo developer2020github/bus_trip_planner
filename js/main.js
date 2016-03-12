@@ -33,7 +33,7 @@
 // There are three scripts: bus_routes.js, bus_stops.js and map_objects.js
 // They are generated from excel files by Python script and contain all the 
 // data for trip planner. Python script needs to be used only once, to convert Excel into 
-// JS. Excel files and python scrip are technically not parts of a front-end application, 
+// JS. Excel files and Python script are technically not parts of a front-end application, 
 // but are provided with the source to facilitate understansding of the data structures. 
 //========================================================================================
 

@@ -4,7 +4,7 @@
 //gui view  - handles gui menu.
 //========================================================================================
 //Built on knockout framework. 
-//Any action related to map is passed to controller
+//Any action related to map is passed to controller.
 //========================================================================================
 
 var GUIViewModel = function(controller, city_name) {
@@ -121,7 +121,6 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
     var max_number_of_matched_words = 0;
     var current_number_of_matched_words = 0;
 
-
     for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
         var cur_str = this.current_filter_list()[i].name;
         var searchable_words = this.current_filter_list()[i].searcheable_words;
@@ -203,7 +202,7 @@ GUIViewModel.prototype.plan_new_trip = function() {
 }
 
 GUIViewModel.prototype.next_step = function() {
-    //call back for next step button 
+    //callback for next step button 
     if (this.current_step() === 1) {
         if (!$.isEmptyObject(this.filtered_location)) {
             this.selected_source(this.filtered_location);
@@ -237,7 +236,7 @@ GUIViewModel.prototype.next_step = function() {
 }
 
 GUIViewModel.prototype.show_hide = function() {
-    //click call back for GUI show-hide button (hamb menu)
+    //click callback for GUI show-hide button (humb menu)
     if (this.gui_shown()) {
         this.gui_shown(false);
     } else {
@@ -271,9 +270,7 @@ GUIViewModel.prototype.init_filtered_location_name = function() {
     this.filtered_location_name(this.filtered_location_name_defaults[this.current_step() - 1]);
 }
 
-
 GUIViewModel.prototype.get_idx_of_item_by_field_value = function(observable_array, field_value, field) {
-
     for (var i = 0, len = observable_array().length; i < len; i++) {
         if (observable_array()[i].hasOwnProperty(field)) {
             if (observable_array()[i][field] === field_value) {
@@ -285,7 +282,6 @@ GUIViewModel.prototype.get_idx_of_item_by_field_value = function(observable_arra
 }
 
 GUIViewModel.prototype.apply_filter = function() {
-
     if (this.length_of_list === this.current_filter_list().length) {
         return; //nothing to filter on 
     }
@@ -294,6 +290,7 @@ GUIViewModel.prototype.apply_filter = function() {
         this.reset_filter();
         return;
     }
+
     //if there is only one item in the list -  
     //set source/destination  
     if (this.current_filter_list().length === 1) {
@@ -307,6 +304,7 @@ GUIViewModel.prototype.apply_filter = function() {
         }
 
     }
+
     //hide all markers that are not in the filtered list. 
     //this applies only to steps 1 and 2 
     if (this.current_step() < 3) {

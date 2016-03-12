@@ -1,3 +1,12 @@
+#========================================================================================
+#Abu Dhabi bus trip planner
+#2016
+#heplper Python script  - converts routes data in Excel format into 
+#javascript data scripts. Tested and works with Python 3.4
+#To use, place data files into map/excel folder
+#generated scripts will be placed into map/js_data folder
+#All this could be done on the server side. 
+#========================================================================================
 import os
 import xlrd
 import csv
@@ -26,10 +35,7 @@ def save_excel_as_csv(excel_file_name, csv_file_name, remove_empty_rows=False):
                     if isinstance(item, float):
                         if ((item % 1)==0.0):
                             item = int(item)
-
                     lw.append(item)
-
-
                 wr.writerow(lw)
 
         csv_file.close()

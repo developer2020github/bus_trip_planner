@@ -1,10 +1,13 @@
-//this module will display objects on the map.
+//========================================================================================
+//Abu Dhabi bus trip planner
+//2016
+//map handler  - handles map-related objects: map itself, markers, info windows, 
+//route lines
+//========================================================================================
 
 var MapHandler = function(initial_pos, center_shift) {
     this.controller = {};
     this.mapDiv = document.getElementById('map');
-
-    console.log(initial_pos);
 
     this.map = new google.maps.Map(this.mapDiv, {
         center: initial_pos,
@@ -14,6 +17,7 @@ var MapHandler = function(initial_pos, center_shift) {
             position: google.maps.ControlPosition.LEFT_BOTTOM
         }
     });
+
     var self = this;
     google.maps.event.addListenerOnce(this.map, "projection_changed", function() {
         //re-center map to ensure GUI does not cover markers
@@ -29,32 +33,23 @@ var MapHandler = function(initial_pos, center_shift) {
     this.list_of_locations = Array();
     this.list_of_bus_routes = Array();
     this.direction_displays = Array();
+    //all markers are created once and stored in an array.
+    //all operations performed on markers will be requested 
+    //via indexes into this array: upon creatiton of markers
+    //controller should ensure all map objects have thier marker idxs assigned to them,
+    //so each map object has a way to connect to its marker.
     this.markers = Array();
-
-    this.info_windows_enabled = true;
-    this.debug_options = {};
-    this.debug_options["show_corner_markers"] = false;
-
-
 
     //I feel info windows might be a bit annoying in a bus trip 
     //planning application, yet have to include them to meet requirements. As an option, 
     //will give control to user in the subsequent versions of the program. 
+    this.info_windows_enabled = true;
 
-    /*
-    on load: 
-    - show all locations (except for bus stops) ->currently automatically transitioning to step 1
-    - on step 1: show only communities (call show_location_of_a_class)
-    - on step 1 upon selection: bounce selected community
-    - on step 2 (transition from step 1): show only selected community. 
-      show list of destinations reachnable from this community.
-     - on step 2 upon selection: bounce selected destination
-     - on step 3 show all bus routes in different colors 
-     - on step 4 upon transition: show only selected source, selected destionation, bus routes and walking directions 
-     from and to relevant stops 
-     display extra information on each step.  
-    */
+    this.debug_options = {};
 
+    //if this debug option is set to true, corners of Panoramio search squares will show on the map.
+    //should always be set to false for relased versions of the program. 
+    this.debug_options["show_corner_markers"] = false;
 }
 
 MapHandler.prototype.stop_animation = function(marker) {
@@ -62,22 +57,31 @@ MapHandler.prototype.stop_animation = function(marker) {
         marker.setAnimation(null);
     }, 3000);
 }
+
+MapHandler.prototype.animate_marker = function(marker_idx) {
+    //animates narker with idx === marker_idx
+    this.markers[marker_idx].setAnimation(google.maps.Animation.BOUNCE);
+    this.stop_animation(this.markers[marker_idx]);
+}
+
 MapHandler.prototype.set_map_to_null = function(items) {
+    //a shotcut to set map to null to an array of objects
     $.each(items, function(idx, i) {
         i.setMap(null);
     })
 }
+
 MapHandler.prototype.remove_directions_display = function() {
+    //removes all direction lines and elimminates all relevant memorized data
     this.set_map_to_null(this.direction_displays);
     this.direction_displays = [];
-
     this.set_map_to_null(this.map_active_lines);
-    this.map_active_lines = [];
-
+    this.map_active_lines = []
 }
 
 MapHandler.prototype.draw_walking_path = function(coordinates) {
-
+    //shows a green walking path betw3een two directions - 
+    //source to a bus stop or from a bus stop to destination
     var directions_service = new google.maps.DirectionsService();
 
     var directions_display = new google.maps.DirectionsRenderer({
@@ -101,35 +105,33 @@ MapHandler.prototype.draw_walking_path = function(coordinates) {
             directions_display.setDirections(result);
             self.direction_displays.push(directions_display);
         } else {
-            // if can't get proper directions - still can draw straignt line 
+            // if can't get proper directions - still can draw a straight line 
+            //(better than nothing)
             self.draw_source_destination_bus_line(coordinates);
         }
     });
 }
 
-MapHandler.prototype.show_marker  = function(marker_idx){
+MapHandler.prototype.show_marker = function(marker_idx) {
     this.markers[marker_idx].setVisible(true);
 }
 
-MapHandler.prototype.hide_all_markers = function(){
- $.each(this.markers, function(idx, m){
-    m.setVisible(false); 
- })
+MapHandler.prototype.hide_all_markers = function() {
+    //hides all markers
+    $.each(this.markers, function(idx, m) {
+        m.setVisible(false);
+    })
 }
 
-MapHandler.prototype.hide_marker  = function(marker_idx){
+MapHandler.prototype.hide_marker = function(marker_idx) {
     this.markers[marker_idx].setVisible(false);
-}
-
-MapHandler.prototype.animate_marker = function(marker_idx) {
-    this.markers[marker_idx].setAnimation(google.maps.Animation.BOUNCE);
-    this.stop_animation(this.markers[marker_idx]);
 }
 
 MapHandler.prototype.draw_source_destination_bus_line = function(coordinates) {
     //this is a ssimplified version - used for first release 
     //(or may keep it if like it - this program is about walking directions, 
-    //does not matter much how exactly bus gets from a to b)
+    //does not matter much how exactly bus gets from a to b) - 
+    //shows a straight blue line with an arrow between source and destination bus stops
     var line_symbol = {
         path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
     };
@@ -152,7 +154,7 @@ MapHandler.prototype.draw_source_destination_bus_line = function(coordinates) {
 }
 
 MapHandler.prototype.draw_line = function(coordinates) {
-    //this is tested but not used in the first vesrion of the program - 
+    //this is tested but not used in the first version of the program - 
     //need to add more points or use google driving directions 
     //function to display routes properly. 
     console.log("MapHandler.prototype.draw_line");
@@ -175,8 +177,9 @@ MapHandler.prototype.remove_walking_directions = function() {
     this.direction_displays = [];
 }
 
-MapHandler.prototype.remove_lines = function() {
 
+
+MapHandler.prototype.remove_lines = function() {
     $.each(this.map_active_lines, function(idx, line) {
         line.setMap(null);
     })
@@ -185,6 +188,7 @@ MapHandler.prototype.remove_lines = function() {
 }
 
 MapHandler.prototype.get_panoramio_request_url = function(o) {
+    //builds a request url for Panoramio API
     var panoramio_url = "http://www.panoramio.com/map/get_panoramas.php?" +
         "order=popularity" +
         "&set=public" +
@@ -225,6 +229,7 @@ MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_p
 
 
 MapHandler.prototype.display_info_window = function(o) {
+    //shows info window ttached to a marker based on a passed map object. 
     if (!this.info_windows_enabled) {
         return;
     }
@@ -259,12 +264,14 @@ MapHandler.prototype.display_info_window = function(o) {
             open_window(self, true, best_photo.photo_file_url);
         })
         .fail(function() {
-            //if request to panoramio fails - still open window with the place name 
+            //if request to panoramio fails - still open window with the place name , without 
+            //any images
             open_window(self, false);
         });
 }
 
 MapHandler.prototype.close_all_info_windows = function() {
+    //close all the windows on the map 
     $.each(this.map_active_windows_markers, function(idx, win) {
         win.close();
     });
@@ -273,8 +280,10 @@ MapHandler.prototype.close_all_info_windows = function() {
 }
 
 MapHandler.prototype.init_locations = function(locations) {
-    
-    var markers_idxs = Array(); 
+    //initialization function - should be called after map 
+    //hanlder object was created. Accepts an array of map objects, returns array of marker idxs 
+    //- controller should ensure these idxs are assigned to appropriate objects. 
+    var markers_idxs = Array();
     for (var i = 0, len = locations.length; i < len; i++) {
         var psn = {};
         psn['lat'] = locations[i].lat;
@@ -308,10 +317,6 @@ MapHandler.prototype.init_locations = function(locations) {
                 title: locations[i].name + " left  corner"
             })
         }
-
-
     }
-
     return markers_idxs;
 }
-

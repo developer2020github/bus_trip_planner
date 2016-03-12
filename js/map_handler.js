@@ -177,8 +177,6 @@ MapHandler.prototype.remove_walking_directions = function() {
     this.direction_displays = [];
 }
 
-
-
 MapHandler.prototype.remove_lines = function() {
     $.each(this.map_active_lines, function(idx, line) {
         line.setMap(null);
@@ -226,7 +224,6 @@ MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_p
     })
     return best_match;
 }
-
 
 MapHandler.prototype.display_info_window = function(o) {
     //shows info window ttached to a marker based on a passed map object. 

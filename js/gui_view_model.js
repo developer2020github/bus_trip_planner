@@ -32,16 +32,16 @@ var GUIViewModel = function(controller, city_name) {
     this.cityName = ko.observable(city_name)
 
     this.messages = {
-        STEP1_AWAITING_INPUT: '<span class ="msg_normal">: Please select starting point and apply filter to confirm. You can use filter to narrow the list</span>',
-        STEP1_NO_SOURCE_SELECTED: '<span class ="msg_warning">: no starting point selected</span>',
-        STEP1_SOURCE_SELECTED: '<span class ="msg_normal">: please click next step to continue</span>',
-        STEP2_AWAITING_INPUT: '<span class ="msg_normal">:Please select destination and apply filter to confirm. You can use filter to narrow the list</span>',
-        STEP2_NO_DESTINATION_SELECTED: '<span class ="msg_warning">: no destination selected</span>',
-        STEP2_DESTINATION_SELECTED: '<span class ="msg_normal">:please click next step to continue</span>',
-        STEP2_ONE_BUS: '<span class ="msg_normal">:please click next to complete</span>',
-        STEP3_SELECT_BUS_ROUTE_MESSAGE: '<span class ="msg_normal">: please select bus route</span>',
-        STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: '<span class ="msg_warning">:  no bus route selected</span>',
-        STEP3_ROUTE_SELECTED: '<span class ="msg_normal">:please click next step to complete</span>'
+        STEP1_AWAITING_INPUT: '<span class ="msg-normal">: Please select starting point and apply filter to confirm. You can use filter to narrow the list</span>',
+        STEP1_NO_SOURCE_SELECTED: '<span class ="msg-warning">: no starting point selected</span>',
+        STEP1_SOURCE_SELECTED: '<span class ="msg-normal">: please click next step to continue</span>',
+        STEP2_AWAITING_INPUT: '<span class ="msg-normal">:Please select destination and apply filter to confirm. You can use filter to narrow the list</span>',
+        STEP2_NO_DESTINATION_SELECTED: '<span class ="msg-warning">: no destination selected</span>',
+        STEP2_DESTINATION_SELECTED: '<span class ="msg-normal">:please click next step to continue</span>',
+        STEP2_ONE_BUS: '<span class ="msg-normal">:please click next to complete</span>',
+        STEP3_SELECT_BUS_ROUTE_MESSAGE: '<span class ="msg-normal">: please select bus route</span>',
+        STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: '<span class ="msg-warning">:  no bus route selected</span>',
+        STEP3_ROUTE_SELECTED: '<span class ="msg-normal">:please click next step to complete</span>'
     }
 
     this.filtered_location_name_defaults = ['source:', 'destination:', 'route:', 'COMPLETE'];
@@ -81,7 +81,7 @@ GUIViewModel.prototype.get_selected_source_destination_display = function() {
         var msg = ('<span>No source selected.</span>');
 
         if (!this.map_loaded()) {
-            msg = msg + '<br><span class = "msg_warning">Warning: map is not available. You may proceed with trip planning anyway.</span>';
+            msg = msg + '<br><span class = "msg-warning">Warning: map is not available. You may proceed with trip planning anyway.</span>';
         }
         return (msg);
     }
@@ -126,7 +126,7 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
         var cur_str = this.current_filter_list()[i].name;
         var searchable_words = this.current_filter_list()[i].searcheable_words;
 
-        var formatted_str = format_string_by_tag_matches(cur_str, current_user_input, "selected_char", "normal_char");
+        var formatted_str = format_string_by_tag_matches(cur_str, current_user_input, "selected-char", "normal-char");
         this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
 
         current_number_of_matched_words = get_number_of_matching_words(current_user_input, searchable_words);
@@ -135,7 +135,7 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
             max_number_of_matched_words = current_number_of_matched_words;
         }
 
-        this.current_filter_list()[i]['number_of_matching_words'] = current_number_of_matched_words;
+        this.current_filter_list()[i]["number_of_matching_words"] = current_number_of_matched_words;
     }
 
     //see if there are entire words matched and keep only items with highest number of words matched

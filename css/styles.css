@@ -1,4 +1,4 @@
- .mapClass {
+ .map-class {
      position: absolute;
      top: 0px;
      left: 0;
@@ -7,7 +7,7 @@
      z-index: 99;
  }
 
- .filtersClass {
+ .gui-main {
      z-index: 999;
      background-color: #473C3C;
      color: #CFCFCF;
@@ -17,7 +17,7 @@
      min-width: 320px;
  }
  
- #application_title {
+ #applicationTitle {
      display: inline-block;
      width: 85%;
      text-align: center;
@@ -76,24 +76,26 @@
      padding-right: 2px !important;
  }
  
-
- .group_map_gui {
+ .group-map-gui {
      margin-top: 5px;
  }
- .selected_char{
+
+ .selected-char{
    font-weight: bold;
    color: #FEEE81;
  }
- .normal_char{
+
+ .normal-char{
      font-weight: bold;
      color: #CFCFCF;
  }
- .msg_normal{
+ 
+ .msg-normal{
      font-weight: bold;
      color: #66D07C;
  }
 
- .msg_warning{
+ .msg-warning{
       font-weight: bold;
      color: #FDB812;
  }

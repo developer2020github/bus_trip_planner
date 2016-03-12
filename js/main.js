@@ -165,7 +165,6 @@ Controller.prototype.apply_filter_to_markers = function() {
     }
 }
 
-
 Controller.prototype.process_step_update = function() {
     //called by GUI view on step transitions and 
     //handles map effects 

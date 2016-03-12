@@ -12,6 +12,7 @@ import xlrd
 import csv
 import json
 import glob
+
 def is_number(s):
     try:
         float(s)

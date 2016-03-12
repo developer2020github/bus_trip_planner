@@ -15,12 +15,12 @@
 </head>
 
 <body>
-    <div id="map" class="mapClass">MY MAP</div>
+    <div id="map" class="map-class"></div>
     <div class="sidebar">
-        <div class="col-md-3 filtersClass custom-padding">
+        <div class="col-md-3 gui-main custom-padding">
             <div id="filters">
                 <div class="zero-padding">
-                    <div id="application_title" data-bind="text: planner_title" class="header-item"></div>
+                    <div id="applicationTitle" data-bind="text: planner_title" class="header-item"></div>
                     <button type="button" data-bind="click: show_hide" class="btn btn-default btn-rev">
                         <span class="glyphicon glyphicon-menu-hamburger btn-rev" aria-hidden="true"></span>
                     </button>
@@ -32,7 +32,7 @@
                     <div id="current_route" class="grid-item">
                         <span data-bind="html: selected_source_destination_display"></span>
                     </div>
-                    <div class="group_map_gui" data-bind="visible: current_step()<4">
+                    <div class="group-map-gui" data-bind="visible: current_step()<4">
                         <button type="button" data-bind="click: previous_step, enable: current_step()>1" class="btn btn-default btn-rev" id="previousStepButton">Previous step</button>
                         <button type="button" data-bind="click: next_step" class="btn btn-default btn-rev" id="nextStepButton">Next step</button>
                         <button type="button" data-bind="click: apply_filter" class="btn btn-default btn-rev">
@@ -43,7 +43,7 @@
                         </button>
                     </div>
                     <div>
-                        <div class="group_map_gui" data-bind="visible: current_step()<4">
+                        <div class="group-map-gui" data-bind="visible: current_step()<4">
                             <input type="text" id="location-search" class="form-control" placeholder="" data-bind="textInput: filtered_location_name">
                         </div>
                     </div>

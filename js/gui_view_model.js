@@ -43,6 +43,7 @@ var GUIViewModel = function(controller, city_name) {
         STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: '<span class ="msg_warning">:  no bus route selected</span>',
         STEP3_ROUTE_SELECTED: '<span class ="msg_normal">:please click next step to complete</span>'
     }
+
     this.filtered_location_name_defaults = ['source:', 'destination:', 'route:', 'COMPLETE'];
 
     this.step_msg = ko.observable(this.messages.STEP1_AWAITING_INPUT);

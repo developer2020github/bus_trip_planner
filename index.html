@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <!--libraries-->
+    <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="bower_components/knockout/dist/knockout.js"></script>
+    <!-- load data for all routes and stops  -->
+    <script type="text/javascript" src="map\js_data\bus_routes_data.js"></script>
+    <script type="text/javascript" src="map\js_data\bus_stops.js"></script>
+    <script type="text/javascript" src="map\js_data\map_objects.js"></script>
+</head>
+
+<body>
+    <div id="map" class="mapClass">MY MAP</div>
+    <div class="sidebar">
+        <div class="col-md-3 filtersClass custom-padding">
+            <div id="filters">
+                <div class="zero-padding">
+                    <div id="application_title" data-bind="text: planner_title" class="header-item"></div>
+                    <button type="button" data-bind="click: show_hide" class="btn btn-default btn-rev">
+                        <span class="glyphicon glyphicon-menu-hamburger btn-rev" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div id="hideable" data-bind="visible: gui_shown()">
+                    <div id="steps" class="grid-item">
+                        <span data-bind="html: step_and_status"></span>
+                    </div>
+                    <div id="current_route" class="grid-item">
+                        <span data-bind="html: selected_source_destination_display"></span>
+                    </div>
+                    <div class="group_map_gui" data-bind="visible: current_step()<4">
+                        <button type="button" data-bind="click: previous_step, enable: current_step()>1" class="btn btn-default btn-rev" id="previousStepButton">Previous step</button>
+                        <button type="button" data-bind="click: next_step" class="btn btn-default btn-rev" id="nextStepButton">Next step</button>
+                        <button type="button" data-bind="click: apply_filter" class="btn btn-default btn-rev">
+                            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span>
+                        </button>
+                        <button type="button" data-bind="click: reset_filter" class="btn btn-default btn-rev">
+                            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <div>
+                        <div class="group_map_gui" data-bind="visible: current_step()<4">
+                            <input type="text" id="location-search" class="form-control" placeholder="" data-bind="textInput: filtered_location_name">
+                        </div>
+                    </div>
+                    <div id="filterList" data-bind="visible: current_step()<4">
+                        <ul class="list-group list-of-items" data-bind="foreach: current_filter_list">
+                            <li class="grid-item clickable">
+                                <span data-bind="html: formatted_displayed_name_for_filter, click: $parent.list_item_click"></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div data-bind="visible: current_step()===4" role="group">
+                            <button type="button" data-bind="click: plan_new_trip" class="btn btn-default btn-rev" id="planNewTripButton">New Trip</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+<!--load main script file -->
+<script type="text/javascript" src="js\transit_location.js"></script>
+<script type="text/javascript" src="js\lib.js"></script>
+<script type="text/javascript" src="js\data_model_bus_routes.js"></script>
+<script type="text/javascript" src="js\data_model_reacheable_objects.js"></script>
+<script type="text/javascript" src="js\data_model.js"></script>
+<script type="text/javascript" src="js\map_handler.js"></script>
+<script type="text/javascript" src="js\debug.js"></script>
+<script type="text/javascript" src="js\gui_view_model.js"></script>
+<script type="text/javascript" src="js\main.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+
+</html>

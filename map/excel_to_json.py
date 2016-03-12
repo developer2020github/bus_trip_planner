@@ -75,7 +75,7 @@ def excel_file_to_js(excel_file_name, js_file_dir):
     save_excel_as_csv(excel_file_name, csv_file, True)
     js_file_name = js_file_dir + "\\"  + var_name + ".js"
     csv_to_js(csv_file, js_file_name, var_name)
-    #os.remove(csv_file)
+    os.remove(csv_file)
 
 
 current_directory = os.path.dirname(os.path.realpath(__file__))

@@ -29,12 +29,13 @@
 // Data model is accessable only by contoller. Data model has no access to contoller. 
 // map handler and GUI view both can call controller methods and the other way around. 
 //
-//6. Data scripts - located in folder map/js_data
+//6. Data scripts - located in folder js/generated_data
 // There are three scripts: bus_routes.js, bus_stops.js and map_objects.js
 // They are generated from excel files by Python script and contain all the 
 // data for trip planner. Python script needs to be used only once, to convert Excel into 
 // JS. Excel files and Python script are technically not parts of a front-end application, 
 // but are provided with the source to facilitate understansding of the data structures. 
+// Python script and source Excel files are located in directory map_utilities
 //========================================================================================
 
 

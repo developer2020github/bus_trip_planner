@@ -12,6 +12,7 @@ import xlrd
 import csv
 import json
 import glob
+import pathlib
 
 def is_number(s):
     try:
@@ -81,7 +82,9 @@ def excel_file_to_js(excel_file_name, js_file_dir):
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
 excel_files_directory = current_directory+ r"\excel"
-js_files_directory = current_directory + r"\js_data"
+js_files_directory = str(pathlib.Path(current_directory).parents[0])  + r"\js\generated_data"
+#print(js_files_directory)
+
 excel_files = glob.glob(excel_files_directory + r"\*.*")
 for excel_file in excel_files:
     excel_file_to_js(excel_file, js_files_directory)

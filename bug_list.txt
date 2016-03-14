@@ -7,3 +7,4 @@
  6. iffilter reset is applied in step 3  - markers disappear
  7. It is easy to forget to apply filter in last step. Ensure there is an extra message to remind user to 
  apply filter one more time. Alternatively, if there is only one item on the list - could go for automated step transition right away.
+ 8. Seems like clicks work only on text area of the list items, should work on the entire "button".

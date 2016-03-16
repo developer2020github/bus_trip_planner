@@ -51,7 +51,7 @@ return gulp.src('src/image/**/*.+(png|jpg|jpeg|gif|svg)')
 
 //need to copy fonts 
 gulp.task('fonts', function() {
-return gulp.src('src/bower_components/bootstrap/dist/fonts/*.woff')
+return gulp.src('src/bower_components/bootstrap/dist/fonts/*.*')
 .pipe(gulp.dest('dist/fonts'))
 })
 
@@ -73,8 +73,8 @@ return cache.clearAll(callback)
 })
 
 gulp.task('build', function (callback) {
-runSequence('clean:dist',
-['useref', 'images', 'fonts'], 'minify_html',
+runSequence('prefix_css','clean:dist',
+['useref', 'images', 'fonts'],'minify_html',
 callback
 )
 })

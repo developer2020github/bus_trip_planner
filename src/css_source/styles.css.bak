@@ -22,8 +22,8 @@
      padding-right: 2px !important;
  }
  #applicationTitle {
-     display: inline-block;
-     width: 86%;
+ 
+     width: 85%;
      text-align: center;
  }
  

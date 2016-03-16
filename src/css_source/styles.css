@@ -12,15 +12,18 @@
      z-index: 999;
      background-color: #473C3C;
      color: #CFCFCF;
-     padding-bottom: 0px;
-     margin-bottom: 0px;
      max-width: 320px;
      min-width: 320px;
  }
- 
+  .custom-padding {
+     margin-left: 2px;
+     margin-right: 2px;
+     padding-left: 2px !important;
+     padding-right: 2px !important;
+ }
  #applicationTitle {
      display: inline-block;
-     width: 85%;
+     width: 86%;
      text-align: center;
  }
  
@@ -38,18 +41,6 @@
         margin-bottom: 5px;
  }
  
- .header-item {
-     border: solid;
-     border-width: 2px;
-     border-radius: 3px;
-     border-color: #CBC9C9;
-     padding: 1px;
-     padding-top: 6px;
-     padding-bottom: 9px;
-     margin-top: 7px;
-     margin-bottom: 5px;
- }
- 
  .grid-item {
      border: solid;
      border-width: 2px;
@@ -63,19 +54,7 @@
      width: 132px !important;
  }
  
- .zero-padding {
-     margin-left: 0px !important;
-     margin-right: 0px !important;
-     padding-left: 0px !important;
-     padding-right: 0px !important;
- }
- 
- .custom-padding {
-     margin-left: 2px;
-     margin-right: 2px;
-     padding-left: 2px !important;
-     padding-right: 2px !important;
- }
+
  
  .group-map-gui {
      margin-top: 5px;

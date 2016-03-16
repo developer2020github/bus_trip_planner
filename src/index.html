@@ -2,6 +2,7 @@
 <html>
 
 <head>
+<title>Abu Dhabi Bus trip planner</title>
  <!--build:css css/styles.min.css-->
     <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
@@ -13,9 +14,8 @@
     <div class="sidebar">
         <div class="col-md-3 gui-main custom-padding">
             <div id="filters">
-                <div class="zero-padding">
-                    <div id="applicationTitle" data-bind="text: planner_title" class="header-item"></div>
-                    <button type="button" data-bind="click: show_hide" class="btn btn-default btn-rev">
+                <div class="grid-item">
+                    <div id="applicationTitle" data-bind="text: planner_title"></div><button id = "showGuibtn" type="button" data-bind="click: show_hide" class="btn btn-default btn-rev">
                         <span class="glyphicon glyphicon-menu-hamburger btn-rev" aria-hidden="true"></span>
                     </button>
                 </div>
@@ -56,7 +56,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 </body>
 <!--build:js js/main.min.js -->

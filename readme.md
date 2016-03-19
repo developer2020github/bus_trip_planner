@@ -7,13 +7,13 @@ Abu Dhabi bus trip planner
 ================================================
 Introduction.
 This readme note covers following topics: 
-*Project motivation 
-*Project overview 
-*Data generation 
-*How requirements of nano-degree project 5 are met
-*Installing and starting the program 
+*Project motivation and explanation. 
+*Overview and functionality.  
+*Data generation. 
+*Installing, building and running  the program.
+*Meeting requirements of nano-degree project 5 and testing procedure.
 ================================================
-Project motivation. 
+Project motivation and explanation.
 
 Project was done as a combination of personal project and project 5 of Udacity front end nano-degree. 
 It is  a demo of a public transit trip planner for the city of Abu Dhabi.
@@ -28,10 +28,9 @@ certain point in a city can be reached, etc. Additionally, support of Abu Dhabi 
 so good in Google maps.
 
 Current version has multiple limitations (the most important ones are mentioned in the overview section),
- but is overall functional and fully 
-meets requirements of the nano-degree project 5. 
+ but is overall functional and fully meets requirements of the nano-degree project 5. 
 ================================================
-Overview.  
+Overview and functionality.  
 
 There are 4 steps in the trip planning process: 
 Step 1: 
@@ -95,15 +94,85 @@ JS files with data (in folder  work\main\js\generated_data).
 Python script an Excel files are not parts of the application, but are provided for reference.
 In the future versions of the program this data would come from the server side. 
 ================================================
-How requirements of nano-degree project 5 are met
+Installing, building and running  the program.
 
-Functionality required by project 5 is fully present in step 1 and step 2.
-However, since step 1 has only three objects, I formally present step 2 for project 5 evaluation. 
-================================================
-Installing and building the program.
+Application utilizes Bower for package management and Gulp for builds. 
+There are two main subfolders: 
+src - sources with all libraries 
+dist - built application.
+
+To ensure all the required components are installed: 
+
+0. Ensure you have node. js and npm installed. 
+Refer to https://docs.npmjs.com/getting-started/installing-node for installation instructions. 
 1. Please extract provided archive file. 
-2.Ensure you have Bower installed. Please refer  to http://bower.io/ for Bower installation instructions. 
-3. Please navigate to src sub-folder of the extracted arhive. Start command line window (ensure you are still in the 
+2. Ensure you have Bower installed. Please refer  to http://bower.io/ for Bower installation instructions. 
+3. Please navigate to src sub-folder of the extracted archive. Start command line window (ensure you are still in the 
 src folder). Run command 
 "bower install"
 This should created bower_components sub-folder and download all dependencies. 
+4. Navigate one level up (into the main directory). Run command 
+"npm install"
+This will download and install all the gulp packages required for builds. 
+
+
+To re-build the application: 
+1) start command line in main directory.
+2) execute command 
+"gulp build"
+This will clean up files in dist directory and rebuild the application. 
+
+To test the program functionality: 
+Option A: 
+Please open index.html, located in dist subfolder with a browser. 
+
+Option B (running local server): 
+This procedure applies to Python 3, for Python 2 please google corresponding command for step 2:  
+1. Run local server: 
+cd /path/to/project-folder/dist
+python -m http.server 8080
+
+2. Open a browser and visit localhost:8080
+
+================================================
+Meeting requirements of nano-degree project 5 and testing procedure.
+
+Functionality required by project 5 is fully present in step 1 and step 2.
+However, step 1 has only three objects. Additionally, some filtering features are 
+applicable only to list in step 2: in step 1 all communities have distinct names, so 
+typing a matching word in an input area will always select one community. 
+For these reasons I formally present step 2 for project 5 evaluation. 
+
+To transition step 2: 
+1) run the program 
+2)Transition to step 2 . To do so,
+a) select any community out of three (by clicking on a marker, by clicking on community name in the list or by typing community name in the text input area)
+b) apply filter to confirm your selection (I am thinking to remove this 
+extra filter application in the next versions - it is not really required if only one 
+item is already filtered)
+c) click 'next step'
+
+Please note that source, selected in step 1, will always be displayed in step 2. it is not part of filtering 
+logic. 
+
+Step 2 presents following functionality as per project 5 requirements: 
+- all destionations are displayed in a list view and as blue markers 
+- clicking on an item in list view will transfer the item name into text input area and 
+clear rest of items form list view 
+- applying filter if only one item meets filter criteria will bounce corresponding marker, 
+show info window on top of the selected marker (pcture from Panoramio API obtained via AJAX request)
+and remove rest of the markers from the map
+- applying filter if more than one item meets filtering criteria will remove other markers from the map
+- there is real-time filtering: user can type location names into text input area, 
+matching charactes will be highlighted, and if complete words are matched - non-matching 
+items will be removed in the list. I.e., if user types "mall" - list will display all malls, etc. 
+- clicking on the marker will make it bounce, display info window and make corresponding item the 
+only item in the list view
+
+Error handling: if map is not available from the beginning, program will display a warning. 
+However, trip planning can still be done. If connection is lost at final step, 
+walking directions will be displayed as straight lines. 
+If Panoramio data is not available, info window will display just item name, without picture. 
+
+
+

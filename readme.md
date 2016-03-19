@@ -11,7 +11,6 @@ This readme note covers following topics:
 *Project overview 
 *Data generation 
 *How requirements of nano-degree project 5 are met
-*Functionality relevant to project 5
 *Installing and starting the program 
 ================================================
 Project motivation. 
@@ -101,3 +100,10 @@ How requirements of nano-degree project 5 are met
 Functionality required by project 5 is fully present in step 1 and step 2.
 However, since step 1 has only three objects, I formally present step 2 for project 5 evaluation. 
 ================================================
+Installing and building the program.
+1. Please extract provided archive file. 
+2.Ensure you have Bower installed. Please refer  to http://bower.io/ for Bower installation instructions. 
+3. Please navigate to src sub-folder of the extracted arhive. Start command line window (ensure you are still in the 
+src folder). Run command 
+"bower install"
+This should created bower_components sub-folder and download all dependencies. 

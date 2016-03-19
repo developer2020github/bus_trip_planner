@@ -7,7 +7,6 @@
      z-index: 99;
  }
 
-
  .gui-main {
      z-index: 999;
      background-color: #473C3C;
@@ -48,6 +47,7 @@
      border-color: #CBC9C9;
      padding: 1px;
      margin-top: 3px;
+     display: block;
  }
  
  #previousStepButton {

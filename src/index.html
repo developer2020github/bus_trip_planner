@@ -44,7 +44,9 @@
                     <div id="filterList" data-bind="visible: current_step()<4">
                         <ul class="list-group list-of-items" data-bind="foreach: current_filter_list">
                             <li class="grid-item clickable">
+                                <div data-bind="click: $parent.list_item_click">
                                 <span data-bind="html: formatted_displayed_name_for_filter, click: $parent.list_item_click"></span>
+                                </div>
                             </li>
                         </ul>
                     </div>

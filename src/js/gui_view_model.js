@@ -32,16 +32,16 @@ var GUIViewModel = function(controller, city_name) {
     this.cityName = ko.observable(city_name)
 
     this.messages = {
-        STEP1_AWAITING_INPUT: '<span class ="msg-normal">: Please select starting point and apply filter to confirm. You can use filter to narrow the list</span>',
-        STEP1_NO_SOURCE_SELECTED: '<span class ="msg-warning">: no starting point selected</span>',
-        STEP1_SOURCE_SELECTED: '<span class ="msg-normal">: please click next step to continue</span>',
-        STEP2_AWAITING_INPUT: '<span class ="msg-normal">:Please select destination and apply filter to confirm. You can use filter to narrow the list</span>',
-        STEP2_NO_DESTINATION_SELECTED: '<span class ="msg-warning">: no destination selected</span>',
-        STEP2_DESTINATION_SELECTED: '<span class ="msg-normal">:please click next step to continue</span>',
-        STEP2_ONE_BUS: '<span class ="msg-normal">:please click next to complete</span>',
-        STEP3_SELECT_BUS_ROUTE_MESSAGE: '<span class ="msg-normal">: please select bus route</span>',
-        STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: '<span class ="msg-warning">:  no bus route selected</span>',
-        STEP3_ROUTE_SELECTED: '<span class ="msg-normal">:please click next step to complete</span>'
+        STEP1_AWAITING_INPUT: '<span class ="msg-normal">: Please select starting point and apply filter to confirm. You can use filter to narrow the list.</span>',
+        STEP1_NO_SOURCE_SELECTED: '<span class ="msg-warning">: No starting point selected. Note you need to apply filter to confirm your selection.</span>',
+        STEP1_SOURCE_SELECTED: '<span class ="msg-normal">: Please click next step to continue</span>',
+        STEP2_AWAITING_INPUT: '<span class ="msg-normal">: Please select destination and apply filter to confirm. You can use filter to narrow the list.</span>',
+        STEP2_NO_DESTINATION_SELECTED: '<span class ="msg-warning">: No destination selected. Note you need to apply filter to confirm your selection.</span>',
+        STEP2_DESTINATION_SELECTED: '<span class ="msg-normal">: Please click next step to continue.</span>',
+        STEP2_ONE_BUS: '<span class ="msg-normal">: Please click next to complete.</span>',
+        STEP3_SELECT_BUS_ROUTE_MESSAGE: '<span class ="msg-normal">: Please select bus route.</span>',
+        STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: '<span class ="msg-warning">:  No bus route selected. Note you need to apply filter to confirm your selection.</span>',
+        STEP3_ROUTE_SELECTED: '<span class ="msg-normal">:Please click next step to complete.</span>'
     }
 
     this.filtered_location_name_defaults = ['source:', 'destination:', 'route:', 'COMPLETE'];

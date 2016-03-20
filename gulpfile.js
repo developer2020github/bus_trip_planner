@@ -1,4 +1,11 @@
+//========================================================
 //https://csstricks.com/gulpforbeginners/
+//https://www.npmjs.com/package/gulp-jshint
+//https://www.npmjs.com/package/gulp-csslint
+//https://www.npmjs.com/package/gulp-html5-lint
+//https://www.npmjs.com/package/gulp-jshint-file-reporter
+//========================================================
+
 var gulp = require('gulp');
 var autoprefixer = require('gulp-autoprefixer');
 var useref = require('gulp-useref');
@@ -12,9 +19,22 @@ var runSequence = require('run-sequence');
 var htmlmin = require('gulp-htmlmin');
 var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
+var html5Lint = require('gulp-html5-lint');
+var csslint = require('gulp-csslint');
+ 
 
+gulp.task('lint_css', function() {
+  gulp.src('src/css/*.css')
+    .pipe(csslint())
+    .pipe(csslint.reporter());
+});
 
-gulp.task('lint_js', function() {
+gulp.task('lint_html5', function() {
+    return gulp.src('./src/*.html')
+        .pipe(html5Lint());
+});
+
+gulp.task('lint_js_console', function() {
   return gulp.src('src/js/*.js')
     .pipe(jshint())
     .pipe(jshint.reporter(stylish));

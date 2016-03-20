@@ -214,11 +214,11 @@ get_number_of_matching_words = function(user_input, tags_string) {
     }
     return num_of_matching_words;
 };
+
 //similar to get_number_of_matching_words, but searches 
 //tags of tags string to contain a portion of user intput
 //if user input is in a tag - it is considered to be a match.
-
-get_number_of_matching_words_rev= function(user_input, tags_string) {
+get_number_of_matching_words_rev = function(user_input, tags_string) {
     var tokens_to_exclude = [',', ':'];
     var num_of_matching_words = 0;
     var tokens = tags_string.toLowerCase().split(' ');
@@ -239,6 +239,12 @@ get_number_of_matching_words_rev= function(user_input, tags_string) {
     }
     }
     return num_of_matching_words;
+}
+
+get_number_of_mismatching_words_rev = function(user_input, tags_string){
+    var tokens = tags_string.toLowerCase().split(' ');
+    var number_of_matches = get_number_of_matching_words_rev(user_input, tags_string);
+    return (tokens.length-number_of_matches);
 }
 
 //this will count number of words in tag that

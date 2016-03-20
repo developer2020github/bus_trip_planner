@@ -179,6 +179,7 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
         }
 
         current_list[i].number_of_matching_words = current_number_of_matched_words;
+        current_list[i].number_of_mismatching_words = get_number_of_mismatching_words_rev(current_user_input, searchable_words);
     }
 
     //see if there are entire words matched and keep only items with highest number of words matched
@@ -336,6 +337,22 @@ GUIViewModel.prototype.get_idx_of_item_by_field_value = function(observable_arra
     return -1;
 };
 
+GUIViewModel.prototype.update_filter = function() {
+    //see if there is an exact match, and if yes - keep only item with exact match 
+    var min_number_of_mismatching_words = 10000000;
+    for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
+        if (this.current_filter_list()[i].number_of_mismatching_words < min_number_of_mismatching_words) {
+            min_number_of_mismatching_words = this.current_filter_list()[i].number_of_mismatching_words;
+        }
+    }
+
+    if (min_number_of_mismatching_words === 0) {
+        this.current_filter_list.remove(function(item) {
+            return (item.number_of_mismatching_words > 0);
+        });
+    }
+}
+
 GUIViewModel.prototype.apply_filter = function() {
     if (this.length_of_list === this.current_filter_list().length) {
         return; //nothing to filter on 
@@ -346,6 +363,7 @@ GUIViewModel.prototype.apply_filter = function() {
         return;
     }
 
+    this.update_filter();
     //if there is only one item in the list -  
     //set source/destination  
     if (this.current_filter_list().length === 1) {

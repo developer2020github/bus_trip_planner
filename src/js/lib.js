@@ -193,6 +193,7 @@ all_str_characters_found_in_tag = function(str, tag) {
     return true;
 };
 
+
 //returns number of matching words between user input and tags_string.
 //user input does not need to be splittable, tags string should 
 //consist of space - separated tags.
@@ -213,6 +214,32 @@ get_number_of_matching_words = function(user_input, tags_string) {
     }
     return num_of_matching_words;
 };
+//similar to get_number_of_matching_words, but searches 
+//tags of tags string to contain a portion of user intput
+//if user input is in a tag - it is considered to be a match.
+
+get_number_of_matching_words_rev= function(user_input, tags_string) {
+    var tokens_to_exclude = [',', ':'];
+    var num_of_matching_words = 0;
+    var tokens = tags_string.toLowerCase().split(' ');
+
+    var user_input_tokens = user_input.toLowerCase().split(' ');
+    for (var j = 0, len1 = user_input_tokens.length; j<len1; j++){
+    var user_input_l = user_input_tokens[j];
+    var match_found = false; 
+    for (var i = 0, len = tokens.length; i < len; i++) {
+        if ($.inArray(tokens[i], tokens_to_exclude) === -1) {
+            if (tokens[i].indexOf(user_input_l) > -1) {
+                match_found=true;
+            }
+        }
+    }
+    if (match_found){
+        num_of_matching_words++;
+    }
+    }
+    return num_of_matching_words;
+}
 
 //this will count number of words in tag that
 //contain all characters of str.

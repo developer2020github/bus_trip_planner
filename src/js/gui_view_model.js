@@ -104,8 +104,8 @@ GUIViewModel.prototype.get_step_and_status_msg = function() {
     }
     return ("Step " + String(this.current_step()) + this.step_msg());
 };
-
-GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(new_input) {
+/*
+GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match_old = function(new_input) {
     //this function  highlights matching characters in list view as user types
     //and filters in the items with max number of words matching user input in real time
     if (this.disable_auto_filter === true) {
@@ -129,7 +129,7 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
         var formatted_str = format_string_by_tag_matches(cur_str, current_user_input, "selected-char", "normal-char");
         this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
 
-        current_number_of_matched_words = get_number_of_matching_words(current_user_input, searchable_words);
+        current_number_of_matched_words = get_number_of_matching_words_rev(current_user_input, searchable_words);
 
         if (current_number_of_matched_words > max_number_of_matched_words) {
             max_number_of_matched_words = current_number_of_matched_words;
@@ -146,8 +146,62 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
             return (item.number_of_matching_words < max_number_of_matched_words);
         });
     }
-};
+};*/
 
+GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(new_input) {
+    //this function  highlights matching characters in list view as user types
+    //and filters in the items with max number of words matching user input in real time
+    if (this.disable_auto_filter === true) {
+        this.disable_auto_filter = false;
+        return;
+    }
+
+    var current_user_input = substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]);
+    if (current_user_input.trim() === ("")) {
+        this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
+        return;
+    }
+
+    var current_list = this.controller.get_filtered_list_for_current_step(this.current_step());
+
+    var max_number_of_matched_words = 0;
+    var current_number_of_matched_words = 0;
+    var i = 0;
+    var len = 0;
+    for (i = 0, len = current_list.length; i < len; i++) {
+        var cur_str = current_list[i].name;
+        var searchable_words = current_list[i].searcheable_words;
+
+        current_number_of_matched_words = get_number_of_matching_words_rev(current_user_input, searchable_words);
+
+        if (current_number_of_matched_words > max_number_of_matched_words) {
+            max_number_of_matched_words = current_number_of_matched_words;
+        }
+
+        current_list[i].number_of_matching_words = current_number_of_matched_words;
+    }
+
+    //see if there are entire words matched and keep only items with highest number of words matched
+    //i.e., if one word is matched - remove all with no words matched, if two is matched - remove 
+    //ones with one and zero, etc. Numbers of matches is already computed in the loop above
+    if (max_number_of_matched_words > 0) {
+
+        this.current_filter_list.removeAll();
+        for (i = 0; i < current_list.length; i++) {
+            if (current_list[i].number_of_matching_words === max_number_of_matched_words)
+                this.current_filter_list.push(current_list[i]);
+        }
+
+    } else {
+        this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
+    }
+    for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
+        cur_str = this.current_filter_list()[i].name;
+        var formatted_str = format_string_by_tag_matches(cur_str, current_user_input, "selected-char", "normal-char");
+        this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
+    }
+
+};
 GUIViewModel.prototype.set_selected_item = function(obj) {
     //used by contoller to process marker clicks 
     this.disable_auto_filter = true;

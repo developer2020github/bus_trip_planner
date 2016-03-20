@@ -36,7 +36,7 @@ var MapHandler = function(initial_pos, center_shift) {
     //all markers are created once and stored in an array.
     //all operations performed on markers will be requested 
     //via indexes into this array: upon creatiton of markers
-    //controller should ensure all map objects have thier marker idxs assigned to them,
+    //controller should ensure all map objects have their marker idxs assigned to them,
     //so each map object has a way to connect to its marker.
     this.markers = Array();
 
@@ -49,38 +49,38 @@ var MapHandler = function(initial_pos, center_shift) {
 
     //if this debug option is set to true, corners of Panoramio search squares will show on the map.
     //should always be set to false for relased versions of the program. 
-    this.debug_options["show_corner_markers"] = false;
-}
+    this.debug_options.show_corner_markers = false;
+};
 
 MapHandler.prototype.stop_animation = function(marker) {
     setTimeout(function() {
         marker.setAnimation(null);
     }, 3000);
-}
+};
 
 MapHandler.prototype.animate_marker = function(marker_idx) {
     //animates narker with idx === marker_idx
     this.markers[marker_idx].setAnimation(google.maps.Animation.BOUNCE);
     this.stop_animation(this.markers[marker_idx]);
-}
+};
 
 MapHandler.prototype.set_map_to_null = function(items) {
     //a shotcut to set map to null to an array of objects
     $.each(items, function(idx, i) {
         i.setMap(null);
-    })
-}
+    });
+};
 
 MapHandler.prototype.remove_directions_display = function() {
     //removes all direction lines and elimminates all relevant memorized data
     this.set_map_to_null(this.direction_displays);
     this.direction_displays = [];
     this.set_map_to_null(this.map_active_lines);
-    this.map_active_lines = []
-}
+    this.map_active_lines = [];
+};
 
 MapHandler.prototype.draw_walking_path = function(coordinates) {
-    //shows a green walking path betw3een two directions - 
+    //shows a green walking path between two points - 
     //source to a bus stop or from a bus stop to destination
     var directions_service = new google.maps.DirectionsService();
 
@@ -110,22 +110,22 @@ MapHandler.prototype.draw_walking_path = function(coordinates) {
             self.draw_source_destination_bus_line(coordinates);
         }
     });
-}
+};
 
 MapHandler.prototype.show_marker = function(marker_idx) {
     this.markers[marker_idx].setVisible(true);
-}
+};
 
 MapHandler.prototype.hide_all_markers = function() {
     //hides all markers
     $.each(this.markers, function(idx, m) {
         m.setVisible(false);
-    })
-}
+    });
+};
 
 MapHandler.prototype.hide_marker = function(marker_idx) {
     this.markers[marker_idx].setVisible(false);
-}
+};
 
 MapHandler.prototype.draw_source_destination_bus_line = function(coordinates) {
     //this is a ssimplified version - used for first release 
@@ -151,14 +151,14 @@ MapHandler.prototype.draw_source_destination_bus_line = function(coordinates) {
 
     line.setMap(this.map);
     this.map_active_lines.push(line);
-}
+};
 
 MapHandler.prototype.draw_line = function(coordinates) {
     //this is tested but not used in the first version of the program - 
     //need to add more points or use google driving directions 
     //function to display routes properly. 
-    console.log("MapHandler.prototype.draw_line");
-    console.log(coordinates);
+    //console.log("MapHandler.prototype.draw_line");
+    //console.log(coordinates);
     var line = new google.maps.Polyline({
         path: coordinates,
         strokeColor: "#2525B2",
@@ -168,22 +168,21 @@ MapHandler.prototype.draw_line = function(coordinates) {
 
     line.setMap(this.map);
     this.map_active_lines.push(line);
-}
+};
 
 MapHandler.prototype.remove_walking_directions = function() {
     $.each(this.direction_displays, function(idx, d) {
         d.setMap(null);
-    })
+    });
     this.direction_displays = [];
-}
+};
 
 MapHandler.prototype.remove_lines = function() {
     $.each(this.map_active_lines, function(idx, line) {
         line.setMap(null);
-    })
+    });
     this.map_active_lines = [];
-
-}
+};
 
 MapHandler.prototype.get_panoramio_request_url = function(o) {
     //builds a request url for Panoramio API
@@ -200,7 +199,7 @@ MapHandler.prototype.get_panoramio_request_url = function(o) {
         "&mapfilter=true" +
         "&callback=?";
     return panoramio_url;
-}
+};
 
 MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_photos) {
     //some photos, while are taken on the location, do not really show what we 
@@ -221,9 +220,9 @@ MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_p
             min_square_ratio = square_ratio;
         }
 
-    })
+    });
     return best_match;
-}
+};
 
 MapHandler.prototype.display_info_window = function(o) {
     //shows info window ttached to a marker based on a passed map object. 
@@ -243,7 +242,7 @@ MapHandler.prototype.display_info_window = function(o) {
             content_string = content_string +
                 '<div id ="image">' +
                 "<img src=" + "\"" + image_url + "\"" + "alt=\"" + "" + "\"" + ">" +
-                '</div>'
+                '</div>';
         }
 
         content_string = content_string + "</div>";
@@ -253,7 +252,7 @@ MapHandler.prototype.display_info_window = function(o) {
 
         infowindow.open(self.map, marker);
         self.map_active_windows_markers.push(infowindow);
-    }
+    };
 
     $.getJSON(this.get_panoramio_request_url(o))
         .done(function(data) {
@@ -265,7 +264,7 @@ MapHandler.prototype.display_info_window = function(o) {
             //any images
             open_window(self, false);
         });
-}
+};
 
 MapHandler.prototype.close_all_info_windows = function() {
     //close all the windows on the map 
@@ -274,7 +273,7 @@ MapHandler.prototype.close_all_info_windows = function() {
     });
 
     this.map_active_windows_markers = [];
-}
+};
 
 MapHandler.prototype.init_locations = function(locations) {
     //initialization function - should be called after map 
@@ -283,22 +282,22 @@ MapHandler.prototype.init_locations = function(locations) {
     var markers_idxs = Array();
     for (var i = 0, len = locations.length; i < len; i++) {
         var psn = {};
-        psn['lat'] = locations[i].lat;
-        psn['lng'] = locations[i].lng;
+        psn.lat = locations[i].lat;
+        psn.lng = locations[i].lng;
 
         var click_call_back_generator = function(controller, data_model_array_name, idx_into_data_model_array) {
             return function() {
                 controller.process_marker_click(data_model_array_name, idx_into_data_model_array);
             };
-        }
+        };
         var marker_click_call_back = click_call_back_generator(this.controller, locations[i].data_model_array_name, locations[i].idx_into_data_model_array);
         var marker = new google.maps.Marker({
             position: psn,
             map: this.map,
             title: locations[i].name,
             icon: locations[i].map_icon
-        })
-        marker.addListener('click', marker_click_call_back)
+        });
+        marker.addListener('click', marker_click_call_back);
         marker.setVisible(false);
         this.markers.push(marker);
         markers_idxs.push(i);
@@ -307,13 +306,13 @@ MapHandler.prototype.init_locations = function(locations) {
                 position: locations[i].search_window_upper_right_corner,
                 map: this.map,
                 title: locations[i].name + " right corner"
-            })
+            });
             var left_corner_marker = new google.maps.Marker({
                 position: locations[i].search_window_lower_left_corner,
                 map: this.map,
                 title: locations[i].name + " left  corner"
-            })
+            });
         }
     }
     return markers_idxs;
-}
+};

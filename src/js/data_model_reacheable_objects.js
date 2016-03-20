@@ -16,7 +16,7 @@ var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route,
 
     this.source = source;
     this.via_bus_route = bus_route;
-    this.reacheable_map_objects = Array()
+    this.reacheable_map_objects = Array();
     this.data_model = data_model;
 
     for (var i = 0, len_i = map_objects.length; i < len_i; i++) {
@@ -30,17 +30,17 @@ var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route,
                 (walking_dist > this.data_model.max_walking_distance_meters)) {
                 if ($.isEmptyObject(reacheable_map_object)) {
                     reacheable_map_object = $.extend({}, map_objects[i]);
-                    reacheable_map_object["closest_stop_idx_into_data_model_array"] = array_of_walkable_bus_stops[j].idx_into_data_model_array;
-                    reacheable_map_object["closest_stop_data_model_array"] = array_of_walkable_bus_stops[j].data_model_array_name;
-                    reacheable_map_object["distance_to_closest_stop"] = dist;
+                    reacheable_map_object.closest_stop_idx_into_data_model_array = array_of_walkable_bus_stops[j].idx_into_data_model_array;
+                    reacheable_map_object.closest_stop_data_model_array = array_of_walkable_bus_stops[j].data_model_array_name;
+                    reacheable_map_object.distance_to_closest_stop = dist;
 
-                    reacheable_map_object["via_bus_routes"] = Array();
-                    reacheable_map_object["via_bus_routes"].push(this.via_bus_route);
+                    reacheable_map_object.via_bus_routes = Array();
+                    reacheable_map_object.via_bus_routes.push(this.via_bus_route);
                 } else {
-                    if (reacheable_map_object["distance_to_closest_stop"] > dist) {
-                        reacheable_map_object["closest_stop_idx_into_data_model_array"] = array_of_walkable_bus_stops[j].idx_into_data_model_array;
-                        reacheable_map_object["closest_stop_data_model_array"] = array_of_walkable_bus_stops[j].data_model_array_name;
-                        reacheable_map_object["distance_to_closest_stop"] = dist;
+                    if (reacheable_map_object.distance_to_closest_stop > dist) {
+                        reacheable_map_object.closest_stop_idx_into_data_model_array = array_of_walkable_bus_stops[j].idx_into_data_model_array;
+                        reacheable_map_object.closest_stop_data_model_array = array_of_walkable_bus_stops[j].data_model_array_name;
+                        reacheable_map_object.distance_to_closest_stop = dist;
                     }
                 }
             }
@@ -50,7 +50,7 @@ var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route,
             this.reacheable_map_objects.push(reacheable_map_object);
         }
     }
-}
+};
 
 ReacheableObjects.prototype.compare_reachable_objects = function(o1, o2) {
     //will return 0 if objects are the same and their closest stop is the same
@@ -75,13 +75,13 @@ ReacheableObjects.prototype.compare_reachable_objects = function(o1, o2) {
     }
 
     return -1; //default
-}
+};
 
 ReacheableObjects.prototype.merge_reacheable_objects = function(reacheable_map_objects) {
     //many destination objects are reacheable via multiple routes. 
     //this method will merge info into one array, eliminating duplicates,  and return it.
     var merged = Array();
-    merged = merged.concat(this.reacheable_map_objects)
+    merged = merged.concat(this.reacheable_map_objects);
     if ($.isEmptyObject(reacheable_map_objects)) {
         return merged;
     }
@@ -90,8 +90,10 @@ ReacheableObjects.prototype.merge_reacheable_objects = function(reacheable_map_o
     //(because there is a closer
     //stop in the reacheable_map_objects then currently in merged) or 
     //updated with extra bus route information (if stop belongs to same route)
+    var i = 0; 
+    var len = 0;
     for (var j = 0, len1 = merged.length; j < len1; j++) {
-        for (var i = 0, len = reacheable_map_objects.length; i < len; i++) {
+        for (i = 0, len = reacheable_map_objects.length; i < len; i++) {
             var cmp = this.compare_reachable_objects(merged[j], reacheable_map_objects[i]);
             if (cmp === 2) {
                 //second route has closer stop. overwrite first stop info
@@ -105,11 +107,11 @@ ReacheableObjects.prototype.merge_reacheable_objects = function(reacheable_map_o
     }
 
     //step 2 - add new objects 
-    for (var i = 0, len = reacheable_map_objects.length; i < len; i++) {
+    for (i = 0, len = reacheable_map_objects.length; i < len; i++) {
         if (this.data_model.get_object_idx(reacheable_map_objects[i], merged) === -1) {
             merged.push(reacheable_map_objects[i]);
         }
     }
 
     return merged;
-}
+};

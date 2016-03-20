@@ -15,7 +15,7 @@ var FilteredArray = function(unfiltered_data, identifier) {
     this.identifier = identifier;
     this.memorized_filters = Array();
     this.arrays_matching_filters = Array();
-}
+};
 
 FilteredArray.prototype.get_filter_index = function(filter) {
     for (var i = 0, len = this.memorized_filters.lenght; i < len; i++) {
@@ -25,13 +25,13 @@ FilteredArray.prototype.get_filter_index = function(filter) {
     }
 
     return -1;
-}
+};
 
 
 FilteredArray.prototype.get_filtered_objects = function(filter) {
     var idx = this.get_filter_index(filter);
     if (idx > -1) {
-        return this.arrays_matching_filters[idx]
+        return this.arrays_matching_filters[idx];
     }
 
     var matching_array = Array();
@@ -44,7 +44,7 @@ FilteredArray.prototype.get_filtered_objects = function(filter) {
                 if (filter.hasOwnProperty(key)) {
                     if (objects[i].hasOwnProperty(key)) {
                         if (objects[i][key] === filter[key]) {
-                            matching_array.push(objects[i])
+                            matching_array.push(objects[i]);
                         }
                     }
                 }
@@ -57,7 +57,7 @@ FilteredArray.prototype.get_filtered_objects = function(filter) {
     this.arrays_matching_filters.push(matching_array);
 
     return (matching_array);
-}
+};
 
 
 //========================================================================================
@@ -70,12 +70,14 @@ var get_dice_coefficient = function(string1, string2) {
     var intersection = 0;
     var length1 = string1.length - 1;
     var length2 = string2.length - 1;
+    var i = 0; 
     if (length1 < 1 || length2 < 1) return 0;
     var bigrams2 = [];
-    for (var i = 0; i < length2; i++) {
+    for (i = 0; i < length2; i++) {
         bigrams2.push(string2.substr(i, 2));
     }
-    for (var i = 0; i < length1; i++) {
+
+    for (i = 0; i < length1; i++) {
         var bigram1 = string1.substr(i, 2);
         for (var j = 0; j < length2; j++) {
             if (bigram1 == bigrams2[j]) {
@@ -86,7 +88,7 @@ var get_dice_coefficient = function(string1, string2) {
         }
     }
     return (2.0 * intersection) / (length1 + length2);
-}
+};
 
 //returns true if values are within % tolerance of each other, 
 //and false otherwise. % is taken of the higher value
@@ -96,7 +98,7 @@ var values_within_tolerance = function(v1, v2, tolerance_percent) {
         return true;
     }
     return false;
-}
+};
 
 //applies selected_char style to matching charactes and normal_char to the rest of them 
 //mmatches are determined as follows: if a character of input string is found  in input tag
@@ -108,7 +110,7 @@ format_string_by_tag_matches = function(input_str, input_tag, selected_char, nor
 
     var begin = 1;
     var selected = 2;
-    var normal = 3
+    var normal = 3;
 
     var state = begin;
     var buf = "";
@@ -122,7 +124,7 @@ format_string_by_tag_matches = function(input_str, input_tag, selected_char, nor
                 state = normal;
             } else if (state === selected) {
                 result_str = result_str + apply_class_to_span(buf, selected_char);
-                buf = ""
+                buf = "";
                 state = normal;
             }
 
@@ -132,7 +134,7 @@ format_string_by_tag_matches = function(input_str, input_tag, selected_char, nor
                 state = selected;
             } else if (state === normal) {
                 result_str = result_str + apply_class_to_span(buf, normal_char);
-                buf = ""
+                buf = "";
                 state = selected;
             }
             buf = buf + input_str[i];
@@ -146,7 +148,7 @@ format_string_by_tag_matches = function(input_str, input_tag, selected_char, nor
     }
 
     return result_str;
-}
+};
 
 //the smaller the result  - the closer image is to square
 var get_square_ratio = function(h, w) {
@@ -156,16 +158,16 @@ var get_square_ratio = function(h, w) {
             r = 1 / r;
         }
         return 1 - r;
-    }
+};
 
 
 toRad = function(n) {
     return n * Math.PI / 180;
-}
+};
 
 toDeg = function(n) {
     return ((180 * n) / Math.PI);
-}
+};
 
 //does not include tag itself. Searches for the first 
 //instance of tag
@@ -177,7 +179,7 @@ substring_after_tag = function(str, tag) {
     }
 
     return str;
-}
+};
 
 //returns true if all characters of str are found in tag
 all_str_characters_found_in_tag = function(str, tag) {
@@ -189,7 +191,7 @@ all_str_characters_found_in_tag = function(str, tag) {
     }
 
     return true;
-}
+};
 
 //returns number of matching words between user input and tags_string.
 //user input does not need to be splittable, tags string should 
@@ -210,7 +212,7 @@ get_number_of_matching_words = function(user_input, tags_string) {
         }
     }
     return num_of_matching_words;
-}
+};
 
 //this will count number of words in tag that
 //contain all characters of str.
@@ -228,13 +230,13 @@ get_number_of_found_words = function(str, tag) {
     }
 
     return num_of_matching_words;
-}
+};
 
 //small helper function to wrap a string 
 //into span with css class
 apply_class_to_span = function(text, css_class) {
     return ('<span class="' + css_class + '">' + text + '</span>');
-}
+};
 
 
 //========================================================================================
@@ -288,7 +290,7 @@ get_destination_point = function(lat1, lng1, distance, bearing) {
     var dest_lng = (toDeg(lambda2)+540)%360-180;
 
     //return new LatLon(φ2.toDegrees(), (λ2.toDegrees()+540)%360-180); 
-    return {lat: dest_lat, lng: dest_lng}
+    return {lat: dest_lat, lng: dest_lng};
 };
 
 //ref. http://www.movable-type.co.uk/scripts/latlong.html
@@ -305,4 +307,4 @@ get_distance_between_two_locations = function(lat1, lon1, lat2, lon2) {
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var d = R * c;
     return d;
-}
+};

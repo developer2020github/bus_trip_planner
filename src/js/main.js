@@ -13,10 +13,10 @@
 //calculates extra data (distrances, reacheable destinations, etc.) 
 //and provides data-related services to other 
 //portions of the application. 
-//Data consists of three modules: 
+//Data model consists of three modules: 
 //data_model_bus_routes.js - internal class of data model
 //data_model_reacheable_objects.js - internal class of data model 
-//data_model.js - main 
+//data_model.js - main class of data model
 //
 //3.  Map handler provides map-related services (show markers, routes, etc.)
 //One module (map_handler.j)
@@ -31,34 +31,33 @@
 //
 //6. Data scripts - located in folder js/generated_data
 // There are three scripts: bus_routes.js, bus_stops.js and map_objects.js
-// They are generated from excel files by Python script and contain all the 
+// They are generated from Excel files by Python script and contain all the 
 // data for trip planner. Python script needs to be used only once, to convert Excel into 
 // JS. Excel files and Python script are technically not parts of a front-end application, 
 // but are provided with the source to facilitate understansding of the data structures. 
-// Python script and source Excel files are located in directory map_utilities
+// Python script and source Excel files are located in directory map_utilities.
 //========================================================================================
 
 
 //========================================================================================
 //Constanst (can be made configurable too)
-var CITY_NAME = "ABU DHABI"
+var CITY_NAME = "ABU DHABI";
 var MAP_CENTER_SHIFT = 200; //tune map center position so that GUI does not cover markers
 var MAX_WALKING_DISTANCE_METERS = 2000;
 
 //======================================================================================
 var controller = {};
 var Controller = function() {
-    var self = this;
     var map_hanler = {};
     this.data_model = new DataModel(bus_routes_data, bus_stops, map_objects, MAX_WALKING_DISTANCE_METERS);
     this.gui_view = new GUIViewModel(this, CITY_NAME);
     this.map_loaded = false;
     ko.applyBindings(this.gui_view);
-}
+};
 
 Controller.prototype.map_is_available = function() {
     return this.map_loaded;
-}
+};
 
 Controller.prototype.reset_formatted_displayed_names = function(objects) {
     //used on re-initialization of the list to remove highlights 
@@ -66,7 +65,7 @@ Controller.prototype.reset_formatted_displayed_names = function(objects) {
         o.formatted_displayed_name_for_filter(o.default_formatted_displayed_name_for_filter);
     });
     return objects;
-}
+};
 
 Controller.prototype.get_filtered_list_for_current_step = function(step) {
     //returns list of items that should be displayed in current step
@@ -95,18 +94,18 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
         var step_3_routes = Array();
         $.each(this.gui_view.selected_destination().via_bus_routes, function(index, value) {
             var route_to_display = {};
-            route_to_display["name"] = value;
-            route_to_display["searcheable_words"] = value;
-            route_to_display["formatted_displayed_name_for_filter"] = ko.observable("<b>" + value + "</b>");
-            route_to_display["default_formatted_displayed_name_for_filter"] = "<b>" + value + "</b>";
+            route_to_display.name = value;
+            route_to_display.searcheable_words = value;
+            route_to_display.formatted_displayed_name_for_filter = ko.observable("<b>" + value + "</b>");
+            route_to_display.default_formatted_displayed_name_for_filter = "<b>" + value + "</b>";
             step_3_routes.push(route_to_display);
         });
 
         filtered_list = step_3_routes;
     }
     return (this.reset_formatted_displayed_names(filtered_list));
+};
 
-}
 Controller.prototype.process_marker_click = function(data_model_array_name, idx_into_data_model_array) {
     //is called by map handler when marker is clicked.
     //map hanlder also passed data model array name and idx into it
@@ -134,7 +133,7 @@ Controller.prototype.process_marker_click = function(data_model_array_name, idx_
         this.map_handler.display_info_window(obj);
         this.map_handler.animate_marker(obj.marker_idx);
     }
-}
+};
 
 Controller.prototype.set_filtered_item = function(item) {
     //handles map effects of item selection from a gui view
@@ -147,8 +146,7 @@ Controller.prototype.set_filtered_item = function(item) {
         this.map_handler.animate_marker(item.marker_idx);
         this.map_handler.display_info_window(item);
     }
-
-}
+};
 
 Controller.prototype.apply_filter_to_markers = function() {
     //ensure only markers that are in current list are shown.
@@ -164,7 +162,7 @@ Controller.prototype.apply_filter_to_markers = function() {
     if (this.gui_view.current_step() === 2) {
         this.map_handler.show_marker(this.gui_view.selected_source().marker_idx);
     }
-}
+};
 
 Controller.prototype.process_step_update = function() {
     //called by GUI view on step transitions and 
@@ -181,7 +179,7 @@ Controller.prototype.process_step_update = function() {
             this.map_handler.show_marker(this.gui_view.current_filter_list()[i].marker_idx);
         }
         if (this.gui_view.current_step() == 2) {
-            this.map_handler.show_marker(this.gui_view.selected_source().marker_idx)
+            this.map_handler.show_marker(this.gui_view.selected_source().marker_idx);
         }
 
     } else if (this.gui_view.current_step() == 3) {
@@ -201,7 +199,7 @@ Controller.prototype.process_step_update = function() {
         this.map_handler.show_marker(this.gui_view.selected_source().marker_idx);
         this.map_handler.show_marker(this.gui_view.selected_destination().marker_idx);
     }
-}
+};
 
 Controller.prototype.set_map_available = function() {
     //called by map loading callback 
@@ -212,8 +210,7 @@ Controller.prototype.set_map_available = function() {
     this.data_model.assign_marker_idxs(this.data_model.map_objects, marker_idxs);
     this.map_loaded = true;
     this.process_step_update();
-
-}
+};
 
 function initMap() {
     //map load call back 

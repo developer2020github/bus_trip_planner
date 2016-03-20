@@ -18,13 +18,14 @@ var BusRoutes = function(bus_routes_data, bus_stops, data_model) {
     this.data_model = data_model;
 
     var len = bus_routes_data.length;
-    for (var i = 0; i < len; i++) {
+    var i = 0;
+    for (i = 0; i < len; i++) {
         if ($.inArray(bus_routes_data[i].route, this.list) === -1) {
             this.list.push(bus_routes_data[i].route);
         }
     }
 
-    for (var i = 0, len1 = this.list.length; i < len1; i++) {
+    for (i = 0, len1 = this.list.length; i < len1; i++) {
         var stops = Array();
         var walkable_stops = Array();
 
@@ -46,11 +47,11 @@ var BusRoutes = function(bus_routes_data, bus_stops, data_model) {
         }
 
         this.by_number[this.list[i]] = {};
-        this.by_number[this.list[i]]['stops'] = stops;
-        this.by_number[this.list[i]]['walkable_stops'] = walkable_stops;
+        this.by_number[this.list[i]].stops = stops;
+        this.by_number[this.list[i]].walkable_stops = walkable_stops;
     }
 
-}
+};
 
 BusRoutes.prototype.get_closest_stop = function(route, map_object) {
     var closest_stop = {};
@@ -66,7 +67,7 @@ BusRoutes.prototype.get_closest_stop = function(route, map_object) {
     });
 
     return closest_stop;
-}
+};
 
 BusRoutes.prototype.get_route_between_stops = function(route, stop1, stop2) {
     //this is tested but not used yet - need to use Google driving directions 
@@ -78,7 +79,7 @@ BusRoutes.prototype.get_route_between_stops = function(route, stop1, stop2) {
 
     if (start_idx > end_idx) {
         start_idx = idx2;
-        end_idx = idx1
+        end_idx = idx1;
     }
 
     var route_between_stops = Array();
@@ -87,7 +88,7 @@ BusRoutes.prototype.get_route_between_stops = function(route, stop1, stop2) {
     }
 
     return route_between_stops;
-}
+};
 
 BusRoutes.prototype.get_stop_idx = function(route, stop) {
     for (var i = 0, len = this.by_number[route].stops.length; i < len; i++) {
@@ -95,7 +96,7 @@ BusRoutes.prototype.get_stop_idx = function(route, stop) {
             return i;
         }
     }
-}
+};
 
 BusRoutes.prototype.get_list_of_routes_object_can_be_reached_from = function(map_object) {
     var list_of_routes = Array();
@@ -105,7 +106,7 @@ BusRoutes.prototype.get_list_of_routes_object_can_be_reached_from = function(map
         }
     }
     return list_of_routes;
-}
+};
 
 BusRoutes.prototype.is_object_in_walking_distance = function(map_object, route_number) {
     for (var i = 0, len = this.by_number[route_number].walkable_stops.length; i < len; i++) {
@@ -115,4 +116,4 @@ BusRoutes.prototype.is_object_in_walking_distance = function(map_object, route_n
         }
     }
     return false;
-}
+};

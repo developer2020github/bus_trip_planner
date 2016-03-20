@@ -22,7 +22,7 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     //add unique integer ID for easy comparisons between various objects. 
     //the idea is that within this applciation all we care about 
     //is if two objects have same "parent" from original data scripts. 
-    var object_idx = 1
+    var object_idx = 1;
     object_idx = this.decorate_objects(this.bus_stops, object_idx, "bus_stops");
     object_idx = this.decorate_objects(this.map_objects, object_idx, "map_objects");
     this.decorate_objects(this.bus_routes_data, object_idx, "bus_routes_data");
@@ -33,7 +33,7 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
 
     this.all_map_objects = this.map_objects.concat(this.bus_stops);
 
-    this.destinations_by_source = {}
+    this.destinations_by_source = {};
     this.max_walking_distance_meters = max_walking_distance_meters;
     this.matrix_items = Array();
     this.local_distance_matrix = Array();
@@ -50,21 +50,21 @@ var DataModel = function(bus_routes_data, bus_stops, map_objects, max_walking_di
     this.reacheable_objects_by_source = Array();
 
     this.bus_routes = new BusRoutes(this.bus_routes_data, this.bus_stops, this);
-}
+};
 
 DataModel.prototype.convert_to_array_of_coordinates = function(map_objects) {
     //takes array of map objects and returns array of lat lon objects 
     var coordinates = Array();
 
     $.each(map_objects, function(idx, o) {
-        coordinates.push({ lat: o.lat, lng: o.lng })
-    })
+        coordinates.push({ lat: o.lat, lng: o.lng });
+    });
 
     return coordinates;
-}
+};
 
 DataModel.prototype.get_map_center_coordinates = function() {
-    //used during initialization to center map better (ensure all sources and distiunations are shown at 
+    //used during initialization to center map better (ensure all sources and distinations are shown at 
     //each step)
     var min_lat = 1000.0;
     var min_lng = 1000.0;
@@ -86,27 +86,29 @@ DataModel.prototype.get_map_center_coordinates = function() {
         if (o.lng > max_lng) {
             max_lng = o.lng;
         }
-    })
+    });
 
     var r_lat = (max_lat + min_lat) / 2.0;
     var r_lng = (max_lng + min_lng) / 2.0;
     return ({ lat: r_lat, lng: r_lng });
-}
+};
 
 DataModel.prototype.map_objects_are_equal = function(o1, o2) {
     //comparison based on object id
     if ((o1.hasOwnProperty("object_id")) && (o2.hasOwnProperty("object_id"))) {
-        return (o1.object_id === o2.object_id)
+        return (o1.object_id === o2.object_id);
     } else {
         return false;
     }
-}
+};
 
 DataModel.prototype.get_reacheable_objects = function(source) {
     //see if list was already built for this source. If 
     //yes - return it, if not - build it and memorize for future use. 
     var reacheable_map_objects = Array();
-    for (var i = 0, len = this.reacheable_objects_by_source.length; i < len; i++) {
+    var i = 0;
+    var len = 0;
+    for (i = 0, len = this.reacheable_objects_by_source.length; i < len; i++) {
         if (this.reacheable_objects_by_source[i].source === source) {
             reacheable_map_objects = this.reacheable_objects_by_source[i].reacheable_map_objects;
         }
@@ -118,7 +120,7 @@ DataModel.prototype.get_reacheable_objects = function(source) {
 
     var routes_to_check = this.bus_routes.get_list_of_routes_object_can_be_reached_from(source);
 
-    for (var i = 0, len = routes_to_check.length; i < len; i++) {
+    for (i = 0, len = routes_to_check.length; i < len; i++) {
 
         var reacheable_objects = new ReacheableObjects(source,
             this.bus_routes.by_number[routes_to_check[i]].walkable_stops,
@@ -133,40 +135,40 @@ DataModel.prototype.get_reacheable_objects = function(source) {
     var stored_object = {
         reacheable_map_objects: reacheable_map_objects,
         source: source
-    }
+    };
 
     this.reacheable_objects_by_source.push(stored_object);
     return reacheable_map_objects;
-}
+};
 
 DataModel.prototype.get_map_objects = function(filter) {
     //retuns map objects that match the filter (i.e. each property of filter matches 
     //each property of map object)
     return this.filtered_map_objects.get_filtered_objects(filter);
-}
+};
 
 DataModel.prototype.assign_marker_idxs = function(objects, idxs) {
     //indexes into markers array - to be called by controller after map was initialized.
     for (var i = 0, len = objects.length; i < len; i++) {
-        objects[i]['marker_idx'] = idxs[i];
+        objects[i].marker_idx = idxs[i];
     }
-}
+};
 
 DataModel.prototype.decorate_map_objects = function(objects) {
     for (var i = 0, len = objects.length; i < len; i++) {
-        objects[i]["idx_into_distance_matrix"] = -1;
+        objects[i].idx_into_distance_matrix = -1;
 
         //in this verion only communities can be sources 
         if (objects[i].class === "community") {
-            objects[i].map_icon = "image/source_marker.png"
+            objects[i].map_icon = "image/source_marker.png";
         } else {
-            objects[i].map_icon = "image/destination_marker.png"
+            objects[i].map_icon = "image/destination_marker.png";
         }
 
         //need these for Panoramio API to search for photos in
         //a box around the location point
-        objects[i]["search_window_upper_right_corner"] = get_destination_point(objects[i].lat, objects[i].lng, 1000, 45);
-        objects[i]["search_window_lower_left_corner"] = get_destination_point(objects[i].lat, objects[i].lng, 1000, 225);
+        objects[i].search_window_upper_right_corner = get_destination_point(objects[i].lat, objects[i].lng, 1000, 45);
+        objects[i].search_window_lower_left_corner = get_destination_point(objects[i].lat, objects[i].lng, 1000, 225);
 
         //create names for GUI
         //exclude "al" at the beggining 
@@ -176,30 +178,30 @@ DataModel.prototype.decorate_map_objects = function(objects) {
 
             str = substring_after_tag(str.toLowerCase(), "al").trim();
         }
-        objects[i]["searcheable_words"] = str;
+        objects[i].searcheable_words = str;
         //this is default constant display of the names
-        objects[i]['default_formatted_displayed_name_for_filter'] = "<b>" + objects[i].name + "</b>";
+        objects[i].default_formatted_displayed_name_for_filter = "<b>" + objects[i].name + "</b>";
         //this is used to highlight characters
-        objects[i]["formatted_displayed_name_for_filter"] =
+        objects[i].formatted_displayed_name_for_filter =
             ko.observable("<b>" + objects[i].name + "</b>");
     }
 
-}
+};
 
 DataModel.prototype.get_data_object = function(data_model_array_name, idx_into_data_model_array) {
     //get an object based on its data model array name and index into this array. 
     return this[data_model_array_name][idx_into_data_model_array];
-}
+};
 
 DataModel.prototype.decorate_objects = function(objects, object_idx, data_model_array_name) {
     for (var i = 0, len = objects.length; i < len; i++) {
-        objects[i]["object_id"] = object_idx;
-        objects[i]["data_model_array_name"] = data_model_array_name;
-        objects[i]["idx_into_data_model_array"] = i;
+        objects[i].object_id = object_idx;
+        objects[i].data_model_array_name = data_model_array_name;
+        objects[i].idx_into_data_model_array = i;
         object_idx++;
     }
     return object_idx;
-}
+};
 
 
 DataModel.prototype.objects_within_walking_distance = function(o1, o2) {
@@ -207,7 +209,7 @@ DataModel.prototype.objects_within_walking_distance = function(o1, o2) {
         return true;
     }
     return false;
-}
+};
 
 DataModel.prototype.estimate_distance_between_two_map_objects = function(o1, o2) {
     if (this.map_objects_at_same_location(o1, o2)) {
@@ -216,14 +218,14 @@ DataModel.prototype.estimate_distance_between_two_map_objects = function(o1, o2)
 
     var d = get_distance_between_two_locations(o1.lat, o1.lng, o2.lat, o2.lng);
     return d;
-}
+};
 
 DataModel.prototype.map_objects_at_same_location = function(o1, o2) {
     if ((o1.lng === o2.lng) && (o1.lat === o2.lat)) {
         return true;
     }
     return false;
-}
+};
 
 DataModel.prototype.map_object_location_is_in_array = function(o, map_objects) {
     for (var i = 0, len = map_objects.length; i < len; i++) {
@@ -231,7 +233,7 @@ DataModel.prototype.map_object_location_is_in_array = function(o, map_objects) {
             return true;
         }
     }
-}
+};
 
 DataModel.prototype.get_object_idx = function(o, array_of_objects) {
     for (var i = 0, len = array_of_objects.length; i < len; i++) {
@@ -241,7 +243,7 @@ DataModel.prototype.get_object_idx = function(o, array_of_objects) {
     }
 
     return -1;
-}
+};
 
 DataModel.prototype.location_is_ok_for_walking = function(o) {
     //the idea is to cover locations user actually checked himself and knows they 
@@ -256,7 +258,7 @@ DataModel.prototype.location_is_ok_for_walking = function(o) {
     }
 
     return false;
-}
+};
 
 DataModel.prototype.build_local_distance_matrix = function() {
     //Google Maps API does not allow to pull more than 25 origins or destinations or 
@@ -270,7 +272,7 @@ DataModel.prototype.build_local_distance_matrix = function() {
     //see http://www.movable-type.co.uk/scripts/latlong.html
     this.prepare_locations_for_distance_matrix();
     this.populate_local_distance_matrix();
-}
+};
 
 DataModel.prototype.prepare_locations_for_distance_matrix = function() {
 
@@ -289,7 +291,7 @@ DataModel.prototype.prepare_locations_for_distance_matrix = function() {
     add_map_objects(map_objects, this);
 
     this.matrix_items = locations;
-}
+};
 
 DataModel.prototype.get_estimated_distance_in_meters_between_two_objects = function(o1, o2) {
     //get distance based on pre-built distance matrix
@@ -305,16 +307,16 @@ DataModel.prototype.get_estimated_distance_in_meters_between_two_objects = funct
     }
 
     return (this.local_distance_matrix[row_idx][col_idx]);
-}
+};
 
 DataModel.prototype.populate_local_distance_matrix = function() {
     for (var i = 0, len = this.matrix_items.length; i < len; i++) {
         this.matrix_items[i].idx_into_distance_matrix = i;
         var a = Array(len);
-        for (var j = i, len = this.matrix_items.length; j < len; j++) {
+        for (var j = i, len1 = this.matrix_items.length; j < len1; j++) {
             var d = this.estimate_distance_between_two_map_objects(this.matrix_items[i], this.matrix_items[j]);
             a[j] = d;
         }
         this.local_distance_matrix.push(a);
     }
-}
+};

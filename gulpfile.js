@@ -10,6 +10,23 @@ var cache = require('gulp-cache');
 var del = require('del');
 var runSequence = require('run-sequence');
 var htmlmin = require('gulp-htmlmin');
+var jshint = require('gulp-jshint');
+var stylish = require('jshint-stylish');
+
+
+gulp.task('lint_js', function() {
+  return gulp.src('src/js/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish));
+});
+
+gulp.task('lint_js_log', function() {
+  return gulp.src('src/js/*.js')
+    .pipe(jshint())
+    .pipe(jshint.reporter('gulp-jshint-file-reporter', {
+      filename: __dirname + '/jshint-output.log'
+    }));
+});
 
 gulp.task('prefix_css', function () {
 	return gulp.src('src/css_source/*.css')

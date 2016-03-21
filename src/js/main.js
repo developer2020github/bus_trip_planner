@@ -138,7 +138,7 @@ Controller.prototype.process_marker_click = function(data_model_array_name, idx_
     }
 };
 
-Controller.prototype.set_filtered_item = function(item) {
+Controller.prototype.set_active_item = function(item) {
     //handles map effects of item selection from a gui view
     if (!this.map_is_available()) {
         return;
@@ -156,7 +156,13 @@ Controller.prototype.apply_filter_to_markers = function() {
     if (!this.map_is_available()) {
         return;
     }
+
+    //this is applicable only to steps <3 
+    if (this.gui_view.current_step()>2){
+        return; 
+    }
     this.map_handler.hide_all_markers();
+    this.map_handler.close_all_info_windows();
 
     for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
         this.map_handler.show_marker(this.gui_view.current_filter_list()[i].marker_idx);

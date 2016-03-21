@@ -65,7 +65,7 @@ var GUIViewModel = function(controller, city_name) {
 
         //disable auto filter (one implemented in highlight_chars_and_filter_by_closest_match 
         //to avoid more then one item being 
-        //displayed. (say,lic user clicks on Yas Mall. But 
+        //displayed. (say, user clicks on Yas Mall. But 
         //Yas Mall cinema will also have two matching words and will 
         //be picked by auto-filter)
         self.disable_auto_filter = true;
@@ -73,6 +73,9 @@ var GUIViewModel = function(controller, city_name) {
         self.current_filter_list.remove(function(item) {
             return (item.name != clicked_item.name);
         });
+
+        //self.controller.apply_filter_to_markers();
+        self.controller.set_active_item(clicked_item);
     };
 };
 
@@ -159,9 +162,7 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
     var current_user_input = substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]);
     if (current_user_input.trim() === ("")) {
         this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
-         if (this.current_step() < 3) {
         this.controller.apply_filter_to_markers();
-         }
         return;
     }
 
@@ -206,10 +207,8 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
     }
 
     //hide all markers that are not in the filtered list. 
-    //this applies only to steps 1 and 2 
-    if (this.current_step() < 3) {
         this.controller.apply_filter_to_markers();
-    }
+    
 };
 
 GUIViewModel.prototype.set_selected_item = function(obj) {
@@ -378,7 +377,7 @@ GUIViewModel.prototype.apply_filter = function() {
     //set source/destination  
     if (this.current_filter_list().length === 1) {
         this.filtered_location = this.current_filter_list()[0];
-        this.controller.set_filtered_item(this.filtered_location);
+        this.controller.set_active_item(this.filtered_location);
         this.set_filtered_location_message();
         if (this.current_step() === 1) {
             this.selected_source(this.filtered_location);
@@ -389,10 +388,9 @@ GUIViewModel.prototype.apply_filter = function() {
     }
 
     //hide all markers that are not in the filtered list. 
-    //this applies only to steps 1 and 2 
-    if (this.current_step() < 3) {
+
         this.controller.apply_filter_to_markers();
-    }
+    
 };
 
 GUIViewModel.prototype.set_filtered_location_message = function() {

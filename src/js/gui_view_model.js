@@ -32,14 +32,14 @@ var GUIViewModel = function(controller, city_name) {
     this.cityName = ko.observable(city_name);
 
     this.messages = {
-        STEP1_AWAITING_INPUT: '<span class ="msg-normal">: Please select starting point and apply filter to confirm. You can use filter to narrow the list.</span>',
-        STEP1_NO_SOURCE_SELECTED: '<span class ="msg-warning">: No starting point selected. Note you need to apply filter to confirm your selection.</span>',
+        STEP1_AWAITING_INPUT: '<span class ="msg-normal">: Please select starting point and click next step to continue. You can use filter to narrow the list.</span>',
+        STEP1_NO_SOURCE_SELECTED: '<span class ="msg-warning">: No starting point selected.</span>',
         STEP1_SOURCE_SELECTED: '<span class ="msg-normal">: Please click next step to continue</span>',
-        STEP2_AWAITING_INPUT: '<span class ="msg-normal">: Please select destination and apply filter to confirm. You can use filter to narrow the list.</span>',
-        STEP2_NO_DESTINATION_SELECTED: '<span class ="msg-warning">: No destination selected. Note you need to apply filter to confirm your selection.</span>',
+        STEP2_AWAITING_INPUT: '<span class ="msg-normal">: Please select destination and click next step to continue. You can use filter to narrow the list.</span>',
+        STEP2_NO_DESTINATION_SELECTED: '<span class ="msg-warning">: No destination selected.</span>',
         STEP2_DESTINATION_SELECTED: '<span class ="msg-normal">: Please click next step to continue.</span>',
         STEP2_ONE_BUS: '<span class ="msg-normal">: Please click next to complete.</span>',
-        STEP3_SELECT_BUS_ROUTE_MESSAGE: '<span class ="msg-normal">: Please select bus route.</span>',
+        STEP3_SELECT_BUS_ROUTE_MESSAGE: '<span class ="msg-normal">: Please select bus route and click next step to continue.</span>',
         STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: '<span class ="msg-warning">:  No bus route selected. Note you need to apply filter to confirm your selection.</span>',
         STEP3_ROUTE_SELECTED: '<span class ="msg-normal">:Please click next step to complete.</span>'
     };
@@ -211,6 +211,7 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
         this.controller.apply_filter_to_markers();
     }
 };
+
 GUIViewModel.prototype.set_selected_item = function(obj) {
     //used by contoller to process marker clicks 
     this.disable_auto_filter = true;
@@ -267,6 +268,7 @@ GUIViewModel.prototype.plan_new_trip = function() {
 
 GUIViewModel.prototype.next_step = function() {
     //callback for next step button 
+    this.apply_filter(); 
     if (this.current_step() === 1) {
         if (!$.isEmptyObject(this.filtered_location)) {
             this.selected_source(this.filtered_location);

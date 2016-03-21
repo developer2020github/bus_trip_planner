@@ -110,6 +110,9 @@ Controller.prototype.process_marker_click = function(data_model_array_name, idx_
     //is called by map handler when marker is clicked.
     //map hanlder also passed data model array name and idx into it
 
+    //close all data windows first 
+    this.map_handler.close_all_info_windows(); 
+
     var obj = this.data_model.get_data_object(data_model_array_name, idx_into_data_model_array);
 
     //in step 2, clicking on alreasy selected source should not reset the list - 

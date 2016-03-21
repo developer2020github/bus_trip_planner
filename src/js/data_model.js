@@ -180,10 +180,10 @@ DataModel.prototype.decorate_map_objects = function(objects) {
         }
         objects[i].searcheable_words = str;
         //this is default constant display of the names
-        objects[i].default_formatted_displayed_name_for_filter = "<b>" + objects[i].name + "</b>";
+        objects[i].default_formatted_displayed_name_for_filter = "<b class='normal-char'>" + objects[i].name + "</b>";
         //this is used to highlight characters
         objects[i].formatted_displayed_name_for_filter =
-            ko.observable("<b>" + objects[i].name + "</b>");
+            ko.observable("<b class='normal-char'>" + objects[i].name + "</b>");
     }
 
 };

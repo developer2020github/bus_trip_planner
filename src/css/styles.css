@@ -11,19 +11,22 @@
      z-index: 999;
      background-color: #473C3C;
      color: #CFCFCF;
-     max-width: 320px;
-     min-width: 320px;
+     width: 320px;
  }
+ 
   .custom-padding {
      margin-left: 2px;
      margin-right: 2px;
      padding-left: 2px !important;
      padding-right: 2px !important;
  }
+
  #applicationTitle {
      display: inline-block;
      width: 86%;
      text-align: center;
+     font-size: 15px;
+     font-weight: bold;
  }
  
  .btn-rev {
@@ -40,7 +43,34 @@
         margin-bottom: 5px;
  }
  
+@media (max-width: 500px){ /* Mobile */ 
  .grid-item {
+     border: solid;
+     border-width: 2px;
+     border-radius: 3px;
+     border-color: #CBC9C9;
+     padding: 5px;
+     margin-top: 3px;
+     display: block;
+     font-size: 18px
+ }
+}
+
+ @media (max-width: 979px){ /* Tablet */ 
+ .grid-item {
+     border: solid;
+     border-width: 2px;
+     border-radius: 3px;
+     border-color: #CBC9C9;
+     padding: 3px;
+     margin-top: 3px;
+     display: block;
+     font-size: 16px
+ }
+}
+
+ @media  (min-width: 980px){ /* Desktop */ 
+     .grid-item {
      border: solid;
      border-width: 2px;
      border-radius: 3px;
@@ -48,14 +78,15 @@
      padding: 1px;
      margin-top: 3px;
      display: block;
+     font-size: 14px;
  }
+}
  
  #previousStepButton {
      width: 132px !important;
  }
  
 
- 
  .group-map-gui {
      margin-top: 5px;
  }

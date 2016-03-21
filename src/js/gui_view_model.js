@@ -159,6 +159,9 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
     var current_user_input = substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]);
     if (current_user_input.trim() === ("")) {
         this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
+         if (this.current_step() < 3) {
+        this.controller.apply_filter_to_markers();
+         }
         return;
     }
 
@@ -202,6 +205,11 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
         this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
     }
 
+    //hide all markers that are not in the filtered list. 
+    //this applies only to steps 1 and 2 
+    if (this.current_step() < 3) {
+        this.controller.apply_filter_to_markers();
+    }
 };
 GUIViewModel.prototype.set_selected_item = function(obj) {
     //used by contoller to process marker clicks 

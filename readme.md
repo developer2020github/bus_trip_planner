@@ -4,6 +4,8 @@ Project 5 - neighbourhood map:
 Abu Dhabi bus trip planner 
 2016
 
+For status on P5-specific review comments please refer to file P5ReviewItemsStatus.txt.
+
 ================================================
 Introduction.
 This readme note covers following topics: 
@@ -55,7 +57,7 @@ to be available from a source if
 Destinations are shown by blue markers with "D".
 Selected source is always shown and is not part of the filtering logic. 
 Current version of the application has 3 bus routes and a total of 18 destination objects (so requirements of project 5
-are met in step 2 ). User should end up selecting one destination (requires an additional application of filter to confirm).
+are met in step 2 ). User should end up selecting one destination .
 Once this is done, user can click on the next button to transition to step 3.
 
 Step 3: 
@@ -147,10 +149,7 @@ To transition step 2:
 1) run the program 
 2)Transition to step 2 . To do so,
 a) select any community out of three (by clicking on a marker, by clicking on community name in the list or by typing community name in the text input area)
-b) apply filter to confirm your selection (I am thinking to remove this 
-extra filter application in the next versions - it is not really required if only one 
-item is already filtered)
-c) click 'next step'
+b) click 'next step'
 
 Please note that source, selected in step 1, will always be displayed in step 2. it is not part of filtering 
 logic. 
@@ -162,10 +161,9 @@ clear rest of items form list view
 - applying filter if only one item meets filter criteria will bounce corresponding marker, 
 show info window on top of the selected marker (pcture from Panoramio API obtained via AJAX request)
 and remove rest of the markers from the map
-- applying filter if more than one item meets filtering criteria will remove other markers from the map
 - there is real-time filtering: user can type location names into text input area, 
-matching charactes will be highlighted, and if complete words are matched - non-matching 
-items will be removed in the list. I.e., if user types "mall" - list will display all malls, etc. 
+matching characters will be highlighted, and non-matching 
+items will be removed in the list and map. I.e., if user types "mall" - list and map will display all malls, etc. 
 - clicking on the marker will make it bounce, display info window and make corresponding item the 
 only item in the list view
 

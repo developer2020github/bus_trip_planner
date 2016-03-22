@@ -369,9 +369,9 @@ GUIViewModel.prototype.reset_filter = function() {
     this.init_filtered_location_name();
     this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
     this.controller.apply_filter_to_markers();
-    this.selected_destination({});
     if (this.current_step() === 1) {
         this.selected_source({});
+        this.selected_destination({});
         this.step_msg(this.messages.STEP1_AWAITING_INPUT);
     } else if (this.current_step() === 2) {
 

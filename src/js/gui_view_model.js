@@ -107,49 +107,6 @@ GUIViewModel.prototype.get_step_and_status_msg = function() {
     }
     return ("Step " + String(this.current_step()) + this.step_msg());
 };
-/*
-GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match_old = function(new_input) {
-    //this function  highlights matching characters in list view as user types
-    //and filters in the items with max number of words matching user input in real time
-    if (this.disable_auto_filter === true) {
-        this.disable_auto_filter = false;
-        return;
-    }
-
-    var current_user_input = substring_after_tag(new_input, this.filtered_location_name_defaults[this.current_step() - 1]);
-    if (current_user_input.trim() === ("")) {
-        this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
-        return;
-    }
-
-    var max_number_of_matched_words = 0;
-    var current_number_of_matched_words = 0;
-
-    for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
-        var cur_str = this.current_filter_list()[i].name;
-        var searchable_words = this.current_filter_list()[i].searcheable_words;
-
-        var formatted_str = format_string_by_tag_matches(cur_str, current_user_input, "selected-char", "normal-char");
-        this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
-
-        current_number_of_matched_words = get_number_of_matching_words_rev(current_user_input, searchable_words);
-
-        if (current_number_of_matched_words > max_number_of_matched_words) {
-            max_number_of_matched_words = current_number_of_matched_words;
-        }
-
-        this.current_filter_list()[i].number_of_matching_words = current_number_of_matched_words;
-    }
-
-    //see if there are entire words matched and keep only items with highest number of words matched
-    //i.e., if one word is matched - remove all with no words matched, if two is matched - remove 
-    //ones with one and zero, etc. Numbers of matches is already computed in the loop above
-    if (max_number_of_matched_words > 0) {
-        this.current_filter_list.remove(function(item) {
-            return (item.number_of_matching_words < max_number_of_matched_words);
-        });
-    }
-};*/
 
 GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(new_input) {
     //this function  highlights matching characters in list view as user types
@@ -172,8 +129,9 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
     var current_number_of_matched_words = 0;
     var i = 0;
     var len = 0;
+    var cur_str = "";
     for (i = 0, len = current_list.length; i < len; i++) {
-        var cur_str = current_list[i].name;
+        cur_str = current_list[i].name;
         var searchable_words = current_list[i].searcheable_words;
 
         current_number_of_matched_words = get_number_of_matching_words_rev(current_user_input, searchable_words);
@@ -186,8 +144,8 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
         current_list[i].number_of_mismatching_words = get_number_of_mismatching_words_rev(current_user_input, searchable_words);
     }
 
-    //see if there are entire words matched and keep only items with highest number of words matched
-    //i.e., if one word is matched - remove all with no words matched, if two is matched - remove 
+    // keep only items with highest number of words matched
+    //i.e., if one word is matched at least partially - remove all with no words matched, if two is matched - remove 
     //ones with one and zero, etc. Numbers of matches is already computed in the loop above
     if (max_number_of_matched_words > 0) {
 
@@ -200,15 +158,15 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
     } else {
         this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
     }
-    for (var i = 0, len = this.current_filter_list().length; i < len; i++) {
+    for (i = 0, len = this.current_filter_list().length; i < len; i++) {
         cur_str = this.current_filter_list()[i].name;
         var formatted_str = format_string_by_tag_matches(cur_str, current_user_input, "selected-char", "normal-char");
         this.current_filter_list()[i].formatted_displayed_name_for_filter(formatted_str);
     }
 
     //hide all markers that are not in the filtered list. 
-        this.controller.apply_filter_to_markers();
-    
+    this.controller.apply_filter_to_markers();
+
 };
 
 GUIViewModel.prototype.set_selected_item = function(obj) {
@@ -267,7 +225,7 @@ GUIViewModel.prototype.plan_new_trip = function() {
 
 GUIViewModel.prototype.next_step = function() {
     //callback for next step button 
-    this.apply_filter(); 
+    this.apply_filter(false);
     if (this.current_step() === 1) {
         if (!$.isEmptyObject(this.filtered_location)) {
             this.selected_source(this.filtered_location);
@@ -320,7 +278,6 @@ GUIViewModel.prototype.transition_to_previous_step = function(step, message) {
     this.controller.process_step_update();
 };
 
-
 GUIViewModel.prototype.previous_step = function() {
     if (this.current_step() === 2) {
         this.selected_source({});
@@ -329,7 +286,6 @@ GUIViewModel.prototype.previous_step = function() {
         this.transition_to_previous_step(2, this.messages.STEP2_AWAITING_INPUT);
     }
 };
-
 
 GUIViewModel.prototype.init_filtered_location_name = function() {
     this.filtered_location_name(this.filtered_location_name_defaults[this.current_step() - 1]);
@@ -360,9 +316,14 @@ GUIViewModel.prototype.update_filter = function() {
             return (item.number_of_mismatching_words > 0);
         });
     }
-}
+};
 
-GUIViewModel.prototype.apply_filter = function() {
+GUIViewModel.prototype.apply_filter = function(activate_item_input) {
+    var activate_item = true;
+    if (activate_item_input !== undefined) {
+        activate_item = activate_item_input;
+    }
+
     if (this.length_of_list === this.current_filter_list().length) {
         return; //nothing to filter on 
     }
@@ -377,7 +338,9 @@ GUIViewModel.prototype.apply_filter = function() {
     //set source/destination  
     if (this.current_filter_list().length === 1) {
         this.filtered_location = this.current_filter_list()[0];
-        this.controller.set_active_item(this.filtered_location);
+        if (activate_item) {
+            this.controller.set_active_item(this.filtered_location);
+        }
         this.set_filtered_location_message();
         if (this.current_step() === 1) {
             this.selected_source(this.filtered_location);
@@ -388,9 +351,7 @@ GUIViewModel.prototype.apply_filter = function() {
     }
 
     //hide all markers that are not in the filtered list. 
-
-        this.controller.apply_filter_to_markers();
-    
+    this.controller.apply_filter_to_markers();
 };
 
 GUIViewModel.prototype.set_filtered_location_message = function() {

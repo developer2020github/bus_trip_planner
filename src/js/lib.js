@@ -70,7 +70,7 @@ var get_dice_coefficient = function(string1, string2) {
     var intersection = 0;
     var length1 = string1.length - 1;
     var length2 = string2.length - 1;
-    var i = 0; 
+    var i = 0;
     if (length1 < 1 || length2 < 1) return 0;
     var bigrams2 = [];
     for (i = 0; i < length2; i++) {
@@ -104,7 +104,7 @@ var values_within_tolerance = function(v1, v2, tolerance_percent) {
 //mmatches are determined as follows: if a character of input string is found  in input tag
 //- there is a match, and no match otherwise.
 format_string_by_tag_matches = function(input_str, input_tag, selected_char, normal_char) {
-    
+
     var str = input_str.toLowerCase();
     var tag = input_tag.toLowerCase();
 
@@ -152,12 +152,12 @@ format_string_by_tag_matches = function(input_str, input_tag, selected_char, nor
 
 //the smaller the result  - the closer image is to square
 var get_square_ratio = function(h, w) {
-      
-        var r = h / w;
-        if (r > 1) {
-            r = 1 / r;
-        }
-        return 1 - r;
+
+    var r = h / w;
+    if (r > 1) {
+        r = 1 / r;
+    }
+    return 1 - r;
 };
 
 
@@ -224,28 +224,28 @@ get_number_of_matching_words_rev = function(user_input, tags_string) {
     var tokens = tags_string.toLowerCase().split(' ');
 
     var user_input_tokens = user_input.toLowerCase().split(' ');
-    for (var j = 0, len1 = user_input_tokens.length; j<len1; j++){
-    var user_input_l = user_input_tokens[j];
-    var match_found = false; 
-    for (var i = 0, len = tokens.length; i < len; i++) {
-        if ($.inArray(tokens[i], tokens_to_exclude) === -1) {
-            if (tokens[i].indexOf(user_input_l) > -1) {
-                match_found=true;
+    for (var j = 0, len1 = user_input_tokens.length; j < len1; j++) {
+        var user_input_l = user_input_tokens[j];
+        var match_found = false;
+        for (var i = 0, len = tokens.length; i < len; i++) {
+            if ($.inArray(tokens[i], tokens_to_exclude) === -1) {
+                if (tokens[i].indexOf(user_input_l) > -1) {
+                    match_found = true;
+                }
             }
         }
-    }
-    if (match_found){
-        num_of_matching_words++;
-    }
+        if (match_found) {
+            num_of_matching_words++;
+        }
     }
     return num_of_matching_words;
-}
+};
 
-get_number_of_mismatching_words_rev = function(user_input, tags_string){
+get_number_of_mismatching_words_rev = function(user_input, tags_string) {
     var tokens = tags_string.toLowerCase().split(' ');
     var number_of_matches = get_number_of_matching_words_rev(user_input, tags_string);
-    return (tokens.length-number_of_matches);
-}
+    return (tokens.length - number_of_matches);
+};
 
 //this will count number of words in tag that
 //contain all characters of str.
@@ -277,32 +277,32 @@ apply_class_to_span = function(text, css_class) {
 //========================================================================================
 function point2LatLng(point, map) {
     //http://stackoverflow.com/questions/25219346/how-to-convert-from-x-y-screen-coordinates-to-latlng-google-maps
-  var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
-  var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
-  var scale = Math.pow(2, map.getZoom());
-  var worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
-  return map.getProjection().fromPointToLatLng(worldPoint);
+    var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
+    var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
+    var scale = Math.pow(2, map.getZoom());
+    var worldPoint = new google.maps.Point(point.x / scale + bottomLeft.x, point.y / scale + topRight.y);
+    return map.getProjection().fromPointToLatLng(worldPoint);
 }
 
 function latLng2Point(latLng, map) {
     //http://stackoverflow.com/questions/25219346/how-to-convert-from-x-y-screen-coordinates-to-latlng-google-maps
-  var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
-  var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
-  var scale = Math.pow(2, map.getZoom());
-  var worldPoint = map.getProjection().fromLatLngToPoint(latLng);
-  return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
+    var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
+    var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
+    var scale = Math.pow(2, map.getZoom());
+    var worldPoint = map.getProjection().fromLatLngToPoint(latLng);
+    return new google.maps.Point((worldPoint.x - bottomLeft.x) * scale, (worldPoint.y - topRight.y) * scale);
 }
 
 //get coordinates of a point located at a certain 
 //distance and bearing from lat1 lng1
 //ref http://www.movable-type.co.uk/scripts/latlong.html
 // @param   {number} distance - Distance travelled, in same units as earth radius (default: metres).
- //* @param   {number} bearing - Initial bearing in degrees from north.
+//* @param   {number} bearing - Initial bearing in degrees from north.
 get_destination_point = function(lat1, lng1, distance, bearing) {
     //console.log("destination_point");
     //radius = (radius === undefined) ? 6371e3 : Number(radius);
-     distance = (distance===undefined)? 1500 : Number(distance);
-     bearing = (bearing===undefined)? 45 : Number(bearing);
+    distance = (distance === undefined) ? 1500 : Number(distance);
+    bearing = (bearing === undefined) ? 45 : Number(bearing);
     // φ2 = asin( sinφ1⋅cosδ + cosφ1⋅sinδ⋅cosθ )
     // λ2 = λ1 + atan2( sinθ⋅sinδ⋅cosφ1, cosδ − sinφ1⋅sinφ2 )
     // see http://williams.best.vwh.net/avform.htm#LL
@@ -313,17 +313,17 @@ get_destination_point = function(lat1, lng1, distance, bearing) {
     var phi1 = toRad(lat1);
     var lambda1 = toRad(lng1);
 
-    var phi2 = Math.asin(Math.sin(phi1)*Math.cos(delta) + Math.cos(phi1)*Math.sin(delta)*Math.cos(theta));
+    var phi2 = Math.asin(Math.sin(phi1) * Math.cos(delta) + Math.cos(phi1) * Math.sin(delta) * Math.cos(theta));
     var x = Math.cos(delta) - Math.sin(phi1) * Math.sin(phi2);
     var y = Math.sin(theta) * Math.sin(delta) * Math.cos(phi1);
     var lambda2 = lambda1 + Math.atan2(y, x);
 
     // normalise to −180..+180°
     var dest_lat = toDeg(phi2);
-    var dest_lng = (toDeg(lambda2)+540)%360-180;
+    var dest_lng = (toDeg(lambda2) + 540) % 360 - 180;
 
     //return new LatLon(φ2.toDegrees(), (λ2.toDegrees()+540)%360-180); 
-    return {lat: dest_lat, lng: dest_lng};
+    return { lat: dest_lat, lng: dest_lng };
 };
 
 //ref. http://www.movable-type.co.uk/scripts/latlong.html

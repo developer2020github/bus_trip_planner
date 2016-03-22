@@ -111,7 +111,7 @@ Controller.prototype.process_marker_click = function(data_model_array_name, idx_
     //map hanlder also passed data model array name and idx into it
 
     //close all data windows first 
-    this.map_handler.close_all_info_windows(); 
+    this.map_handler.close_all_info_windows();
 
     var obj = this.data_model.get_data_object(data_model_array_name, idx_into_data_model_array);
 
@@ -158,8 +158,8 @@ Controller.prototype.apply_filter_to_markers = function() {
     }
 
     //this is applicable only to steps <3 
-    if (this.gui_view.current_step()>2){
-        return; 
+    if (this.gui_view.current_step() > 2) {
+        return;
     }
     this.map_handler.hide_all_markers();
     this.map_handler.close_all_info_windows();

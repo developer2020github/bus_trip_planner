@@ -40,7 +40,7 @@ var GUIViewModel = function(controller, city_name) {
         STEP2_DESTINATION_SELECTED: '<span class ="msg-normal">: Please click next step to continue.</span>',
         STEP2_ONE_BUS: '<span class ="msg-normal">: Please click next to complete.</span>',
         STEP3_SELECT_BUS_ROUTE_MESSAGE: '<span class ="msg-normal">: Please select bus route and click next step to continue.</span>',
-        STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: '<span class ="msg-warning">:  No bus route selected. Note you need to apply filter to confirm your selection.</span>',
+        STEP3_NO_BUS_ROUTE_SELECTED_MESSAGE: '<span class ="msg-warning">:  No bus route selected.</span>',
         STEP3_ROUTE_SELECTED: '<span class ="msg-normal">:Please click next step to complete.</span>'
     };
 

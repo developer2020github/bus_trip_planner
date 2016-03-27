@@ -21,7 +21,12 @@ var jshint = require('gulp-jshint');
 var stylish = require('jshint-stylish');
 var html5Lint = require('gulp-html5-lint');
 var csslint = require('gulp-csslint');
- 
+var sloc = require('gulp-sloc');
+
+
+gulp.task('sloc', function(){
+  gulp.src(['src/js/*.js']).pipe(sloc());
+});
 
 gulp.task('lint_css', function() {
   gulp.src('src/css/*.css')

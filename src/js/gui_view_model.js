@@ -8,30 +8,31 @@
 //========================================================================================
 
 var GUIViewModel = function(controller, city_name) {
+    var self = this;
 
-    this.controller = controller;
-    this.current_filter_list = ko.observableArray();
-    this.current_step = ko.observable(1);
-    this.map_loaded = ko.observable(false); //this does not have to be observable in current version of 
+    self.controller = controller;
+    self.current_filter_list = ko.observableArray();
+    self.current_step = ko.observable(1);
+    self.map_loaded = ko.observable(false); //this does not have to be observable in current version of 
     //the program, but keep it like this - may decide to 
     //add some kind of map status indication
 
-    this.gui_shown = ko.observable(true);
+    self.gui_shown = ko.observable(true);
     //filtered location name is whatever is in the input text area (an observable)
     //filtered location is an object selected on application 
     //of the filter (since this is a trip planning 
-    //application, we can pick only one object as source, only one as desitnation 
+    //application, we can pick only one object as source, only one as destination 
     //and only one bus route)
-    this.filtered_location_name = ko.observable("");
-    this.filtered_location = {};
+    self.filtered_location_name = ko.observable("");
+    self.filtered_location = {};
 
-    this.selected_source = ko.observable({});
-    this.selected_destination = ko.observable({});
-    this.selected_bus_route = ko.observable({});
-    this.update_current_filter_list(this.controller.get_filtered_list_for_current_step(this.current_step()));
-    this.cityName = ko.observable(city_name);
+    self.selected_source = ko.observable({});
+    self.selected_destination = ko.observable({});
+    self.selected_bus_route = ko.observable({});
+    self.update_current_filter_list(self.controller.get_filtered_list_for_current_step(self.current_step()));
+    self.cityName = ko.observable(city_name);
 
-    this.messages = {
+    self.messages = {
         STEP1_AWAITING_INPUT: '<span class ="msg-normal">: Please select starting point and click next step to continue. You can use filter to narrow the list.</span>',
         STEP1_NO_SOURCE_SELECTED: '<span class ="msg-warning">: No starting point selected.</span>',
         STEP1_SOURCE_SELECTED: '<span class ="msg-normal">: Please click next step to continue</span>',
@@ -44,22 +45,22 @@ var GUIViewModel = function(controller, city_name) {
         STEP3_ROUTE_SELECTED: '<span class ="msg-normal">:Please click next step to complete.</span>'
     };
 
-    this.filtered_location_name_defaults = ['source:', 'destination:', 'route:', 'COMPLETE'];
+    self.filtered_location_name_defaults = ['source:', 'destination:', 'route:', 'COMPLETE'];
 
-    this.step_msg = ko.observable(this.messages.STEP1_AWAITING_INPUT);
-    this.init_filtered_location_name();
-    this.length_of_list = 0;
-    this.disable_auto_filter = false;
+    self.step_msg = ko.observable(self.messages.STEP1_AWAITING_INPUT);
+    self.init_filtered_location_name();
+    self.length_of_list = 0;
+    self.disable_auto_filter = false;
 
-    this.filtered_location_name.subscribe(this.highlight_chars_and_filter_by_closest_match, this);
-    this.step_and_status = ko.computed(this.get_step_and_status_msg, this);
-    this.selected_source_destination_display = ko.computed(this.get_selected_source_destination_display, this);
+    self.filtered_location_name.subscribe(self.highlight_chars_and_filter_by_closest_match, self);
+    self.step_and_status = ko.computed(self.get_step_and_status_msg, self);
+    self.selected_source_destination_display = ko.computed(self.get_selected_source_destination_display, self);
 
-    this.planner_title = ko.computed(function() {
-        return (this.cityName() + " BUS TRIP PLANNER");
-    }, this);
+    self.planner_title = ko.computed(function() {
+        return (self.cityName() + " BUS TRIP PLANNER");
+    }, self);
 
-    var self = this;
+   
     self.list_item_click = function(clicked_item) {
         //process a click on a filtered list item 
 

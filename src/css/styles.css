@@ -9,7 +9,7 @@
  
  .gui-main {
      z-index: 999;
-     background-color: #473C3C;
+     background-color: #473c3c;
      color: #CFCFCF;
      width: 320px;
  }
@@ -17,11 +17,11 @@
  .custom-padding {
      margin-left: 2px;
      margin-right: 2px;
-     padding-left: 2px !important;
-     padding-right: 2px !important;
+     padding-left: 2px;
+     padding-right: 2px;
  }
  
- #applicationTitle {
+ .application-title-style {
      display: inline-block;
      width: 86%;
      text-align: center;
@@ -30,13 +30,13 @@
  }
  
  .btn-rev {
-     color: white !important;
-     background-color: #A8A6A6 !important;
-     border-width: 2px !important;
+     color: white;
+     background-color: #a8a6a6;
+     border-width: 2px;
      padding-top: 4px;
  }
  
- #planNewTripButton {
+ .plan-new-trip-button-style {
      width: 100%;
      text-align: center;
      margin-bottom: 5px;
@@ -46,18 +46,18 @@
      border: solid;
      border-width: 2px;
      border-radius: 3px;
-     border-color: #CBC9C9;
+     border-color: #cbc9c9;
      display: block;
  }
  
  .selected-char {
      font-weight: bold;
-     color: #FEEE81;
+     color: #feee81;
  }
  
  .normal-char {
      font-weight: bold;
-     color: #CFCFCF;
+     color: #cfcfcf;
  }
 
  /* phone  */
@@ -82,9 +82,11 @@
          margin-top: 3px;
          font-size: 17px;
      }
+
      .selected-char {
          font-size: 17px;
      }
+
      .normal-char {
          font-size: 17px;
      }
@@ -97,16 +99,18 @@
          margin-top: 3px;
          font-size: 16px;
      }
+
      .selected-char {
          font-size: 16px;
      }
+     
      .normal-char {
          font-size: 16px;
      }
  }
  
- #previousStepButton {
-     width: 132px !important;
+ .previous-step-button-class{
+     width: 132px;
  }
  
  .group-map-gui {
@@ -122,11 +126,11 @@
  .msg-warning {
      font-weight: bold;
      font-size: 16px;
-     color: #FDB812;
+     color: #fdb812;
  }
  
  .list-of-items {
-     margin-bottom: 2px !important;
+     margin-bottom: 2px;
  }
  
  .clickable {

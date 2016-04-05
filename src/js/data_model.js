@@ -1,6 +1,12 @@
-//========================================================================================
-//Abu Dhabi bus trip planner
+
+//========================================================
+//Bus trip planner
 //2016
+//Author:  developer2020 
+//e-mail:  dev276236@gmail.com
+//========================================================
+
+//========================================================================================
 //data model main module
 //handles all data - related computations and builds data structures to support 
 //application functionality

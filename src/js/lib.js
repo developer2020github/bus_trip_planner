@@ -1,3 +1,12 @@
+
+//========================================================
+//Bus trip planner
+//2016
+//Author:  developer2020 
+//e-mail:  dev276236@gmail.com
+//========================================================
+
+
 //========================================================================================
 //Library  - functions and classes that do not belong to any 
 //particular class/object and can be re-used in a generic way.

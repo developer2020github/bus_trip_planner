@@ -1,3 +1,11 @@
+
+//========================================================
+//Bus trip planner
+//2016
+//Author:  developer2020 
+//e-mail:  dev276236@gmail.com
+//========================================================
+
 //========================================================
 //https://csstricks.com/gulpforbeginners/
 //https://www.npmjs.com/package/gulp-jshint

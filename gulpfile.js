@@ -62,7 +62,8 @@ gulp.task('lint_js_log', function() {
 });
 
 gulp.task('prefix_css', function () {
-	return gulp.src('src/css_source/*.css')
+	return gulp.src('src/css/*.css')
+    .pipe(gulp.dest('src/temp_css'))
 		.pipe(autoprefixer({
 			browsers: ['last 2 versions'],
 			cascade: false
@@ -70,9 +71,15 @@ gulp.task('prefix_css', function () {
 		.pipe(gulp.dest('src/css'));
 });
 
+gulp.task('restore_css_source', function () {
+  return gulp.src('src/temp_css/*.css')
+    .pipe(gulp.dest('src/css'));
+});
+
 gulp.task('watch', function(){
 gulp.watch('src/css_source/*.css', ['prefix_css']);
 })
+
 
 
 gulp.task('useref', function(){
@@ -117,6 +124,9 @@ gulp.task('clean:dist', function() {
 return del.sync('dist');
 })
 
+gulp.task('clean:temp', function() {
+return del.sync('src/temp_css');
+})
 //clear cach if needed
 gulp.task('cache:clear', function (callback) {
 return cache.clearAll(callback)
@@ -125,6 +135,8 @@ return cache.clearAll(callback)
 gulp.task('build', function (callback) {
 runSequence('prefix_css','clean:dist',
 ['useref', 'images', 'fonts'],'minify_html',
-callback
+'restore_css_source',
+'clean:temp',
+ callback
 )
 })

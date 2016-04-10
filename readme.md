@@ -1,6 +1,6 @@
 
 ##Project title
-######Bus trip planner demo
+######[Bus trip planner demo](http://developer2020github.github.io/bus_trip_planner/dist/ "link to project page")
 Author: developer2020 (<dev276236@gmail.com> )
 2016
 
@@ -8,7 +8,7 @@ Author: developer2020 (<dev276236@gmail.com> )
 Bus trip planner is a personal/portfolio/learning project,  designed and implemented by  developer2020 (<dev276236@gmail.com> ).  The one-page application helps user to determine which destinations in the city are reacheble by bus, and shows a route: walking directions from source to start of trip bus stop and from destination stop to  actual destination. It uses Google Maps, but also provides a limited functionality without Internet connection: all necessary calculations are done locally.
 
 City covered in the current version is  Abu Dhabi: Abu Dhabi  has a decent public transit system, but at the time when I started the application maps were not very user friendly. Now there is an official bus trip
-planner, with a very good GUI, so this project remains personal/demo project. 
+planner, with a very good GUI, so this project remains personal/demo project. Additinally, this application used a different approach to planning: user is presented with list of imporatant objects reacheable from a source (i.e. does not need to know beforehand to which stop he needs to go to).
 Application can be easily modified to be used for any other city.
 
 One of the steps meets requirements of one of Udacity front end nano-degree pojects, so application was used for that purpose as well.

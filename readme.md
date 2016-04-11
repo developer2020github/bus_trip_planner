@@ -5,13 +5,13 @@ Author: developer2020 (<dev276236@gmail.com> )
 2016
 
 ##Project overview
-Bus trip planner is a personal/portfolio/learning project,  designed and implemented by  developer2020 (<dev276236@gmail.com> ).  The one-page application helps user to determine which destinations in the city are reacheble by bus, and shows a route: walking directions from source to start of trip bus stop and from destination stop to  actual destination. It uses Google Maps, but also provides a limited functionality without Internet connection: all necessary calculations are done locally.
+Bus trip planner is a personal/portfolio/learning project,  designed and implemented by  developer2020 (<dev276236@gmail.com> ).  The one-page application helps user to determine which destinations in the city are reachable by bus, and shows a route: walking directions from source to start of trip bus stop, line connecting source and destination stops, and walking directions from destination stop to  actual destination. It uses Google Maps, but also provides a limited functionality without Internet connection: all necessary calculations are done locally.
 
 City covered in the current version is  Abu Dhabi: Abu Dhabi  has a decent public transit system, but at the time when I started the application maps were not very user friendly. Now there is an official bus trip
-planner, with a very good GUI, so this project remains personal/demo project. Additinally, this application used a different approach to planning: user is presented with list of imporatant objects reacheable from a source (i.e. does not need to know beforehand to which stop he needs to go to).
+planner, with a very good GUI, so this project remains personal/demo project. Additionally, this application presents a slightly different approach to planning: user is presented with list of important objects reachable from a source (i.e. does not need to know beforehand to which stop he needs to go to: if user wishes to reach a shopping mall, she will be presented with all malls reachable from a particular starting point).
 Application can be easily modified to be used for any other city.
 
-One of the steps meets requirements of one of Udacity front end nano-degree pojects, so application was used for that purpose as well.
+One of the steps meets requirements of one of Udacity front end nano-degree projects, so application was used for that purpose as well.
 
 ##Built with (libraries/technologies/APIs used)
 #####Application itself:
@@ -28,13 +28,13 @@ One of the steps meets requirements of one of Udacity front end nano-degree poje
 * Bower
 
 
-###Imporant limitations:
+###Important limitations:
 1) Since this is a demo project, there is a limited set of sources and destinations, picked by developer2020 based on his knowledge of the city of Abu Dhabi. However, there are no design  limitations on scalability, so more can be added.
 2) Current version uses Python script to generate bus routes/map objects data from Excel spreadsheets.While not perfect, this approach serves the purpose of easily  populating data for a demo and allows for an easy creation of personalized versions of the planner.
 
 ###Running the application
 
-You do not need to rebuild the application to check it out (built version is provided), just get it from GuitHub and open index.html, located in dist subfolder with a browser.
+You do not need to rebuild the application to check it out (built version is provided), just get it from GuitHub and open index.html, located in dist sub-folder with a browser.
 
 ###Functionality
 
@@ -55,7 +55,7 @@ Current version of the application has 3 bus routes and a total of 18 destinatio
 Once this is done, user can click on the next button to transition to step 3.
 
 ######Step 3
-Step 3 shows a list of bus routes which can take user from source to destination. In current version  of the program this step is not very informative - there is no obvious distinction between routes.  Step 3 is there at all because I am consdering  adding more funcitonality to it in the future.
+Step 3 shows a list of bus routes which can take user from source to destination. In current version  of the program this step is not very informative - there is no obvious distinction between routes.  Step 3 is there at all because I am considering  adding more functionality to it in the future.
 Once route is selected, user can click on the next button, to move to the next step.
 
 If during transition from step 2 to step 3 it is determined that there is only one bus route available for a selected source - destination pair - step 3 is skipped.
@@ -80,7 +80,7 @@ Details on how distances are calculated, etc. can be found in the comments to th
 ####Installing all the source and rebuilding the application.
 
 Application utilizes Bower for package management and Gulp for builds.
-There are two main subfolders:
+There are two main sub-folders:
 src - sources with all libraries
 dist - built application.
 

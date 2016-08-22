@@ -74,7 +74,7 @@ FilteredArray.prototype.get_filtered_objects = function(filter) {
 //========================================================================================
 
 //https://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Dice%27s_coefficient
-//dice coefficient shows simularity between two strings
+//dice coefficient shows similarity between two strings
 var get_dice_coefficient = function(string1, string2) {
     var intersection = 0;
     var length1 = string1.length - 1;
@@ -109,8 +109,8 @@ var values_within_tolerance = function(v1, v2, tolerance_percent) {
     return false;
 };
 
-//applies selected_char style to matching charactes and normal_char to the rest of them 
-//mmatches are determined as follows: if a character of input string is found  in input tag
+//applies selected_char style to matching characters and normal_char to the rest of them 
+//matches are determined as follows: if a character of input string is found  in input tag
 //- there is a match, and no match otherwise.
 format_string_by_tag_matches = function(input_str, input_tag, selected_char, normal_char) {
 
@@ -225,7 +225,7 @@ get_number_of_matching_words = function(user_input, tags_string) {
 };
 
 //similar to get_number_of_matching_words, but searches 
-//tags of tags string to contain a portion of user intput
+//tags of tags string to contain a portion of user input
 //if user input is in a tag - it is considered to be a match.
 get_number_of_matching_words_rev = function(user_input, tags_string) {
     var tokens_to_exclude = [',', ':'];

@@ -7,14 +7,14 @@
 //========================================================
 
 //========================================================================================
-//reacheable objects - part of data model 
-//builds a list of map objects reacheable from a source via a particular bus route 
+//reachable objects - part of data model 
+//builds a list of map objects reachable from a source via a particular bus route 
 //========================================================================================
 
 var ReacheableObjects = function(source, array_of_walkable_bus_stops, bus_route, data_model, map_objects) {
     //inputs:
     //source  - source provided by gui view via controller (selected by user)
-    //it is assumed that source itself is reacheable.
+    //it is assumed that source itself is reachable.
     //array of walkable_bus_stops -  one array per route - stops that are ok for walking (supplied with the 
     //data - these are stops that are convenient for walking)
     //route - just route number 
@@ -84,7 +84,7 @@ ReacheableObjects.prototype.compare_reachable_objects = function(o1, o2) {
 };
 
 ReacheableObjects.prototype.merge_reacheable_objects = function(reacheable_map_objects) {
-    //many destination objects are reacheable via multiple routes. 
+    //many destination objects are reachable via multiple routes. 
     //this method will merge info into one array, eliminating duplicates,  and return it.
     var merged = Array();
     merged = merged.concat(this.reacheable_map_objects);
@@ -92,7 +92,7 @@ ReacheableObjects.prototype.merge_reacheable_objects = function(reacheable_map_o
         return merged;
     }
 
-    //step 1 - see which objects already in merged should be overwirtten 
+    //step 1 - see which objects already in merged should be overwritten 
     //(because there is a closer
     //stop in the reacheable_map_objects then currently in merged) or 
     //updated with extra bus route information (if stop belongs to same route)

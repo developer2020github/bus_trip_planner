@@ -177,7 +177,7 @@ GUIViewModel.prototype.highlight_chars_and_filter_by_closest_match = function(ne
 };
 
 GUIViewModel.prototype.set_selected_item = function(obj) {
-    //used by contoller to process marker clicks 
+    //used by controller to process marker clicks 
     this.disable_auto_filter = true;
     this.filtered_location_name(obj.name);
     this.current_filter_list.remove(function(item) {

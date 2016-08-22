@@ -16,8 +16,8 @@
 //1. GUI view - implemented with Knockout, handles GUI menu. 
 //One module (gui_view_model.js)
 //
-//2.Data model - loads all the data on iniailization, 
-//calculates extra data (distrances, reacheable destinations, etc.) 
+//2.Data model - loads all the data on initialization, 
+//calculates extra data (distances, reachable destinations, etc.) 
 //and provides data-related services to other 
 //portions of the application. 
 //Data model consists of three modules: 
@@ -33,7 +33,7 @@
 //One module (main.js)
 //
 //5. Library of generic functions(lib.js)
-// Data model is accessable only by contoller. Data model has no access to contoller. 
+// Data model is accessible only by controller. Data model has no access to controller. 
 // map handler and GUI view both can call controller methods and the other way around. 
 //
 //6. Data scripts - located in folder js/generated_data
@@ -41,13 +41,13 @@
 // They are generated from Excel files by Python script and contain all the 
 // data for trip planner. Python script needs to be used only once, to convert Excel into 
 // JS. Excel files and Python script are technically not parts of a front-end application, 
-// but are provided with the source to facilitate understansding of the data structures. 
+// but are provided with the source to facilitate understanding of the data structures. 
 // Python script and source Excel files are located in directory map_utilities.
 //========================================================================================
 
 
 //========================================================================================
-//Constanst (can be made configurable too)
+//Constants (can be made configurable too)
 var CITY_NAME = "ABU DHABI";
 var MAP_CENTER_SHIFT = 200; //tune map center position so that GUI does not cover markers
 var MAX_WALKING_DISTANCE_METERS = 2000;
@@ -83,8 +83,8 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
         filtered_list = this.data_model.get_map_objects({ class: "community" });
     }
 
-    //for step 2, return list of reacheable stops 
-    //desitnation object is considered to be reachebale from a source 
+    //for step 2, return list of reachable stops 
+    //destination object is considered to be reachable from a source 
     //if
     //1. there is a walkable bus stop closer to the source than max walking distance
     //2. there is a bus route that leads to a stop that is located closer to destination
@@ -115,14 +115,14 @@ Controller.prototype.get_filtered_list_for_current_step = function(step) {
 
 Controller.prototype.process_marker_click = function(data_model_array_name, idx_into_data_model_array) {
     //is called by map handler when marker is clicked.
-    //map hanlder also passed data model array name and idx into it
+    //map handler also passed data model array name and idx into it
 
     //close all data windows first 
     this.map_handler.close_all_info_windows();
 
     var obj = this.data_model.get_data_object(data_model_array_name, idx_into_data_model_array);
 
-    //in step 2, clicking on alreasy selected source should not reset the list - 
+    //in step 2, clicking on already selected source should not reset the list - 
     //trip source is not selectable from the list and is always displayed on the map.
     var update_current_filter_list = true;
     if (this.gui_view.current_step() == 2) {
@@ -174,7 +174,7 @@ Controller.prototype.apply_filter_to_markers = function() {
     for (var i = 0, len = this.gui_view.current_filter_list().length; i < len; i++) {
         this.map_handler.show_marker(this.gui_view.current_filter_list()[i].marker_idx);
     }
-    //always display seleted source in step 2 
+    //always display selected source in step 2 
     if (this.gui_view.current_step() === 2) {
         this.map_handler.show_marker(this.gui_view.selected_source().marker_idx);
     }
@@ -219,7 +219,7 @@ Controller.prototype.process_step_update = function() {
 
 Controller.prototype.set_map_available = function() {
     //called by map loading callback 
-    //and peforms relevant initializations
+    //and performs relevant initializations
     this.gui_view.map_loaded(true);
 
     var marker_idxs = this.map_handler.init_locations(this.data_model.map_objects);

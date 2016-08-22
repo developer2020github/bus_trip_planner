@@ -41,7 +41,7 @@ var MapHandler = function(initial_pos, center_shift) {
     this.direction_displays = Array();
     //all markers are created once and stored in an array.
     //all operations performed on markers will be requested 
-    //via indexes into this array: upon creatiton of markers
+    //via indexes into this array: upon creation of markers
     //controller should ensure all map objects have their marker idxs assigned to them,
     //so each map object has a way to connect to its marker.
     this.markers = Array();
@@ -54,7 +54,7 @@ var MapHandler = function(initial_pos, center_shift) {
     this.debug_options = {};
 
     //if this debug option is set to true, corners of Panoramio search squares will show on the map.
-    //should always be set to false for relased versions of the program. 
+    //should always be set to false for released versions of the program. 
     this.debug_options.show_corner_markers = false;
 };
 
@@ -65,20 +65,20 @@ MapHandler.prototype.stop_animation = function(marker) {
 };
 
 MapHandler.prototype.animate_marker = function(marker_idx) {
-    //animates narker with idx === marker_idx
+    //animates marker with idx === marker_idx
     this.markers[marker_idx].setAnimation(google.maps.Animation.BOUNCE);
     this.stop_animation(this.markers[marker_idx]);
 };
 
 MapHandler.prototype.set_map_to_null = function(items) {
-    //a shotcut to set map to null to an array of objects
+    //a shortcut to set map to null to an array of objects
     $.each(items, function(idx, i) {
         i.setMap(null);
     });
 };
 
 MapHandler.prototype.remove_directions_display = function() {
-    //removes all direction lines and elimminates all relevant memorized data
+    //removes all direction lines and eliminates all relevant memorized data
     this.set_map_to_null(this.direction_displays);
     this.direction_displays = [];
     this.set_map_to_null(this.map_active_lines);
@@ -134,7 +134,7 @@ MapHandler.prototype.hide_marker = function(marker_idx) {
 };
 
 MapHandler.prototype.draw_source_destination_bus_line = function(coordinates) {
-    //this is a ssimplified version - used for first release 
+    //this is a simplified version - used for first release 
     //(or may keep it if like it - this program is about walking directions, 
     //does not matter much how exactly bus gets from a to b) - 
     //shows a straight blue line with an arrow between source and destination bus stops
@@ -209,7 +209,7 @@ MapHandler.prototype.get_panoramio_request_url = function(o) {
 
 MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_photos) {
     //some photos, while are taken on the location, do not really show what we 
-    //want to show (example - a photo of a buiding facing community but not a part of it)
+    //want to show (example - a photo of a building facing community but not a part of it)
     //this function will try to get the best match by photo title. 
     //for otherwise equal photos take more "square" ones
     var best_match = panoramio_photos[0];
@@ -231,7 +231,7 @@ MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_p
 };
 
 MapHandler.prototype.display_info_window = function(o) {
-    //shows info window ttached to a marker based on a passed map object. 
+    //shows info window attached to a marker based on a passed map object. 
     if (!this.info_windows_enabled) {
         return;
     }
@@ -283,7 +283,7 @@ MapHandler.prototype.close_all_info_windows = function() {
 
 MapHandler.prototype.init_locations = function(locations) {
     //initialization function - should be called after map 
-    //hanlder object was created. Accepts an array of map objects, returns array of marker idxs 
+    //handler object was created. Accepts an array of map objects, returns array of marker idxs 
     //- controller should ensure these idxs are assigned to appropriate objects. 
     var markers_idxs = Array();
     for (var i = 0, len = locations.length; i < len; i++) {

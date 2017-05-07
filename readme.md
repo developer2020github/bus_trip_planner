@@ -1,7 +1,7 @@
 
 ## Project title
 ###### [Bus trip planner demo](http://developer2020github.github.io/bus_trip_planner/dist/ "link to project page")
-Author: developer2020 (<dev276236@gmail.com> )  
+Author: developer2020 (<dev276236@gmail.com> )
 2016
 
 ## Project overview
@@ -20,7 +20,7 @@ One of the steps meets requirements of one of Udacity front end nano-degree proj
 * jQuery
 * Google Maps
 * AJAX
-* Panoramio
+* Panoramio (API is disabled (was ok when approaction was created), working on an alternative)
 
 ##### Build process:
 

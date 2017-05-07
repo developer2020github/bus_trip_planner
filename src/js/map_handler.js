@@ -190,8 +190,14 @@ MapHandler.prototype.remove_lines = function() {
     this.map_active_lines = [];
 };
 
+//need to replace panoramio APi with Google places as Panoramio is not available any more
+//    //https://developers.google.com/maps/documentation/javascript/places#places_photos
+//https://developers.google.com/places/web-service/photos
+
 MapHandler.prototype.get_panoramio_request_url = function(o) {
     //builds a request url for Panoramio API
+    // take a look at 
+
     var panoramio_url = "http://www.panoramio.com/map/get_panoramas.php?" +
         "order=popularity" +
         "&set=public" +

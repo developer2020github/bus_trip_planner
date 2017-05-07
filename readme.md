@@ -20,7 +20,7 @@ One of the steps meets requirements of one of Udacity front end nano-degree proj
 * jQuery
 * Google Maps
 * AJAX
-* Panoramio (API is disabled (was ok when approaction was created), working on an alternative)
+* Panoramio (API is disabled (was ok when application was created), working on an alternative)
 
 ##### Build process:
 

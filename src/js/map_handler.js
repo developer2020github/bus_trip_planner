@@ -193,6 +193,31 @@ MapHandler.prototype.remove_lines = function() {
 //need to replace panoramio APi with Google places as Panoramio is not available any more
 //    //https://developers.google.com/maps/documentation/javascript/places#places_photos
 //https://developers.google.com/places/web-service/photos
+//Record of work done: 
+//0. Went to https://developers.google.com/maps/documentation/javascript/places
+//1. Enabled google places API for this application. 
+MapHandler.prototype.google_places_pictures(o){
+    //new google.maps.LatLng(-34, 151)
+    //bounds, which must be a google.maps.LatLngBounds object defining the rectangular search area; 
+    //google.maps.LatLngBounds class
+    //LatLngBounds(sw?:LatLng|LatLngLiteral, ne?:LatLng|LatLngLiteral)    Constructs a rectangle from the points at its south-west and north-east corners.
+    //south west is lower left and north east is upper right 
+    var o_sw = new google.maps.LatLng(o.search_window_lower_left_corner.lat, o.search_window_lower_left_corner.lng); 
+    var o_ne = new google.maps.LatLng(o.search_window_upper_right_corner.lat, o.search_window_upper_right_corner.lng); 
+    var search_bounds = new google.maps.LatLngBounds(o_sw, o_ne);
+
+    var request = {bounds: search_bounds};
+    //stopped here - function callback was copied from https://developers.google.com/maps/documentation/javascript/places but not customized yet
+        function callback(results, status) {
+      if (status == google.maps.places.PlacesServiceStatus.OK) {
+        for (var i = 0; i < results.length; i++) {
+          var place = results[i];
+          createMarker(results[i]);
+        }
+      }
+    }
+}
+
 
 MapHandler.prototype.get_panoramio_request_url = function(o) {
     //builds a request url for Panoramio API

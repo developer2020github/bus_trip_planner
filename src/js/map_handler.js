@@ -196,7 +196,7 @@ MapHandler.prototype.remove_lines = function() {
 //Record of work done: 
 //0. Went to https://developers.google.com/maps/documentation/javascript/places
 //1. Enabled google places API for this application. 
-MapHandler.prototype.google_places_pictures(o){
+MapHandler.prototype.google_places_pictures = function(o){
     //new google.maps.LatLng(-34, 151)
     //bounds, which must be a google.maps.LatLngBounds object defining the rectangular search area; 
     //google.maps.LatLngBounds class
@@ -212,10 +212,21 @@ MapHandler.prototype.google_places_pictures(o){
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         for (var i = 0; i < results.length; i++) {
           var place = results[i];
-          createMarker(results[i]);
+          console.log("found some places!")
+          console.log(results[i]);
+          var photos = place.photos;
+          if (photos){
+           var url = photos[0].getUrl({'maxWidth': 100, 'maxHeight': 100})
+           console.log("photo url:"); 
+           console.log(url); // this is working - return correct urls for photos; need to select ones that have locality in type
+          }
+
+          //createMarker(results[i]);
         }
       }
     }
+    service = new google.maps.places.PlacesService(this.map);
+    service.nearbySearch(request, callback);
 }
 
 
@@ -290,6 +301,10 @@ MapHandler.prototype.display_info_window = function(o) {
         infowindow.open(self.map, marker);
         self.map_active_windows_markers.push(infowindow);
     };
+
+    console.log("calling google_places_pictures");
+
+    this.google_places_pictures(o);
 
     $.getJSON(this.get_panoramio_request_url(o))
         .done(function(data) {

@@ -196,52 +196,61 @@ MapHandler.prototype.remove_lines = function() {
 //Record of work done: 
 //0. Went to https://developers.google.com/maps/documentation/javascript/places
 //1. Enabled google places API for this application. 
-MapHandler.prototype.google_places_pictures = function(o, open_window, self){
+MapHandler.prototype.google_places_pictures = function(o, open_window, self) {
     //new google.maps.LatLng(-34, 151)
     //bounds, which must be a google.maps.LatLngBounds object defining the rectangular search area; 
     //google.maps.LatLngBounds class
     //LatLngBounds(sw?:LatLng|LatLngLiteral, ne?:LatLng|LatLngLiteral)    Constructs a rectangle from the points at its south-west and north-east corners.
     //south west is lower left and north east is upper right 
-    var o_sw = new google.maps.LatLng(o.search_window_lower_left_corner.lat, o.search_window_lower_left_corner.lng); 
-    var o_ne = new google.maps.LatLng(o.search_window_upper_right_corner.lat, o.search_window_upper_right_corner.lng); 
+    var o_sw = new google.maps.LatLng(o.search_window_lower_left_corner.lat, o.search_window_lower_left_corner.lng);
+    var o_ne = new google.maps.LatLng(o.search_window_upper_right_corner.lat, o.search_window_upper_right_corner.lng);
     var search_bounds = new google.maps.LatLngBounds(o_sw, o_ne);
 
-    var request = {bounds: search_bounds};
+    var request = { bounds: search_bounds };
     //stopped here - function callback was copied from https://developers.google.com/maps/documentation/javascript/places but not customized yet
     function callback(results, status) {
-      if (status == google.maps.places.PlacesServiceStatus.OK) {
-        var window_opened = false; 
-        for (var i = 0; i < results.length; i++) {
-          var place = results[i];
-          //console.log("found some places!")
-          //console.log(results[i]);
-          
-          var types = place.types; 
-          var url; 
-          if (types.indexOf("locality") > -1){
-              var photos = place.photos;
-              if (photos){
-               url = photos[0].getUrl({'maxWidth': 100, 'maxHeight': 100})
-               console.log("photo url:"); 
-               console.log(url); // this is working - return correct urls for photos; need to select ones that have locality in type
-              }
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+            var window_opened = false;
+            for (var i = 0; i < results.length; i++) {
+                var place = results[i];
+                //console.log("found some places!")
+                //console.log(results[i]);
+
+                var types = place.types;
+                console.log(place); 
+
+                var url;
+                if (types.indexOf("sublocality") > -1) {
+                    var photos = place.photos;
+                    if (photos) {
+                        url = photos[0].getUrl({ 'maxWidth': 100, 'maxHeight': 100 })
+                        console.log(url);
+
+                    }
+                }
+                if (url && !window_opened) {
+                    open_window(self, true, url);
+                    window_opened = true;
+                    console.log(); 
+                    console.log("chosen place:"); 
+                    console.log(place);
+                    console.log("photo url:");
+                    console.log(url); // this is working - return correct urls for photos; need to select ones that have locality in type
+
+
+                }
+                //createMarker(results[i]);
             }
-          if (url&&!window_opened){
-            open_window(self, true, url);
-            window_opened = true; 
-          }
-          //createMarker(results[i]);
-        }
-      }
-      else{
-        //if request to google photos fails - still open window with the place name , without 
+        } else {
+            //if request to google photos fails - still open window with the place name , without 
             //any images
             open_window(self, false);
-      }
+        }
     }
     service = new google.maps.places.PlacesService(this.map);
     service.nearbySearch(request, callback);
 }
+
 
 
 MapHandler.prototype.get_panoramio_request_url = function(o) {

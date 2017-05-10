@@ -230,7 +230,7 @@ Controller.prototype.set_map_available = function() {
 
 function initMap() {
     //map load call back 
-    var map_handler = new MapHandler(controller.data_model.get_map_center_coordinates(), MAP_CENTER_SHIFT);
+    var map_handler = new MapHandler(controller.data_model.get_map_center_coordinates(), MAP_CENTER_SHIFT, CITY_NAME);
     controller.map_handler = map_handler;
     map_handler.controller = controller;
     controller.set_map_available();

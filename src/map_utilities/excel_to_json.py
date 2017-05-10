@@ -4,7 +4,7 @@
 #heplper Python script  - converts routes data in Excel format into 
 #javascript data scripts. Tested and works with Python 3.4
 #To use, place data files into map/excel folder
-#generated scripts will be placed into map/js_data folder
+#generated scripts will be placed into js/generated_data folder
 #All this could be done on the server side. 
 #========================================================================================
 import os

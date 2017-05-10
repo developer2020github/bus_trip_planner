@@ -11,9 +11,11 @@
 //route lines
 //========================================================================================
 
-var MapHandler = function(initial_pos, center_shift) {
+var MapHandler = function(initial_pos, center_shift, city_name) {
     this.controller = {};
     this.mapDiv = document.getElementById('map');
+
+    this.city_name = city_name;
 
     this.map = new google.maps.Map(this.mapDiv, {
         center: initial_pos,
@@ -196,7 +198,7 @@ MapHandler.prototype.remove_lines = function() {
 //Record of work done: 
 //0. Went to https://developers.google.com/maps/documentation/javascript/places
 //1. Enabled google places API for this application. 
-MapHandler.prototype.google_places_pictures = function(o, open_window, self) {
+MapHandler.prototype.show_marker_with_google_places_pictures = function(o, open_window, self) {
     //new google.maps.LatLng(-34, 151)
     //bounds, which must be a google.maps.LatLngBounds object defining the rectangular search area; 
     //google.maps.LatLngBounds class
@@ -210,6 +212,14 @@ MapHandler.prototype.google_places_pictures = function(o, open_window, self) {
     //stopped here - function callback was copied from https://developers.google.com/maps/documentation/javascript/places but not customized yet
     function callback(results, status) {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
+            var best_photo_url = self.get_best_matching_google_photo_url(o, results, self.city_name);
+            if (best_photo_url===""){
+                open_window(self, false);
+            }else{
+                open_window(self, true, best_photo_url);
+            }
+
+/*
             var window_opened = false;
             for (var i = 0; i < results.length; i++) {
                 var place = results[i];
@@ -228,6 +238,7 @@ MapHandler.prototype.google_places_pictures = function(o, open_window, self) {
 
                     }
                 }
+
                 if (url && !window_opened) {
                     open_window(self, true, url);
                     window_opened = true;
@@ -239,8 +250,10 @@ MapHandler.prototype.google_places_pictures = function(o, open_window, self) {
 
 
                 }
+
                 //createMarker(results[i]);
             }
+*/
         } else {
             //if request to google photos fails - still open window with the place name , without 
             //any images
@@ -252,31 +265,79 @@ MapHandler.prototype.google_places_pictures = function(o, open_window, self) {
 }
 
 
+MapHandler.prototype.get_best_matching_google_photo_url = function(o, places, city_name) {
+    //This function returns a best matching photo to display
+    //inputs are object to get a photo for, array of 
+    //google places nearby and city name. 
+    //Search is done by best matching dice coefficient between places names 
+    //and object name. If for some reason no photo url is available for 
+    //the places selected - a sublocality photo url is selected. 
+    //If no sublocality photo is available - default is photo of first place in the array of places. 
+    //If everything above fails - an empty string is returned.
 
-MapHandler.prototype.get_panoramio_request_url = function(o) {
-    //builds a request url for Panoramio API
-    // take a look at 
+    console.log("get_best_matching_google_photo_url"); 
+    console.log(o.name);
 
-    var panoramio_url = "http://www.panoramio.com/map/get_panoramas.php?" +
-        "order=popularity" +
-        "&set=public" +
-        "&from=0" +
-        "&to=30" +
-        "&minx=" + o.search_window_lower_left_corner.lng.toString() +
-        "&miny=" + o.search_window_lower_left_corner.lat.toString() +
-        "&maxx=" + o.search_window_upper_right_corner.lng.toString() +
-        "&maxy=" + o.search_window_upper_right_corner.lat.toString() +
-        "&size=small" +
-        "&mapfilter=true" +
-        "&callback=?";
-    return panoramio_url;
-};
+    var get_dice_coef_no_city = function(name1, name2, city_name){
+        var updated_name1 = name1.toUpperCase();
+        updated_name1 = updated_name1.replace(city_name.toUpperCase, "");
+          
+        if (updated_name1===""){
+            return -1;
+        }
 
+        var updated_name2 = name2.toUpperCase();
+        updated_name2 = updated_name2.replace(city_name.toUpperCase, "");
+         if (updated_name2===""){
+            return -1;
+        }
+
+        return get_dice_coefficient(updated_name1, updated_name2);
+    }
+
+    var get_photo_url = function(place){
+        var photos = place.photos; 
+        if (photos){
+            return photos[0].getUrl({ 'maxWidth': 200, 'maxHeight': 200 });
+        }
+        return "";
+    }
+
+    var max_dice_coefficient = -1;
+    var best_match = get_photo_url(places[0]);
+    var best_match2 = "";
+
+    $.each(places, function(idx, place) {
+        var dice_coefficient = get_dice_coef_no_city(o.name, place.name, city_name);
+        var types = place.types;
+        if (types.indexOf("sublocality") > -1){
+            best_match2 = get_photo_url(place);
+        }
+
+        if (dice_coefficient > max_dice_coefficient){
+
+            best_match = get_photo_url(place);
+            max_dice_coefficient = dice_coefficient;
+        }
+
+    });
+
+    if (best_match ===""){
+        best_match  = best_match2;
+    }
+
+    return best_match;
+
+}
+
+//this function is not used any more; keep it for reference on how photo selection can be done 
+//if need to use some other photo source 
 MapHandler.prototype.get_best_matching_panoramio_photo = function(o, panoramio_photos) {
     //some photos, while are taken on the location, do not really show what we 
     //want to show (example - a photo of a building facing community but not a part of it)
     //this function will try to get the best match by photo title. 
     //for otherwise equal photos take more "square" ones
+
     var best_match = panoramio_photos[0];
     var max_dice_coefficient = get_dice_coefficient(o.name, panoramio_photos[0].photo_title);
     var min_square_ratio = get_square_ratio(panoramio_photos[0].height, panoramio_photos[0].width);
@@ -325,22 +386,8 @@ MapHandler.prototype.display_info_window = function(o) {
         self.map_active_windows_markers.push(infowindow);
     };
 
-    console.log("calling google_places_pictures");
 
-    this.google_places_pictures(o, open_window, self);
-    return; 
-    
-
-    $.getJSON(this.get_panoramio_request_url(o))
-        .done(function(data) {
-            var best_photo = self.get_best_matching_panoramio_photo(o, data.photos);
-            open_window(self, true, best_photo.photo_file_url);
-        })
-        .fail(function() {
-            //if request to panoramio fails - still open window with the place name , without 
-            //any images
-            open_window(self, false);
-        });
+    this.show_marker_with_google_places_pictures(o, open_window, self);
     
 };
 

@@ -18,9 +18,8 @@ One of the steps meets requirements of one of Udacity front end nano-degree proj
 
 * Knockout
 * jQuery
-* Google Maps
+* Google Maps and Places Photos
 * AJAX
-* Panoramio (API is disabled (was ok when application was created), working on an alternative)
 
 ##### Build process:
 

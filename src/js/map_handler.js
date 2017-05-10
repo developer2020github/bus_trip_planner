@@ -1,4 +1,3 @@
-
 //========================================================
 //Bus trip planner
 //2016
@@ -8,7 +7,7 @@
 
 //========================================================================================
 //map handler  - handles map-related objects: map itself, markers, info windows, 
-//route lines
+//route lines and interface with photos source (google places)
 //========================================================================================
 
 var MapHandler = function(initial_pos, center_shift, city_name) {
@@ -192,76 +191,35 @@ MapHandler.prototype.remove_lines = function() {
     this.map_active_lines = [];
 };
 
-//need to replace panoramio APi with Google places as Panoramio is not available any more
-//    //https://developers.google.com/maps/documentation/javascript/places#places_photos
-//https://developers.google.com/places/web-service/photos
-//Record of work done: 
-//0. Went to https://developers.google.com/maps/documentation/javascript/places
-//1. Enabled google places API for this application. 
+
 MapHandler.prototype.show_marker_with_google_places_pictures = function(o, open_window, self) {
-    //new google.maps.LatLng(-34, 151)
-    //bounds, which must be a google.maps.LatLngBounds object defining the rectangular search area; 
-    //google.maps.LatLngBounds class
-    //LatLngBounds(sw?:LatLng|LatLngLiteral, ne?:LatLng|LatLngLiteral)    Constructs a rectangle from the points at its south-west and north-east corners.
-    //south west is lower left and north east is upper right 
+    //this function displays a google place photo for the map object
+    //References: 
+    //https://developers.google.com/maps/documentation/javascript/places#places_photos
+
     var o_sw = new google.maps.LatLng(o.search_window_lower_left_corner.lat, o.search_window_lower_left_corner.lng);
     var o_ne = new google.maps.LatLng(o.search_window_upper_right_corner.lat, o.search_window_upper_right_corner.lng);
     var search_bounds = new google.maps.LatLngBounds(o_sw, o_ne);
 
     var request = { bounds: search_bounds };
-    //stopped here - function callback was copied from https://developers.google.com/maps/documentation/javascript/places but not customized yet
-    function callback(results, status) {
+    //ref.  https://developers.google.com/maps/documentation/javascript/places
+    function display_photo_callback(results, status) {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
             var best_photo_url = self.get_best_matching_google_photo_url(o, results, self.city_name);
-            if (best_photo_url===""){
+            if (best_photo_url === "") {
                 open_window(self, false);
-            }else{
+            } else {
                 open_window(self, true, best_photo_url);
             }
 
-/*
-            var window_opened = false;
-            for (var i = 0; i < results.length; i++) {
-                var place = results[i];
-                //console.log("found some places!")
-                //console.log(results[i]);
-
-                var types = place.types;
-                console.log(place); 
-
-                var url;
-                if (types.indexOf("sublocality") > -1) {
-                    var photos = place.photos;
-                    if (photos) {
-                        url = photos[0].getUrl({ 'maxWidth': 100, 'maxHeight': 100 })
-                        console.log(url);
-
-                    }
-                }
-
-                if (url && !window_opened) {
-                    open_window(self, true, url);
-                    window_opened = true;
-                    console.log(); 
-                    console.log("chosen place:"); 
-                    console.log(place);
-                    console.log("photo url:");
-                    console.log(url); // this is working - return correct urls for photos; need to select ones that have locality in type
-
-
-                }
-
-                //createMarker(results[i]);
-            }
-*/
         } else {
-            //if request to google photos fails - still open window with the place name , without 
+            //if request to google places fails - still open window with the place name , without 
             //any images
             open_window(self, false);
         }
     }
     service = new google.maps.places.PlacesService(this.map);
-    service.nearbySearch(request, callback);
+    service.nearbySearch(request, display_photo_callback);
 }
 
 
@@ -275,29 +233,29 @@ MapHandler.prototype.get_best_matching_google_photo_url = function(o, places, ci
     //If no sublocality photo is available - default is photo of first place in the array of places. 
     //If everything above fails - an empty string is returned.
 
-    console.log("get_best_matching_google_photo_url"); 
+    console.log("get_best_matching_google_photo_url");
     console.log(o.name);
 
-    var get_dice_coef_no_city = function(name1, name2, city_name){
+    var get_dice_coef_no_city = function(name1, name2, city_name) {
         var updated_name1 = name1.toUpperCase();
         updated_name1 = updated_name1.replace(city_name.toUpperCase, "");
-          
-        if (updated_name1===""){
+
+        if (updated_name1 === "") {
             return -1;
         }
 
         var updated_name2 = name2.toUpperCase();
         updated_name2 = updated_name2.replace(city_name.toUpperCase, "");
-         if (updated_name2===""){
+        if (updated_name2 === "") {
             return -1;
         }
 
         return get_dice_coefficient(updated_name1, updated_name2);
     }
 
-    var get_photo_url = function(place){
-        var photos = place.photos; 
-        if (photos){
+    var get_photo_url = function(place) {
+        var photos = place.photos;
+        if (photos) {
             return photos[0].getUrl({ 'maxWidth': 200, 'maxHeight': 200 });
         }
         return "";
@@ -310,11 +268,11 @@ MapHandler.prototype.get_best_matching_google_photo_url = function(o, places, ci
     $.each(places, function(idx, place) {
         var dice_coefficient = get_dice_coef_no_city(o.name, place.name, city_name);
         var types = place.types;
-        if (types.indexOf("sublocality") > -1){
+        if (types.indexOf("sublocality") > -1) {
             best_match2 = get_photo_url(place);
         }
 
-        if (dice_coefficient > max_dice_coefficient){
+        if (dice_coefficient > max_dice_coefficient) {
 
             best_match = get_photo_url(place);
             max_dice_coefficient = dice_coefficient;
@@ -322,8 +280,8 @@ MapHandler.prototype.get_best_matching_google_photo_url = function(o, places, ci
 
     });
 
-    if (best_match ===""){
-        best_match  = best_match2;
+    if (best_match === "") {
+        best_match = best_match2;
     }
 
     return best_match;
@@ -388,7 +346,7 @@ MapHandler.prototype.display_info_window = function(o) {
 
 
     this.show_marker_with_google_places_pictures(o, open_window, self);
-    
+
 };
 
 MapHandler.prototype.close_all_info_windows = function() {

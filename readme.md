@@ -2,7 +2,7 @@
 ## Project title
 ###### [Bus trip planner demo](http://developer2020github.github.io/bus_trip_planner/dist/ "link to project page")
 Author: developer2020 (<dev276236@gmail.com> )
-2016
+2016-2017
 
 ## Project overview
 Bus trip planner is a personal/portfolio/learning project,  designed and implemented by  developer2020 (<dev276236@gmail.com> ).  The one-page application helps user to determine which destinations in the city are reachable by bus, and shows a route: walking directions from source to start of trip bus stop, line connecting source and destination stops, and walking directions from destination stop to  actual destination. It uses Google Maps, but also provides a limited functionality without Internet connection: all necessary calculations are done locally.

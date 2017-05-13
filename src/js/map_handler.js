@@ -1,6 +1,6 @@
 //========================================================
 //Bus trip planner
-//2016
+//2016-2017
 //Author:  developer2020 
 //e-mail:  dev276236@gmail.com
 //========================================================
@@ -233,8 +233,6 @@ MapHandler.prototype.get_best_matching_google_photo_url = function(o, places, ci
     //If no sublocality photo is available - default is photo of first place in the array of places. 
     //If everything above fails - an empty string is returned.
 
-    console.log("get_best_matching_google_photo_url");
-    console.log(o.name);
 
     var get_dice_coef_no_city = function(name1, name2, city_name) {
         var updated_name1 = name1.toUpperCase();
